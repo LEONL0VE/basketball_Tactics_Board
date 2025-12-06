@@ -569,7 +569,7 @@ const TacticsBoard: React.FC = () => {
 
     // If the click target is NOT a part of a Player or Ball group
     // We can check the parent chain.
-    let parent = e.target.getParent ? e.target.getParent() : null;
+    let parent = e.target && e.target.getParent ? e.target.getParent() : null;
     let isEntity = false;
     while (parent) {
       if (parent.attrs.name === 'entity-group') {
@@ -609,8 +609,8 @@ const TacticsBoard: React.FC = () => {
       // If it is background, we want to clear.
       
       // Let's check if we clicked the court background
-      const name = e.target.attrs?.name;
-      const parentName = (e.target.getParent && e.target.getParent())?.attrs.name;
+      const name = e.target && e.target.attrs ? e.target.attrs.name : null;
+      const parentName = (e.target && e.target.getParent && e.target.getParent())?.attrs?.name;
 
       if (name === 'court-background' || name === 'court-base' || parentName === 'wood-texture') {
          setSelectedId(null);

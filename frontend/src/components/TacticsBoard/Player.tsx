@@ -69,8 +69,8 @@ const Player: React.FC<PlayerProps> = ({
   const handleRotateStart = (e: any) => {
     e.cancelBubble = true;
     const stage = e.target.getStage();
-    const parent = e.target.getParent();
-    const playerGroup = parent ? parent.getParent() : null; // HandleGroup -> SelectionGroup -> PlayerGroup
+    const parent = e.target && e.target.getParent ? e.target.getParent() : null;
+    const playerGroup = parent && parent.getParent ? parent.getParent() : null; // HandleGroup -> SelectionGroup -> PlayerGroup
     
     if (!playerGroup || !stage) return;
 
