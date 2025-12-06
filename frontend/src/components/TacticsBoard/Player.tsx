@@ -191,22 +191,15 @@ const Player: React.FC<PlayerProps> = ({
           onContextMenu(e, player.id);
         }
       }}
-    >
-      {/* Info Tooltip - Premium Data Card */}
-      {/* Only show on hover to avoid conflict with Action Menu or Drawing Path */}
-      {isHovered && player.profile && (
+    >{isHovered && player.profile && (
         <Group
           y={-radius - 12}
           rotation={-rotation + rotationOffset} // Keep upright
           listening={false}
-        >
-          {/* Card Background */}
-          <Group
+        ><Group
              offsetX={85} // Center horizontally (Width 170 / 2)
              offsetY={100} // Position above anchor
-          >
-              {/* Shadow & Main Body */}
-              <Rect
+          ><Rect
                 width={170}
                 height={94}
                 fill="rgba(15, 15, 18, 0.95)"
@@ -231,20 +224,14 @@ const Player: React.FC<PlayerProps> = ({
                     width={142}
                     ellipsis={true}
                     wrap="none"
-                  />
-                  
-                  {/* Sub-info: Team | Pos | #Num */}
-                  <Text
+                  /><Text
                     y={18}
                     text={`${(player.profile.stats as any)?.team || 'NBA'} · ${(player.profile.stats as any)?.position || 'G'} · #${(player.profile.stats as any)?.jersey || player.number}`}
                     fontFamily="Inter, sans-serif"
                     fontSize={11}
                     fill="rgba(255, 255, 255, 0.6)"
                     width={142}
-                  />
-
-                  {/* Divider Line */}
-                  <Rect
+                  /><Rect
                     y={40}
                     width={142}
                     height={1}
@@ -254,20 +241,11 @@ const Player: React.FC<PlayerProps> = ({
                   {/* Stats Row 1: PTS / REB / AST */}
                   <Group y={50}>
                       {/* PTS */}
-                      <Group x={0}>
-                          <Text text="PTS" fontSize={9} fill="rgba(255,255,255,0.5)" />
-                          <Text y={12} text={`${(player.profile.stats as any)?.stats?.ppg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" />
-                      </Group>
+                      <Group x={0}><Text text="PTS" fontSize={9} fill="rgba(255,255,255,0.5)" /><Text y={12} text={`${(player.profile.stats as any)?.stats?.ppg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" /></Group>
                       {/* REB */}
-                      <Group x={50}>
-                          <Text text="REB" fontSize={9} fill="rgba(255,255,255,0.5)" />
-                          <Text y={12} text={`${(player.profile.stats as any)?.stats?.rpg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" />
-                      </Group>
+                      <Group x={50}><Text text="REB" fontSize={9} fill="rgba(255,255,255,0.5)" /><Text y={12} text={`${(player.profile.stats as any)?.stats?.rpg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" /></Group>
                       {/* AST */}
-                      <Group x={100}>
-                          <Text text="AST" fontSize={9} fill="rgba(255,255,255,0.5)" />
-                          <Text y={12} text={`${(player.profile.stats as any)?.stats?.apg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" />
-                      </Group>
+                      <Group x={100}><Text text="AST" fontSize={9} fill="rgba(255,255,255,0.5)" /><Text y={12} text={`${(player.profile.stats as any)?.stats?.apg ?? '-'}`} fontSize={13} fontStyle="600" fill="#fff" /></Group>
                   </Group>
               </Group>
 

@@ -2038,25 +2038,20 @@ const TacticsBoard: React.FC = () => {
                     rotation={isVertical ? 90 : 0}
                     x={isVertical ? stageWidth : 0}
                     y={0}
-                  >
-                    {memoizedCourt}
-                    
-                    {showGhostDefense && (
+                  >{memoizedCourt}{showGhostDefense && (
                       <GhostDefenseLayer 
                         entities={entities} 
                         viewMode={viewMode} 
                         currentFrameIndex={currentFrameIndex}
                       />
-                    )}
-                    
-                    <ActionLayer 
+                    )}<ActionLayer 
                       actions={actions}
                       currentAction={currentAction}
                       selectedActionId={selectedActionId}
                       onSelectAction={handleActionSelect}
                       onActionPointChange={handleActionPointChange}
                       viewMode={viewMode}
-                    />                    {entities.map(entity => {
+                    />{entities.map(entity => {
                       if (entity.type === 'player') {
                         // Check if this player has the ball
                         const hasBall = entities.some(e => e.type === 'ball' && (e as BallType).ownerId === entity.id);

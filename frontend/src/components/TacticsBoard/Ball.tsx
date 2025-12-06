@@ -71,54 +71,12 @@ const Ball: React.FC<BallProps> = ({
         if (container) container.style.cursor = 'default';
       }}
     >
-
       {/* Selection Ring */}
-      {isSelected && (
-        <Circle
-          radius={16}
-          stroke="#1890ff"
-          strokeWidth={2}
-          dash={[5, 5]}
-        />
-      )}
-
+      {isSelected && (<Circle radius={16} stroke="#1890ff" strokeWidth={2} dash={[5, 5]} />)}
       {/* Main Body Orange */}
-      <Circle
-        radius={12}
-        fill="#e67e22"
-        stroke="black"
-        strokeWidth={1}
-        shadowColor="black"
-        shadowBlur={2}
-        shadowOpacity={0.3}
-      />
-      
+      <Circle radius={12} fill="#e67e22" stroke="black" strokeWidth={1} shadowColor="black" shadowBlur={2} shadowOpacity={0.3} />
       {/* Ball Texture/Lines - Curved lines to look like a real basketball */}
-      <Group>
-        {/* Horizontal line */}
-        <Path
-            data="M -12 0 Q 0 0 12 0"
-            stroke="#1a1a1a"
-            strokeWidth={1.5}
-        />
-        {/* Vertical line */}
-        <Path
-            data="M 0 -12 Q 0 0 0 12"
-            stroke="#1a1a1a"
-            strokeWidth={1.5}
-        />
-        {/* Side curves */}
-        <Path
-            data="M -8 -8 Q 0 0 -8 8"
-            stroke="#1a1a1a"
-            strokeWidth={1.5}
-        />
-        <Path
-            data="M 8 -8 Q 0 0 8 8"
-            stroke="#1a1a1a"
-            strokeWidth={1.5}
-        />
-      </Group>
+      <Group><Path data="M -12 0 Q 0 0 12 0" stroke="#1a1a1a" strokeWidth={1.5} /><Path data="M 0 -12 Q 0 0 0 12" stroke="#1a1a1a" strokeWidth={1.5} /><Path data="M -8 -8 Q 0 0 -8 8" stroke="#1a1a1a" strokeWidth={1.5} /><Path data="M 8 -8 Q 0 0 8 8" stroke="#1a1a1a" strokeWidth={1.5} /></Group>
     </Group>
   );
 };

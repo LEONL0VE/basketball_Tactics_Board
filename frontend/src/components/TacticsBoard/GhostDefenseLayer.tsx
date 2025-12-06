@@ -97,91 +97,17 @@ const GhostDefenseLayer: React.FC<GhostDefenseLayerProps> = ({ entities, viewMod
         return (
           <Group key={`ghost-${player.id}`}>
             {/* Connection Line */}
-            <Line
-              points={[renderPlayerX, renderPlayerY, renderGhostX, renderGhostY]}
-              stroke={showOpen ? "#2ecc71" : color}
-              strokeWidth={showOpen ? 3 : 2}
-              dash={showOpen ? [] : [5, 5]}
-              opacity={showOpen ? Math.max(0.3, indicatorOpacity) : 1}
-            />
-            
+            <Line points={[renderPlayerX, renderPlayerY, renderGhostX, renderGhostY]} stroke={showOpen ? "#2ecc71" : color} strokeWidth={showOpen ? 3 : 2} dash={showOpen ? [] : [5, 5]} opacity={showOpen ? Math.max(0.3, indicatorOpacity) : 1} />
             {/* Ghost Defender Body */}
-            <Circle
-              x={renderGhostX}
-              y={renderGhostY}
-              radius={14 * scale}
-              fill={color}
-              stroke={showOpen ? "#2ecc71" : "white"}
-              strokeWidth={showOpen ? 3 : 1}
-              opacity={showOpen ? Math.max(0.6, indicatorOpacity) : 1}
-            />
-
+            <Circle x={renderGhostX} y={renderGhostY} radius={14 * scale} fill={color} stroke={showOpen ? "#2ecc71" : "white"} strokeWidth={showOpen ? 3 : 1} opacity={showOpen ? Math.max(0.6, indicatorOpacity) : 1} />
             {/* Info Text */}
-            <Text
-              x={renderGhostX - 20}
-              y={renderGhostY - 30}
-              text={`${(gap / SCALE).toFixed(1)}m`}
-              fontSize={10}
-              fill="white"
-            />
-            
+            <Text x={renderGhostX - 20} y={renderGhostY - 30} text={`${(gap / SCALE).toFixed(1)}m`} fontSize={10} fill="white" />
             {/* Real Data Indicator */}
-            <Circle
-                x={renderGhostX + 10 * scale}
-                y={renderGhostY - 10 * scale}
-                radius={4 * scale}
-                fill={isRealData ? "#2ecc71" : "#95a5a6"}
-                stroke="white"
-                strokeWidth={1}
-            />
+            <Circle x={renderGhostX + 10 * scale} y={renderGhostY - 10 * scale} radius={4 * scale} fill={isRealData ? "#2ecc71" : "#95a5a6"} stroke="white" strokeWidth={1} />
              {/* Debug Info (Optional: Show Zone/Pct on hover or always) */}
-            {hasBall && (
-                <Group x={renderGhostX + 15 * scale} y={renderGhostY - 15 * scale}>
-                    <Text 
-                        text={`${isRealData ? 'Real' : 'Avg'}: ${(pct * 100).toFixed(1)}%`}
-                        fontSize={10}
-                        fill={isRealData ? "#4cd137" : "#dcdde1"} // Green for Real, Grey for Avg
-                        fontStyle={isRealData ? "bold" : "normal"}
-                    />
-                    <Text 
-                        text={zoneName}
-                        y={12}
-                        fontSize={8}
-                        fill="#7f8fa6"
-                    />
-                </Group>
-            )}
-
+            {hasBall && (<Group x={renderGhostX + 15 * scale} y={renderGhostY - 15 * scale}><Text text={`${isRealData ? 'Real' : 'Avg'}: ${(pct * 100).toFixed(1)}%`} fontSize={10} fill={isRealData ? "#4cd137" : "#dcdde1"} fontStyle={isRealData ? "bold" : "normal"} /><Text text={zoneName} y={12} fontSize={8} fill="#7f8fa6" /></Group>)}
             {/* OPEN SHOT INDICATOR */}
-            {showOpen && (
-                <Label 
-                    x={renderPlayerX} 
-                    y={renderPlayerY - 50 * scale} 
-                    opacity={indicatorOpacity}
-                    scaleX={scale}
-                    scaleY={scale}
-                >
-                    <Tag 
-                        fill="#2ecc71" 
-                        pointerDirection="down" 
-                        pointerWidth={12} 
-                        pointerHeight={12} 
-                        lineJoin="round"
-                        shadowColor="black"
-                        shadowBlur={10}
-                        shadowOpacity={0.5}
-                        stroke="white"
-                        strokeWidth={2}
-                    />
-                    <Text
-                        text={hasBall ? "OPEN SHOT!" : "OPEN!"}
-                        fontSize={16}
-                        fontStyle="bold"
-                        fill="white"
-                        padding={10}
-                    />
-                </Label>
-            )}
+            {showOpen && (<Label x={renderPlayerX} y={renderPlayerY - 50 * scale} opacity={indicatorOpacity} scaleX={scale} scaleY={scale}><Tag fill="#2ecc71" pointerDirection="down" pointerWidth={12} pointerHeight={12} lineJoin="round" shadowColor="black" shadowBlur={10} shadowOpacity={0.5} stroke="white" strokeWidth={2} /><Text text={hasBall ? "OPEN SHOT!" : "OPEN!"} fontSize={16} fontStyle="bold" fill="white" padding={10} /></Label>)}
           </Group>
         );
       })}

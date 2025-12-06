@@ -112,12 +112,7 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
         const sp2 = toScreen(p2x, p2y);
 
         return (
-            <Group key={id} {...commonProps}>
-                <Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} />
-                <Line points={flatPoints} stroke={color} strokeWidth={2} tension={0.5} />
-                <Line points={[sp1.x, sp1.y, sp2.x, sp2.y]} stroke={color} strokeWidth={2} />
-                {renderHandles()}
-            </Group>
+            <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Line points={flatPoints} stroke={color} strokeWidth={2} tension={0.5} /><Line points={[sp1.x, sp1.y, sp2.x, sp2.y]} stroke={color} strokeWidth={2} />{renderHandles()}</Group>
         );
     }
 
@@ -161,25 +156,7 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
         zigzag.push(slast.x, slast.y);
 
         return (
-            <Group key={id} {...commonProps}>
-                {/* Hit Area - Use the smooth curve for hit detection as it covers the area better */}
-                <Line
-                    points={flatPoints}
-                    stroke="transparent"
-                    strokeWidth={hitStrokeWidth}
-                    tension={0.5}
-                />
-                <Arrow
-                    points={zigzag}
-                    stroke={color}
-                    strokeWidth={2}
-                    fill={color}
-                    pointerLength={10}
-                    pointerWidth={10}
-                    tension={0.5} // Smooth wave
-                />
-                {renderHandles()}
-            </Group>
+            <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Arrow points={zigzag} stroke={color} strokeWidth={2} fill={color} pointerLength={10} pointerWidth={10} tension={0.5} />{renderHandles()}</Group>
         );
     }
 
@@ -231,78 +208,21 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
         const sl2p2 = toScreen(l2x2, l2y2);
 
         return (
-            <Group key={id} {...commonProps}>
-                <Line
-                    points={flatPoints}
-                    stroke="transparent"
-                    strokeWidth={hitStrokeWidth}
-                    tension={0.5}
-                />
-                <Arrow
-                    points={flatPoints}
-                    stroke={color}
-                    strokeWidth={2}
-                    fill={color}
-                    dash={[10, 10]}
-                    pointerLength={10}
-                    pointerWidth={10}
-                    tension={0.5}
-                />
-                {/* The two vertical lines */}
-                <Line points={[sl1p1.x, sl1p1.y, sl1p2.x, sl1p2.y]} stroke={color} strokeWidth={2} />
-                <Line points={[sl2p1.x, sl2p1.y, sl2p2.x, sl2p2.y]} stroke={color} strokeWidth={2} />
-                {renderHandles()}
-            </Group>
+            <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Arrow points={flatPoints} stroke={color} strokeWidth={2} fill={color} dash={[10, 10]} pointerLength={10} pointerWidth={10} tension={0.5} /><Line points={[sl1p1.x, sl1p1.y, sl1p2.x, sl1p2.y]} stroke={color} strokeWidth={2} /><Line points={[sl2p1.x, sl2p1.y, sl2p2.x, sl2p2.y]} stroke={color} strokeWidth={2} />{renderHandles()}</Group>
         );
     }
 
     // Steal Logic (Aggressive Dashed Arrow)
     if (type === 'steal') {
         return (
-            <Group key={id} {...commonProps}>
-                <Line
-                    points={flatPoints}
-                    stroke="transparent"
-                    strokeWidth={hitStrokeWidth}
-                    tension={0.5}
-                />
-                <Arrow
-                    points={flatPoints}
-                    stroke={color}
-                    strokeWidth={2}
-                    fill={color}
-                    dash={[15, 5]}
-                    pointerLength={10}
-                    pointerWidth={10}
-                    tension={0.5}
-                />
-                {renderHandles()}
-            </Group>
+            <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Arrow points={flatPoints} stroke={color} strokeWidth={2} fill={color} dash={[15, 5]} pointerLength={10} pointerWidth={10} tension={0.5} />{renderHandles()}</Group>
         );
     }
 
     // Block Logic (Dotted Arrow)
     if (type === 'block') {
         return (
-            <Group key={id} {...commonProps}>
-                <Line
-                    points={flatPoints}
-                    stroke="transparent"
-                    strokeWidth={hitStrokeWidth}
-                    tension={0.5}
-                />
-                <Arrow
-                    points={flatPoints}
-                    stroke={color}
-                    strokeWidth={2}
-                    fill={color}
-                    dash={[2, 2]}
-                    pointerLength={10}
-                    pointerWidth={10}
-                    tension={0.5}
-                />
-                {renderHandles()}
-            </Group>
+            <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Arrow points={flatPoints} stroke={color} strokeWidth={2} fill={color} dash={[2, 2]} pointerLength={10} pointerWidth={10} tension={0.5} />{renderHandles()}</Group>
         );
     }
 
@@ -310,33 +230,12 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
     if (type === 'pass') dash = [5, 5]; // Dotted line for pass
     
     return (
-      <Group key={id} {...commonProps}>
-        <Line
-          points={flatPoints}
-          stroke="transparent"
-          strokeWidth={hitStrokeWidth}
-          tension={0.5}
-        />
-        <Arrow
-          points={flatPoints}
-          stroke={color}
-          strokeWidth={2}
-          fill={color}
-          dash={dash}
-          pointerLength={10}
-          pointerWidth={10}
-          tension={0.5}
-        />
-        {renderHandles()}
-      </Group>
+      <Group key={id} {...commonProps}><Line points={flatPoints} stroke="transparent" strokeWidth={hitStrokeWidth} tension={0.5} /><Arrow points={flatPoints} stroke={color} strokeWidth={2} fill={color} dash={dash} pointerLength={10} pointerWidth={10} tension={0.5} />{renderHandles()}</Group>
     );
   };
 
   return (
-    <Group>
-      {actions.map(renderAction)}
-      {currentAction && renderAction(currentAction)}
-    </Group>
+    <Group>{actions.map(renderAction)}{currentAction && renderAction(currentAction)}</Group>
   );
 };
 
