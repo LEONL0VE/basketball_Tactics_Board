@@ -1655,7 +1655,7 @@ const TacticsBoard: React.FC = () => {
         }
       }
       
-      const response = await fetch('http://localhost:8000/api/epv/analyze', {
+      const response = await fetch('https://basketball-tactics-board.onrender.com/api/epv/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1711,7 +1711,7 @@ const TacticsBoard: React.FC = () => {
       };
 
       // Call Backend API
-      const response = await fetch('http://localhost:8000/api/match-tactic', {
+      const response = await fetch('https://basketball-tactics-board.onrender.com/api/match-tactic', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1869,7 +1869,7 @@ const TacticsBoard: React.FC = () => {
     if (!searchQuery.trim()) return;
     setLoadingPlayers(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/players/search?name=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(`https://basketball-tactics-board.onrender.com/api/players/search?name=${encodeURIComponent(searchQuery)}`);
       if (!response.ok) throw new Error('Failed to search players');
       const data = await response.json();
       setSearchResults(data);
@@ -1887,7 +1887,7 @@ const TacticsBoard: React.FC = () => {
     // Fetch stats for this player
     let stats = undefined;
     try {
-        const response = await fetch(`http://localhost:8000/api/players/${nbaPlayer.id}/stats`);
+        const response = await fetch(`https://basketball-tactics-board.onrender.com/api/players/${nbaPlayer.id}/stats`);
         if (response.ok) {
             stats = await response.json();
         }
