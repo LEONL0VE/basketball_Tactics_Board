@@ -560,7 +560,7 @@ const TacticsBoard: React.FC = () => {
     }
 
     // If the click target is the Stage itself (empty space)
-    if (e.target === e.target.getStage()) {
+    if (e.target && e.target.getStage && e.target === e.target.getStage()) {
       setSelectedId(null);
       setSelectedActionId(null);
       setActiveTool(null);
@@ -701,7 +701,8 @@ const TacticsBoard: React.FC = () => {
   const handleStageMouseDown = (e: any) => {
     if (!activeTool || !selectedId) return;
     
-    const stage = e.target.getStage();
+    const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+    if (!stage) return;
     const pos = stage.getPointerPosition();
     if (!pos) return;
 
@@ -727,7 +728,8 @@ const TacticsBoard: React.FC = () => {
   const handleStageMouseMove = (e: any) => {
     if (!activeTool || !currentAction) return;
     
-    const stage = e.target.getStage();
+    const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+    if (!stage) return;
     const pos = stage.getPointerPosition();
     if (!pos) return;
 
