@@ -69,8 +69,11 @@ const Player: React.FC<PlayerProps> = ({
   const handleRotateStart = (e: any) => {
     e.cancelBubble = true;
     const stage = e.target.getStage();
-    const playerGroup = e.target.getParent().getParent(); // HandleGroup -> SelectionGroup -> PlayerGroup
+    const parent = e.target.getParent();
+    const playerGroup = parent ? parent.getParent() : null; // HandleGroup -> SelectionGroup -> PlayerGroup
     
+    if (!playerGroup || !stage) return;
+
     const moveHandler = () => {
        const pointerPos = stage.getPointerPosition();
        if (!pointerPos) return;
