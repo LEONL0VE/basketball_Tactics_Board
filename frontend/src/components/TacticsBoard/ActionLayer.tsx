@@ -48,11 +48,13 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
       onClick: () => onSelectAction && onSelectAction(id),
       onTap: () => onSelectAction && onSelectAction(id),
       onMouseEnter: (e: any) => {
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'pointer';
       },
       onMouseLeave: (e: any) => {
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'default';
       }
     };
@@ -77,11 +79,13 @@ const ActionLayer: React.FC<ActionLayerProps> = ({
                 onActionPointChange(id, i, { x: logical.x, y: logical.y });
             }}
             onMouseEnter={(e) => {
-                const container = e.target.getStage()?.container();
+                const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+                const container = stage ? stage.container() : null;
                 if (container) container.style.cursor = 'move';
             }}
             onMouseLeave={(e) => {
-                const container = e.target.getStage()?.container();
+                const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+                const container = stage ? stage.container() : null;
                 if (container) container.style.cursor = 'default';
             }}
             />

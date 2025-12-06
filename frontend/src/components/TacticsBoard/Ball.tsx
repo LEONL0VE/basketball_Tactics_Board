@@ -61,11 +61,13 @@ const Ball: React.FC<BallProps> = ({
       }}
       onDragMove={handleDragMove}
       onMouseEnter={(e) => {
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'move';
       }}
       onMouseLeave={(e) => {
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'default';
       }}
     >

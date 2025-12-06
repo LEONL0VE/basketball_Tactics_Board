@@ -175,12 +175,14 @@ const Player: React.FC<PlayerProps> = ({
       onDragMove={handleDragMove}
       onMouseEnter={(e) => {
         setIsHovered(true);
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'move';
       }}
       onMouseLeave={(e) => {
         setIsHovered(false);
-        const container = e.target.getStage()?.container();
+        const stage = e.target && e.target.getStage ? e.target.getStage() : null;
+        const container = stage ? stage.container() : null;
         if (container) container.style.cursor = 'default';
       }}
       onContextMenu={(e) => {
