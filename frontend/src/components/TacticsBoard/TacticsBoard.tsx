@@ -1056,7 +1056,7 @@ const TacticsBoard: React.FC = () => {
 
     // Determine available types based on player role (ball handler or not)
     // We need to find the player associated with this action
-    const player = entities.find(e => e.id === selectedAction.playerId);
+    const player = entities.find(e => e.id === selectedAction.playerId) as PlayerType | undefined;
     const hasBall = player && entities.some(e => e.type === 'ball' && (e as BallType).ownerId === player.id);
     
     // Determine if this is a defensive player (not on the same team as the ball owner)
@@ -2171,7 +2171,7 @@ const TacticsBoard: React.FC = () => {
                                     <LineChart
                                     data={epvData.epv_curve} // Pass full data to establish domain
                                     margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                                    onClick={(e) => {
+                                    onClick={(e: any) => {
                                         if (e && e.activeLabel) {
                                             const time = Number(e.activeLabel);
                                             const frameIdx = Math.floor(time);
@@ -2191,7 +2191,7 @@ const TacticsBoard: React.FC = () => {
                                     <XAxis 
                                         dataKey="timestamp" 
                                         stroke="#888" 
-                                        tickFormatter={(val) => val.toFixed(1)}
+                                        tickFormatter={(val: any) => Number(val).toFixed(1)}
                                         type="number"
                                         domain={[0, epvData.epv_curve.length > 0 ? epvData.epv_curve[epvData.epv_curve.length - 1].timestamp : 'auto']}
                                         height={20}

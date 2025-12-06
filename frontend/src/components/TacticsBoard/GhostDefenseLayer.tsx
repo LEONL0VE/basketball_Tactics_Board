@@ -40,7 +40,7 @@ const GhostDefenseLayer: React.FC<GhostDefenseLayerProps> = ({ entities, viewMod
         // For screening logic, only other Offensive players can set screens
         const offensePlayers = entities.filter(e => e.type === 'player' && (e as Player).team === offenseTeam) as Player[];
         
-        const { position: ghostPos, gap, isRealData, pct, isScreened, screenDisplacement } = calculateGhostDefender(player, ball, viewMode, offensePlayers);
+        const { position: ghostPos, gap, isRealData, pct, isScreened, screenDisplacement } = calculateGhostDefender(player, ball, viewMode, offensePlayers) as any;
         
         // Re-calculate color logic for visualization
         const zoneName = getZoneName(player.position, BASKET_POS, viewMode);

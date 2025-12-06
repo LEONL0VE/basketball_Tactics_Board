@@ -60,7 +60,7 @@ const PlayerInfoPanel: React.FC<PlayerInfoPanelProps> = ({ players, mode = 'side
 
     const renderPlayerRow = (player: Player) => {
     const profile = player.profile!;
-    const playerDetails = profile.stats; // This contains height, weight, AND a nested 'stats' object
+    const playerDetails = profile.stats as any; // This contains height, weight, AND a nested 'stats' object
     const performanceStats = playerDetails?.stats;
     const isExpanded = expandedPlayerIds.has(player.id);
     

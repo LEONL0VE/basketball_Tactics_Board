@@ -3,7 +3,7 @@ export interface Position {
   y: number;
 }
 
-export type TeamType = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange' | 'black' | 'white' | 'grey';
+export type TeamType = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange' | 'black' | 'white' | 'grey' | 'cyan';
 export type ViewMode = 'full' | 'half';
 
 export interface PlayerProfile {

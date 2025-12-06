@@ -65,7 +65,7 @@ export const calculateGhostDefender = (
   ball: Ball | undefined, 
   viewMode: 'full' | 'half',
   allPlayers: Player[] = []
-): { position: Position, radius: number, gap: number, isRealData: boolean, pct: number } => {
+): { position: Position, radius: number, gap: number, isRealData: boolean, pct: number, isScreened: boolean, screenDisplacement: number } => {
   const BASKET_POS = viewMode === 'half' 
     ? { x: COURT_WIDTH / 2, y: 35 } 
     : { x: 40, y: COURT_HEIGHT / 2 };
@@ -204,7 +204,7 @@ export const calculateGhostDefender = (
     pct,
     isScreened,
     screenDisplacement
-  };
+  } as any;
 };
 
 /**
