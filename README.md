@@ -1,38 +1,40 @@
 # Basketball Tactics Board Project
 
-## 项目简介
-这是一个基于 React + TypeScript + Konva 的篮球战术板前端项目。
+## Project Introduction
+This is a basketball tactics board frontend project based on React + TypeScript + Konva.
 
-## 快速开始
+**Live Demo**: [https://basketball-tactics-board.vercel.app/](https://basketball-tactics-board.vercel.app/)
 
-### 1. 进入前端目录
-打开终端，进入 `frontend` 目录：
+## Quick Start
+
+### 1. Enter Frontend Directory
+Open terminal and enter the `frontend` directory:
 ```bash
 cd frontend
 ```
 
-### 2. 安装依赖
-使用 npm 或 yarn 安装项目依赖：
+### 2. Install Dependencies
+Install project dependencies using npm or yarn:
 ```bash
 npm install
-# 或者
+# or
 yarn
 ```
 
-### 3. 启动开发服务器
+### 3. Start Development Server
 ```bash
 npm run dev
-# 或者
+# or
 yarn dev
 ```
 
-启动后，打开浏览器访问控制台输出的地址（通常是 http://localhost:5173），即可看到战术板。
+After starting, open your browser and visit the address output in the console (usually http://localhost:5173) to see the tactics board.
 
-## 功能说明
-- **球场绘制**: 包含标准篮球场线（中线、三分线、禁区等）。
-- **球员交互**: 支持拖拽 10 名球员（5名进攻，5名防守）。
+## Features
+- **Court Drawing**: Includes standard basketball court lines (center line, three-point line, paint area, etc.).
+- **Player Interaction**: Supports dragging 10 players (5 offense, 5 defense).
 
-## 下一步开发计划
-1. **工具栏开发**: 添加画笔工具（移动路线、传球路线、挡拆符号）。
-2. **绘图逻辑**: 实现 `onMouseDown`, `onMouseMove`, `onMouseUp` 事件来绘制线条。
-3. **动画回放**: 记录关键帧，实现插值动画。
+## Roadmap
+1. **Toolbar Development**: Add drawing tools (movement paths, passing paths, pick-and-roll symbols).
+2. **Drawing Logic**: Implement `onMouseDown`, `onMouseMove`, `onMouseUp` events to draw lines.
+3. **Animation Playback**: Record keyframes and implement interpolation animation.
