@@ -42,6 +42,7 @@ import {
 
 import GhostDefenseLayer from './GhostDefenseLayer';
 import { resolveCollisions, calculateGhostDefender } from '../../utils/playerUtils';
+import { API_ENDPOINTS } from '../../config/api';
 
 interface Frame {
   id: string;
@@ -1657,16 +1658,21 @@ const TacticsBoard: React.FC = () => {
         }
       }
       
-      const response = await fetch('https://basketball-tactics-board.onrender.com/api/epv/analyze', {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s for analysis
+      
+      const response = await fetch(API_ENDPOINTS.ANALYZE_EPV, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
               trajectory: trajectoryFrames,
               court_type: viewMode
-          })
+          }),
+          signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
-      if (!response.ok) throw new Error('Analysis failed');
+      if (!response.ok) throw new Error(`Analysis failed: ${response.status}`);
       
       const data = await response.json();
       setEpvData(data);
@@ -1713,16 +1719,21 @@ const TacticsBoard: React.FC = () => {
       };
 
       // Call Backend API
-      const response = await fetch('https://basketball-tactics-board.onrender.com/api/match-tactic', {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
+      const response = await fetch(API_ENDPOINTS.MATCH_TACTIC, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch recommendations');
+        throw new Error(`Server error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -1871,13 +1882,24 @@ const TacticsBoard: React.FC = () => {
     if (!searchQuery.trim()) return;
     setLoadingPlayers(true);
     try {
-      const response = await fetch(`https://basketball-tactics-board.onrender.com/api/players/search?name=${encodeURIComponent(searchQuery)}`);
-      if (!response.ok) throw new Error('Failed to search players');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      
+      const response = await fetch(`${API_ENDPOINTS.SEARCH_PLAYERS}?name=${encodeURIComponent(searchQuery)}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
       setSearchResults(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error searching players:', error);
-      message.error('Failed to search players');
+      if (error.name === 'AbortError') {
+        message.error('Request timeout - backend may be sleeping. Please try again.');
+      } else {
+        message.error(`Failed to search players: ${error.message}`);
+      }
     } finally {
       setLoadingPlayers(false);
     }
@@ -1889,7 +1911,14 @@ const TacticsBoard: React.FC = () => {
     // Fetch stats for this player
     let stats = undefined;
     try {
-        const response = await fetch(`https://basketball-tactics-board.onrender.com/api/players/${nbaPlayer.id}/stats`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
+        const response = await fetch(API_ENDPOINTS.GET_PLAYER_STATS(nbaPlayer.id), {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
         if (response.ok) {
             stats = await response.json();
         }

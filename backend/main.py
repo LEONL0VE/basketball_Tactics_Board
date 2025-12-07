@@ -41,6 +41,14 @@ class AnalysisRequest(BaseModel):
 async def root():
     return {"message": "Basketball Tactics Board Backend is running"}
 
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0"
+    }
+
 @app.get("/api/players/search")
 async def search_players(name: str):
     try:
