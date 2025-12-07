@@ -2183,14 +2183,6 @@ const TacticsBoard: React.FC = () => {
                     
                     {epvData ? (
                         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ marginBottom: 10, display: 'flex', justifyContent: 'space-between', color: 'white', fontSize: '12px' }}>
-                                <div>
-                                    <Tag color="blue">Avg: {epvData.average_epv?.toFixed(3)}</Tag>
-                                </div>
-                                <div>
-                                    <Tag color="green">Max: {epvData.max_epv?.toFixed(3)}</Tag>
-                                </div>
-                            </div>
                             
                             <div style={{ flex: 1, minHeight: 0 }}>
                                 <ResponsiveContainer width="100%" height="100%">
@@ -2224,7 +2216,7 @@ const TacticsBoard: React.FC = () => {
                                         tick={{fontSize: 10}}
                                     />
                                     <YAxis 
-                                        domain={['auto', 'auto']} 
+                                        domain={[0, 1]} 
                                         stroke="#888" 
                                         width={30}
                                         tick={{fontSize: 10}}
