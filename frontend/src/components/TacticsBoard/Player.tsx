@@ -194,7 +194,7 @@ const Player: React.FC<PlayerProps> = ({
     >{isHovered && player.profile && (
         <Group
           y={-radius - 12}
-          rotation={-rotation + rotationOffset} // Keep upright
+          rotation={rotationOffset} // Keep upright
           listening={false}
         ><Group
              offsetX={85} // Center horizontally (Width 170 / 2)
