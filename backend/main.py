@@ -12,7 +12,7 @@ from nba_api.stats.endpoints import commonplayerinfo, playercareerstats
 
 # Import local modules
 from epv_analytics import calculate_epv_series
-from fetch_shot_chart import fetch_player_shot_chart
+from fetch_shot_chart import fetch_player_shot_chart, fetch_shot_chart_by_id
 
 app = FastAPI()
 
@@ -34,6 +34,9 @@ class TrajectoryFrame(BaseModel):
 class AnalysisRequest(BaseModel):
     trajectory: List[TrajectoryFrame]
     court_type: Optional[str] = "full"
+    player_id: Optional[int] = None # Deprecated, kept for backward compatibility
+    player_map: Optional[Dict[str, int]] = None # New: Map of entity_id -> nba_player_id
+    sliders: Optional[Dict[str, float]] = None
 
 # --- Endpoints ---
 
@@ -152,13 +155,39 @@ async def analyze_epv(request: AnalysisRequest):
                     "type": entity.get("type"),
                     "team": entity.get("team"),
                     "x": entity.get("x"),
-                    "y": entity.get("y")
+                    "y": entity.get("y"),
+                    "ownerId": entity.get("ownerId") # Pass ownerId
                 })
         
         kinematics_df = pd.DataFrame(frames_data)
         
+        # Fetch Shot Charts for ALL involved players
+        shot_charts_map = {}
+        
+        # 1. Handle new player_map (Multiple players)
+        if request.player_map:
+            print(f"Loading data for {len(request.player_map)} players...")
+            for entity_id, nba_id in request.player_map.items():
+                print(f"Fetching data for Entity {entity_id} -> NBA ID {nba_id}")
+                chart = fetch_shot_chart_by_id(nba_id)
+                if chart:
+                    shot_charts_map[entity_id] = chart
+        
+        # 2. Handle legacy single player_id (Fallback)
+        elif request.player_id:
+            print(f"Legacy mode: Analyzing for single Player ID: {request.player_id}")
+            chart = fetch_shot_chart_by_id(request.player_id)
+            if chart:
+                # We don't know which entity this belongs to, so we might need to pass it as a default
+                # For now, let's just store it with a special key or handle it in calculate_epv_series
+                shot_charts_map['default'] = chart
+
         # Run Analysis
-        epv_series = calculate_epv_series(kinematics_df)
+        epv_series = calculate_epv_series(
+            kinematics_df, 
+            shot_charts_map=shot_charts_map,
+            sliders=request.sliders
+        )
         
         # Return format expected by frontend: { epv_curve: [...], kinematics: ... }
         return {

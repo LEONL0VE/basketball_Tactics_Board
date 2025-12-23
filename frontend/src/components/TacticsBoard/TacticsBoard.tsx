@@ -111,6 +111,13 @@ const TacticsBoard: React.FC = () => {
   const [isEpvModalVisible, setIsEpvModalVisible] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showAnalysisPanel, setShowAnalysisPanel] = useState(false); // Toggle for right panel
+  
+  // EPV Sliders State
+  const [epvSliders, setEpvSliders] = useState({
+    base: 0.0,
+    dribble: -0.5,
+    defense: 0.5
+  });
 
   // Sync current state to current frame when it changes
   React.useEffect(() => {
@@ -1530,7 +1537,7 @@ const TacticsBoard: React.FC = () => {
   );
 
   // Recommendation Handler
-  const handleAnalyzeEPV = async (silent = false) => {
+  const handleAnalyzeEPV = async (silent = false, slidersOverride: any = null) => {
     if (frames.length < 2) {
       if (!silent) message.warning("Need at least 2 frames for analysis");
       return;
@@ -1661,12 +1668,36 @@ const TacticsBoard: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s for analysis
       
+      // Collect ALL assigned player profiles
+      const playerMap: Record<string, number> = {};
+      const assignedNames: string[] = [];
+      
+      entitiesMap[viewMode].forEach(entity => {
+          if (entity.type === 'player' && (entity as any).profile) {
+              const pid = (entity as any).profile.id;
+              if (pid) {
+                  playerMap[entity.id] = pid;
+                  if (!assignedNames.includes((entity as any).profile.name)) {
+                      assignedNames.push((entity as any).profile.name);
+                  }
+              }
+          }
+      });
+
+      if (Object.keys(playerMap).length > 0) {
+          message.info(`Analyzing with data for: ${assignedNames.join(', ')}`);
+      } else {
+          message.warning("No NBA players identified. Using League Average.");
+      }
+
       const response = await fetch(API_ENDPOINTS.ANALYZE_EPV, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
               trajectory: trajectoryFrames,
-              court_type: viewMode
+              court_type: viewMode,
+              player_map: playerMap,
+              sliders: slidersOverride || epvSliders
           }),
           signal: controller.signal
       });
@@ -1678,7 +1709,7 @@ const TacticsBoard: React.FC = () => {
       setEpvData(data);
       // setIsEpvModalVisible(true); // No longer using modal
       setShowAnalysisPanel(true); // Show panel instead
-      if (!silent) message.success("EPV Analysis Complete!");
+      if (!silent) message.success("Analysis Complete!");
     } catch (error) {
         console.error(error);
         if (!silent) message.error("Analysis failed");
@@ -1748,6 +1779,126 @@ const TacticsBoard: React.FC = () => {
   };
 
   const handleExportJSON = () => {
+    // --- Generate Trajectory Data (Interpolation) for EPV ---
+    const trajectoryFrames: any[] = [];
+    let currentTime = 0;
+    const dt = 0.04; // 25 FPS simulation
+    const simPlaybackSpeed = 1.0;
+
+    if (frames.length >= 2) {
+        for (let i = 0; i < frames.length - 1; i++) {
+            const currentFrame = frames[i];
+            const nextFrame = frames[i + 1];
+            
+            const currentEntities = currentFrame.entitiesMap[viewMode];
+            const nextEntities = nextFrame.entitiesMap[viewMode];
+            const currentActions = currentFrame.actionsMap[viewMode];
+
+            // Simulate transition
+            for (let progress = 0; progress <= 1; progress += (dt * simPlaybackSpeed)) {
+                const frameEntities = currentEntities.map(entity => {
+                    const nextEntity = nextEntities.find(e => e.id === entity.id);
+                    if (!nextEntity) return { id: entity.id, type: entity.type, team: (entity as any).team || 'neutral', x: entity.position.x, y: entity.position.y };
+
+                    let pos = { ...entity.position };
+                    let action: Action | undefined;
+
+                    if (entity.type === 'player') {
+                        action = currentActions.find(a => a.playerId === entity.id && ['move', 'dribble', 'screen', 'steal', 'block'].includes(a.type));
+                    } else if (entity.type === 'ball') {
+                        const ball = entity as BallType;
+                        if (ball.ownerId) {
+                            action = currentActions.find(a => a.playerId === ball.ownerId && (a.type === 'pass' || a.type === 'shoot'));
+                            if (!action) {
+                                const ownerAction = currentActions.find(a => a.playerId === ball.ownerId && ['move', 'dribble', 'steal', 'screen', 'block'].includes(a.type));
+                                if (ownerAction) action = ownerAction;
+                            }
+                        }
+                    }
+
+                    if (action && action.path.length >= 2) {
+                        let t = progress;
+                        let speedMultiplier = 1.5;
+                        if (action.speed === 'walk') speedMultiplier = 1.0;
+                        if (action.speed === 'sprint') speedMultiplier = 2.5;
+                        
+                        let localProgress = Math.min(1, progress * speedMultiplier);
+                        t = localProgress;
+
+                        if (action.type === 'steal') t = t * t;
+
+                        if (t >= 1) {
+                            pos = action.path[action.path.length - 1];
+                        } else {
+                            pos = getPointOnSpline(action.path, t);
+                        }
+                    } else {
+                        pos = {
+                            x: entity.position.x + (nextEntity.position.x - entity.position.x) * progress,
+                            y: entity.position.y + (nextEntity.position.y - entity.position.y) * progress
+                        };
+                    }
+
+                    return {
+                        id: entity.id,
+                        type: entity.type,
+                        team: (entity as any).team || 'neutral',
+                        x: pos.x,
+                        y: pos.y,
+                        ownerId: (entity as any).ownerId
+                    };
+                });
+
+                // Inject Ghost Defenders if enabled
+                if (showGhostDefense) {
+                    const ball = frameEntities.find(e => e.type === 'ball');
+                    const ballOwner = frameEntities.find(e => e.id === (ball as any)?.ownerId);
+                    const offenseTeam = (ballOwner as any)?.team || 'red';
+                    
+                    const ballObj = ball ? {
+                        ...ball,
+                        position: { x: ball.x, y: ball.y },
+                        ownerId: (ball as any).ownerId
+                    } : undefined;
+
+                    const currentPlayers = frameEntities
+                        .filter(e => e.type === 'player')
+                        .map(e => ({
+                            ...e,
+                            position: { x: e.x, y: e.y },
+                            role: 'player',
+                            team: e.team
+                        })) as any[];
+
+                    currentPlayers.forEach(player => {
+                        if (player.team === offenseTeam) {
+                            const { position: ghostPos } = calculateGhostDefender(
+                                player, 
+                                ballObj as any, 
+                                viewMode, 
+                                currentPlayers
+                            );
+                            
+                            frameEntities.push({
+                                id: `ghost_${player.id}`,
+                                type: 'player',
+                                team: offenseTeam === 'red' ? 'blue' : 'red',
+                                x: ghostPos.x,
+                                y: ghostPos.y
+                            });
+                        }
+                    });
+                }
+                
+                trajectoryFrames.push({
+                    timestamp: currentTime,
+                    entities: frameEntities
+                });
+                currentTime += dt;
+            }
+        }
+    }
+
     const data = {
       meta: {
         version: "1.0",
@@ -1794,7 +1945,8 @@ const TacticsBoard: React.FC = () => {
             color: a.color
           }))
         };
-      })
+      }),
+      epv_trajectory: trajectoryFrames
     };
 
     const jsonString = JSON.stringify(data, null, 2);
@@ -1807,7 +1959,7 @@ const TacticsBoard: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    message.success('Sketch data (all frames) exported to JSON!');
+    message.success('Sketch data (with EPV trajectory) exported to JSON!');
   };
 
   // Player Search Modal
@@ -1926,6 +2078,43 @@ const TacticsBoard: React.FC = () => {
         console.warn("Could not fetch stats", e);
     }
 
+    // Update ALL frames to ensure consistency
+    setFrames(prevFrames => {
+        return prevFrames.map(frame => {
+            const updatedEntitiesMap = { ...frame.entitiesMap };
+            // Update for both full and half views if needed, but usually ID is unique across views? 
+            // Actually viewMode separates them. We should update the current viewMode's entities.
+            // Or better: update in all viewModes if the ID exists?
+            // For now, let's stick to current viewMode as IDs might not be shared across modes in this app's logic (usually they are separate boards)
+            
+            ['full', 'half'].forEach((mode) => {
+                const vMode = mode as ViewMode;
+                const entities = [...updatedEntitiesMap[vMode]];
+                const idx = entities.findIndex(e => e.id === targetPlayerId);
+                
+                if (idx !== -1 && entities[idx].type === 'player') {
+                    const player = entities[idx] as PlayerType;
+                    entities[idx] = {
+                        ...player,
+                        profile: {
+                            id: nbaPlayer.id,
+                            name: nbaPlayer.name,
+                            photoUrl: nbaPlayer.photoUrl,
+                            stats: stats
+                        }
+                    };
+                    updatedEntitiesMap[vMode] = entities;
+                }
+            });
+            
+            return {
+                ...frame,
+                entitiesMap: updatedEntitiesMap
+            };
+        });
+    });
+
+    // Also update current state (entitiesMap) to reflect changes immediately
     setEntitiesMap(prev => {
       const currentEntities = [...prev[viewMode]];
       const entityIndex = currentEntities.findIndex(e => e.id === targetPlayerId);
@@ -1946,6 +2135,10 @@ const TacticsBoard: React.FC = () => {
         [viewMode]: currentEntities
       };
     });
+
+    if (targetPlayerId) {
+        setSelectedId(targetPlayerId);
+    }
 
     setIsPlayerSearchModalVisible(false);
     message.success(`Assigned ${nbaPlayer.name} to player!`);
@@ -2003,7 +2196,7 @@ const TacticsBoard: React.FC = () => {
                   setShowAnalysisPanel(false);
               }
           }}
-          tooltip="Analyze EPV"
+          tooltip="Analyze Expected Score"
           active={showAnalysisPanel}
         />
 
@@ -2163,14 +2356,18 @@ const TacticsBoard: React.FC = () => {
                  }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ color: 'white', fontWeight: 'bold' }}>EPV Analysis</span>
+                            <span style={{ color: 'white', fontWeight: 'bold' }}>Expected Score Analysis</span>
                             <Button 
                                 type="text" 
                                 size="small"
                                 icon={<ReloadOutlined spin={isAnalyzing} />} 
-                                onClick={() => handleAnalyzeEPV()}
+                                onClick={() => {
+                                    const defaults = { base: 0.0, dribble: -0.5, defense: 0.5 };
+                                    setEpvSliders(defaults);
+                                    handleAnalyzeEPV(false, defaults);
+                                }}
                                 style={{ color: 'rgba(255,255,255,0.7)' }}
-                                title="Re-analyze"
+                                title="Reset & Re-analyze"
                             />
                         </div>
                         <Button 
@@ -2179,6 +2376,67 @@ const TacticsBoard: React.FC = () => {
                             onClick={() => setShowAnalysisPanel(false)}
                             style={{ color: 'white' }}
                         />
+                    </div>
+
+                    {/* Sliders Section */}
+                    <div style={{ marginBottom: '15px', padding: '10px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                            <Tooltip title="Base shooting capability (Intercept)">
+                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Base Ability:</span>
+                            </Tooltip>
+                            <Slider 
+                                min={-5} max={5} step={0.1} 
+                                value={epvSliders.base} 
+                                onChange={(v) => setEpvSliders(prev => ({ ...prev, base: v }))}
+                                style={{ flex: 1, margin: '0 10px' }}
+                            />
+                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
+                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
+                                    {epvSliders.base > 0 ? '+' : ''}{epvSliders.base}
+                                </span>
+                                <span style={{ color: '#888', fontSize: '10px' }}>
+                                    {epvSliders.base === 0 ? 'Average' : epvSliders.base > 0 ? 'Good' : 'Poor'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                            <Tooltip title="Impact of dribbling on shot accuracy (Negative means harder)">
+                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Dribble Impact:</span>
+                            </Tooltip>
+                            <Slider 
+                                min={-5} max={5} step={0.1} 
+                                value={epvSliders.dribble} 
+                                onChange={(v) => setEpvSliders(prev => ({ ...prev, dribble: v }))}
+                                style={{ flex: 1, margin: '0 10px' }}
+                            />
+                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
+                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
+                                    {epvSliders.dribble > 0 ? '+' : ''}{epvSliders.dribble}
+                                </span>
+                                <span style={{ color: '#888', fontSize: '10px' }}>
+                                    {epvSliders.dribble === 0 ? 'None' : epvSliders.dribble < 0 ? 'Penalty' : 'Bonus'}
+                                </span>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                            <Tooltip title="Impact of defensive pressure (Positive means open shots are better)">
+                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Defense Impact:</span>
+                            </Tooltip>
+                            <Slider 
+                                min={-5} max={5} step={0.1} 
+                                value={epvSliders.defense} 
+                                onChange={(v) => setEpvSliders(prev => ({ ...prev, defense: v }))}
+                                style={{ flex: 1, margin: '0 10px' }}
+                            />
+                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
+                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
+                                    {epvSliders.defense > 0 ? '+' : ''}{epvSliders.defense}
+                                </span>
+                                <span style={{ color: '#888', fontSize: '10px' }}>
+                                    {epvSliders.defense === 0 ? 'Ignored' : 'Sensitive'}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     
                     {epvData ? (
@@ -2225,6 +2483,7 @@ const TacticsBoard: React.FC = () => {
                                         contentStyle={{ backgroundColor: '#333', border: 'none', color: '#fff', fontSize: '12px' }}
                                         itemStyle={{ color: '#fff' }}
                                         labelFormatter={(label) => `Time: ${Number(label).toFixed(2)}s`}
+                                        formatter={(value: number) => [value.toFixed(3), 'Exp. Score']}
                                     />
                                     {/* Full Line (Hidden or faint) - Optional */}
                                     {/* <Line type="monotone" dataKey="epv" stroke="#333" strokeWidth={1} dot={false} isAnimationActive={false} /> */}

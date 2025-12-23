@@ -3,6 +3,11 @@ from nba_api.stats.static import players
 import pandas as pd
 import json
 import time
+import os
+
+# Cache Directory Setup
+CACHE_DIR = os.path.join(os.path.dirname(__file__), 'data', 'cache')
+os.makedirs(CACHE_DIR, exist_ok=True)
 
 def get_player_id(player_name):
     nba_players = players.get_players()
@@ -11,13 +16,18 @@ def get_player_id(player_name):
             return player['id']
     return None
 
-def fetch_player_shot_chart(player_name, season='2023-24'):
-    player_id = get_player_id(player_name)
-    if not player_id:
-        print(f"Player {player_name} not found.")
-        return None
+def fetch_shot_chart_by_id(player_id, season='2023-24'):
+    # 1. Check Cache
+    cache_file = os.path.join(CACHE_DIR, f"shot_chart_{player_id}.json")
+    if os.path.exists(cache_file):
+        print(f"Loading cached shot chart for Player ID: {player_id}")
+        try:
+            with open(cache_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error reading cache: {e}")
 
-    print(f"Fetching shot chart for {player_name} (ID: {player_id}) Season: {season}...")
+    print(f"Fetching shot chart for Player ID: {player_id} Season: {season}...")
     
     try:
         # Fetch shot chart data
@@ -64,11 +74,26 @@ def fetch_player_shot_chart(player_name, season='2023-24'):
                 "fgm": int(row['FGM'])
             }
             
+        # 2. Save to Cache
+        try:
+            with open(cache_file, 'w') as f:
+                json.dump(hot_zones, f)
+            print(f"Cached shot chart for {player_id}")
+        except Exception as e:
+            print(f"Error writing cache: {e}")
+
         return hot_zones
 
     except Exception as e:
         print(f"Error fetching data: {e}")
         return None
+
+def fetch_player_shot_chart(player_name, season='2023-24'):
+    player_id = get_player_id(player_name)
+    if not player_id:
+        print(f"Player {player_name} not found.")
+        return None
+    return fetch_shot_chart_by_id(player_id, season)
 
 if __name__ == "__main__":
     # Test with Stephen Curry
