@@ -1,6 +1,6 @@
 import React from 'react';
 import { Circle, Text, Group, Path, Image as KonvaImage, Ellipse, Label, Tag, Rect } from 'react-konva';
-import { Player as PlayerType, ViewMode } from '../../types';
+import { Player as PlayerType, ViewMode, ActionType } from '../../types';
 import { TEAM_COLORS } from '../../utils/constants';
 import { getPlayerRadius } from '../../utils/playerUtils';
 
@@ -20,6 +20,7 @@ interface PlayerProps {
   viewMode?: ViewMode;
   scale?: number;
   armExtension?: number; // 0 to 1, for steal animation
+  actionType?: ActionType; // Current action type (block, steal, etc.)
 }
 
 const Player: React.FC<PlayerProps> = ({ 
@@ -37,7 +38,8 @@ const Player: React.FC<PlayerProps> = ({
   stageHeight,
   viewMode = 'full',
   scale = 1,
-  armExtension = 0
+  armExtension = 0,
+  actionType
 }) => {
   const color = TEAM_COLORS[player.team] || '#999';
   const isLightColor = ['white', 'yellow', 'grey'].includes(player.team);
@@ -270,6 +272,52 @@ const Player: React.FC<PlayerProps> = ({
 
       {/* Rotatable Body Group */}
       <Group rotation={rotation}>
+        {/* Shadow Effect for Jumping Actions (Block/Steal) */}
+        {(actionType === 'block' || actionType === 'steal') && (
+          <Group>
+            {/* Ground Shadow - Shrinking ellipse below player */}
+            <Ellipse
+              x={0}
+              y={radius + 8}
+              radiusX={radius * 0.5}
+              radiusY={radius * 0.2}
+              fill="rgba(0, 0, 0, 0.3)"
+              listening={false}
+            />
+          </Group>
+        )}
+
+        {/* Pulsing Aura Effect for Block Action (Defensive Jump) */}
+        {actionType === 'block' && (
+          <Group listening={false}>
+            {/* Create pulsing glow rings */}
+            {[0.2, 0.4, 0.6].map((opacity, idx) => (
+              <Circle
+                key={`aura-${idx}`}
+                radius={radius + 10 + (idx * 4)}
+                stroke={`rgba(255, 200, 100, ${opacity * 0.6})`}
+                strokeWidth={2}
+              />
+            ))}
+          </Group>
+        )}
+
+        {/* Radiating Pulse for Steal Action */}
+        {actionType === 'steal' && (
+          <Group listening={false}>
+            {/* Multiple expanding circles for pulse effect */}
+            {[0, 1, 2].map((idx) => (
+              <Circle
+                key={`pulse-${idx}`}
+                radius={radius + 5 + (idx * 8)}
+                stroke={`rgba(100, 200, 255, ${0.5 - idx * 0.15})`}
+                strokeWidth={1.5}
+                opacity={Math.max(0, 0.6 - idx * 0.2)}
+              />
+            ))}
+          </Group>
+        )}
+
         {/* Hands/Shoulders - Indicate facing "Up" in local space (-Y) */}
         {/* Left Hand - Angled slightly forward (-Y) */}
         <Circle 

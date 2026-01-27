@@ -264,12 +264,14 @@ const TacticsBoard: React.FC = () => {
       let rot = entity.type === 'player' ? (entity as PlayerType).rotation : 0;
       let scale = 1;
       let armExtension = 0;
+      let actionType: ActionType | undefined;
 
       // Check for Action-based movement
       let action: Action | undefined;
       
       if (entity.type === 'player') {
          action = currentActions.find(a => a.playerId === entity.id && ['move', 'dribble', 'screen', 'steal', 'block'].includes(a.type));
+         actionType = action?.type;
          
          // Handle Block Jump Animation
          if (action && action.type === 'block') {
@@ -370,7 +372,8 @@ const TacticsBoard: React.FC = () => {
         position: pos,
         rotation: rot,
         scale: scale,
-        armExtension: armExtension
+        armExtension: armExtension,
+        actionType: actionType
       };
     });
 
@@ -2518,6 +2521,7 @@ const TacticsBoard: React.FC = () => {
                             viewMode={viewMode}
                             scale={(entity as any).scale || 1}
                             armExtension={(entity as any).armExtension || 0}
+                            actionType={(entity as any).actionType}
                           />
                         );
                       } else if (entity.type === 'ball') {
