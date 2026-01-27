@@ -219,5 +219,72 @@ async def get_shot_chart(player_name: str):
         print(f"Error fetching shot chart: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+import os
+
+# --- Tactics Library Endpoints ---
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+TACTICS_DIR = os.path.join(DATA_DIR, 'tactics')
+os.makedirs(TACTICS_DIR, exist_ok=True)
+
+@app.get("/api/tactics")
+async def get_tactics_list():
+    tactics = []
+    
+    # Load custom user tactics from data/tactics/*.json
+    try:
+        if os.path.exists(TACTICS_DIR):
+            for filename in os.listdir(TACTICS_DIR):
+                if filename.endswith(".json"):
+                    file_path = os.path.join(TACTICS_DIR, filename)
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            tactic_data = json.load(f)
+                            
+                        # Extract meta info
+                        meta = tactic_data.get("meta", {})
+                        t_id = filename.replace(".json", "")
+                        
+                        tactics.append({
+                            "id": t_id,
+                            "name": meta.get("name", t_id.replace("_", " ").title()),
+                            "description": meta.get("description", "User created tactic"),
+                            "category": "Custom",
+                            "is_custom": True
+                        })
+                    except Exception as e:
+                        print(f"Error loading custom tactic {filename}: {e}")
+    except Exception as e:
+        print(f"Error scanning tactics directory: {e}")
+
+    return tactics
+
+@app.get("/api/tactics/{tactic_id}")
+async def get_tactic_detail(tactic_id: str):
+    try:
+        # 1. Check Custom Tactics first
+        custom_path = os.path.join(TACTICS_DIR, f"{tactic_id}.json")
+        if os.path.exists(custom_path):
+            with open(custom_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+
+        # 2. Check Built-in Mappings
+        filename = None
+        if tactic_id == "1_3_1_offense":
+            filename = "131_offense.json"
+        
+        if filename:
+            file_path = os.path.join(DATA_DIR, filename)
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+        
+        raise HTTPException(status_code=404, detail="Tactic visualization not found")
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading tactic detail: {str(e)}")
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

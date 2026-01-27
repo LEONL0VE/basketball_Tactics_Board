@@ -41,13 +41,16 @@ import {
 } from '@ant-design/icons';
 
 import GhostDefenseLayer from './GhostDefenseLayer';
+import TacticsLibrary from './TacticsLibrary';
 import { resolveCollisions, calculateGhostDefender } from '../../utils/playerUtils';
 import { API_ENDPOINTS } from '../../config/api';
+import { BookOutlined } from '@ant-design/icons';
 
 interface Frame {
   id: string;
   entitiesMap: Record<ViewMode, BoardEntity[]>;
   actionsMap: Record<ViewMode, Action[]>;
+  description?: string;
 }
 
 const TacticsBoard: React.FC = () => {
@@ -98,6 +101,11 @@ const TacticsBoard: React.FC = () => {
 
   // Ghost Defense State
   const [showGhostDefense, setShowGhostDefense] = useState(false);
+
+  // Tactics Library State
+  const [isTacticsLibraryVisible, setIsTacticsLibraryVisible] = useState(false);
+  const [currentTacticDescription, setCurrentTacticDescription] = useState<string>('');
+
 
   // Player Assignment State
   const [isPlayerSearchModalVisible, setIsPlayerSearchModalVisible] = useState(false);
@@ -1421,6 +1429,9 @@ const TacticsBoard: React.FC = () => {
             transform: scale(1.15);
             color: #3A7AFE !important; /* Accent Blue */
           }
+          .frame-desc-input::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+          }
         `}
       </style>
 
@@ -1475,6 +1486,35 @@ const TacticsBoard: React.FC = () => {
             style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.7)', marginLeft: '5px' }}
           />
         </Tooltip>
+        
+        {/* Frame Description Input */}
+        <div style={{ marginLeft: '10px', borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '10px' }}>
+            <Input 
+                className="frame-desc-input"
+                placeholder="Frame Description (e.g. Pick & Roll)" 
+                value={frames[currentFrameIndex]?.description || ''}
+                onChange={(e) => {
+                    const newDesc = e.target.value;
+                    setFrames(prev => {
+                        const newFrames = [...prev];
+                        newFrames[currentFrameIndex] = {
+                            ...newFrames[currentFrameIndex],
+                            description: newDesc
+                        };
+                        return newFrames;
+                    });
+                }}
+                style={{ 
+                    width: '200px', 
+                    background: '#141414', 
+                    border: '1px solid #434343', 
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    borderRadius: '4px'
+                }}
+                size="small"
+            />
+        </div>
       </div>
 
       {/* Right Playback */}
@@ -1899,12 +1939,20 @@ const TacticsBoard: React.FC = () => {
         }
     }
 
+    // Prompt for Tactic Details
+    const tacticName = window.prompt("Enter Tactic Name:", "My Custom Tactic");
+    if (!tacticName) return; // Cancelled
+    
+    const tacticDesc = window.prompt("Enter Description (Optional):", "Created with Tactics Board");
+
     const data = {
       meta: {
         version: "1.0",
         timestamp: new Date().toISOString(),
         viewMode: viewMode,
-        frameCount: frames.length
+        frameCount: frames.length,
+        name: tacticName,
+        description: tacticDesc || ""
       },
       frames: frames.map((frame, index) => {
         // Use current state for the current frame to ensure latest changes are captured
@@ -1915,6 +1963,7 @@ const TacticsBoard: React.FC = () => {
         return {
           id: frame.id,
           index: index,
+          description: frame.description || "", // Export description
           entities: entities.map(e => {
             if (e.type === 'player') {
               const p = e as PlayerType;
@@ -1960,6 +2009,170 @@ const TacticsBoard: React.FC = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     message.success('Sketch data (with EPV trajectory) exported to JSON!');
+  };
+
+  const handleLoadTactic = async (tacticId: string) => {
+    try {
+      const response = await fetch(`${API_ENDPOINTS.BASE_URL}/api/tactics/${tacticId}`);
+      if (!response.ok) throw new Error('Failed to fetch tactic details');
+      const data = await response.json();
+
+      // Check if it's the new Export format (Sketch Data)
+      if (data.frames && Array.isArray(data.frames) && data.meta) {
+          const loadedViewMode = data.meta.viewMode || 'full';
+          const newFrames: Frame[] = data.frames.map((f: any) => {
+              // Reconstruct entities and actions for the specific viewMode
+              const entities = f.entities || [];
+              const actions = f.actions || [];
+              
+              // We populate both viewModes with the same data to prevent crashes, 
+              // but ideally we should respect the viewMode it was created in.
+              return {
+                  id: f.id || uuidv4(),
+                  entitiesMap: {
+                      full: entities,
+                      half: entities // Duplicate for safety
+                  },
+                  actionsMap: {
+                      full: actions,
+                      half: actions // Duplicate for safety
+                  },
+                  description: f.description || "" // Support description if added later
+              };
+          });
+
+          setFrames(newFrames);
+          setEntitiesMap(newFrames[0].entitiesMap);
+          setActionsMap(newFrames[0].actionsMap);
+          setCurrentFrameIndex(0);
+          
+          // Switch view mode if needed
+          if (loadedViewMode !== viewMode) {
+              setViewMode(loadedViewMode as ViewMode);
+              message.info(`Switched to ${loadedViewMode} court view`);
+          }
+
+          setIsPlaying(true);
+          setIsAnimationMode(true);
+          message.success(`Loaded tactic: ${data.meta.name || 'Custom Tactic'}`);
+          return;
+      }
+
+      // Fallback: Old Format (1-3-1 Offense style)
+      // Parse tactic data into frames
+      const newFrames: Frame[] = [];
+      
+      // Initial Setup (Frame 0)
+      // Hardcoded 1-3-1 positions for now as they are not in the JSON
+      // In a real app, these should come from the JSON
+      const initialEntities: BoardEntity[] = [
+        { id: '1', type: 'player', team: 'home', number: '1', role: 'PG', position: { x: 380, y: 120 }, rotation: 0 },
+        { id: '2', type: 'player', team: 'home', number: '2', role: 'SG', position: { x: 100, y: 300 }, rotation: 0 },
+        { id: '3', type: 'player', team: 'home', number: '3', role: 'SF', position: { x: 660, y: 300 }, rotation: 0 },
+        { id: '4', type: 'player', team: 'home', number: '4', role: 'PF', position: { x: 250, y: 350 }, rotation: 0 },
+        { id: '5', type: 'player', team: 'home', number: '5', role: 'C', position: { x: 380, y: 250 }, rotation: 0 },
+        { id: 'ball', type: 'ball', position: { x: 380, y: 130 }, ownerId: '1' }
+      ];
+
+      newFrames.push({
+        id: '0',
+        entitiesMap: { full: initialEntities, half: initialEntities },
+        actionsMap: { full: [], half: [] },
+        description: "Initial Setup"
+      });
+
+      // Process steps
+      if (data.steps && Array.isArray(data.steps)) {
+        data.steps.forEach((stepText: string, index: number) => {
+          const stepIndex = index + 1; // 1-based index for matching overlays
+          
+          // Clone previous frame entities
+          const prevEntities = [...newFrames[newFrames.length - 1].entitiesMap.full];
+          const currentEntities = prevEntities.map(e => ({ ...e })); 
+          
+          // Find overlays for this step
+          const overlay = data.overlays?.find((o: any) => o.for_step === stepIndex);
+          const actions: Action[] = [];
+
+          if (overlay && overlay.arrows) {
+            overlay.arrows.forEach((arrow: any) => {
+              // Create action from arrow
+              const actionId = uuidv4();
+              let path: Position[] = [];
+              
+              // Find start position from entity
+              const fromEntity = currentEntities.find(e => e.id === String(arrow.fromId));
+              const startPos = fromEntity ? fromEntity.position : { x: 0, y: 0 };
+              
+              // Determine end position
+              let endPos = { x: 0, y: 0 };
+              if (arrow.endPoint) {
+                endPos = arrow.endPoint;
+              } else if (arrow.toId) {
+                const toEntity = currentEntities.find(e => e.id === String(arrow.toId));
+                endPos = toEntity ? toEntity.position : { x: 0, y: 0 };
+              }
+
+              // Construct path
+              path = [startPos];
+              if (arrow.controlPoint) {
+                path.push(arrow.controlPoint);
+              }
+              path.push(endPos);
+
+              actions.push({
+                id: actionId,
+                type: arrow.type === 'pass' ? 'pass' : arrow.type === 'screen' ? 'screen' : 'move',
+                playerId: String(arrow.fromId),
+                path: path,
+                color: arrow.type === 'pass' ? '#ff9c6e' : arrow.type === 'screen' ? '#8c8c8c' : '#1890ff'
+              });
+
+              // Update entity position if it's a move
+              if (arrow.type === 'move' || arrow.type === 'curve_move') {
+                 const entityIndex = currentEntities.findIndex(e => e.id === String(arrow.fromId));
+                 if (entityIndex !== -1) {
+                   currentEntities[entityIndex] = {
+                     ...currentEntities[entityIndex],
+                     position: endPos
+                   };
+                 }
+              }
+              // Update ball position if it's a pass
+              if (arrow.type === 'pass') {
+                 const ballIndex = currentEntities.findIndex(e => e.type === 'ball');
+                 if (ballIndex !== -1) {
+                    currentEntities[ballIndex] = {
+                      ...currentEntities[ballIndex],
+                      position: endPos,
+                      ownerId: String(arrow.toId)
+                    };
+                 }
+              }
+            });
+          }
+
+          newFrames.push({
+            id: String(stepIndex),
+            entitiesMap: { full: currentEntities, half: currentEntities },
+            actionsMap: { full: actions, half: actions },
+            description: stepText
+          });
+        });
+      }
+
+      setFrames(newFrames);
+      setEntitiesMap(newFrames[0].entitiesMap);
+      setActionsMap(newFrames[0].actionsMap);
+      setCurrentFrameIndex(0);
+      setIsPlaying(true);
+      setIsAnimationMode(true);
+      message.success(`Loaded tactic: ${data.tactic}`);
+
+    } catch (error) {
+      console.error('Error loading tactic:', error);
+      message.error('Failed to load tactic');
+    }
   };
 
   // Player Search Modal
@@ -2181,6 +2394,13 @@ const TacticsBoard: React.FC = () => {
         <div style={{ flex: 1 }} />
         
         <SidebarButton 
+          icon={<BookOutlined />} 
+          onClick={() => setIsTacticsLibraryVisible(true)}
+          tooltip="Tactics Library"
+          active={isTacticsLibraryVisible}
+        />
+
+        <SidebarButton 
           icon={<BulbOutlined />} 
           onClick={handleRecommendTactic}
           tooltip="Recommend Tactic (AI)"
@@ -2322,6 +2542,28 @@ const TacticsBoard: React.FC = () => {
                     })}
                   </Layer>
                 </Stage>
+
+                {/* Tactic Step Description Overlay */}
+                {isAnimationMode && frames[currentFrameIndex]?.description && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    color: 'white',
+                    padding: '10px 20px',
+                    borderRadius: '20px',
+                    maxWidth: '80%',
+                    textAlign: 'center',
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                  }}>
+                    {frames[currentFrameIndex].description}
+                  </div>
+                )}
               </div>
               {renderTopBar()}
             </div>
@@ -2689,6 +2931,11 @@ const TacticsBoard: React.FC = () => {
         {/* EPV Analysis Modal - REMOVED (Replaced by Right Panel) */}
       </div>
       
+      <TacticsLibrary 
+        visible={isTacticsLibraryVisible}
+        onClose={() => setIsTacticsLibraryVisible(false)}
+        onSelectTactic={handleLoadTactic}
+      />
     </div>
   );
 };
