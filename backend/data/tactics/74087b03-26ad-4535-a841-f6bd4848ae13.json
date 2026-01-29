@@ -1,0 +1,229 @@
+{
+  "id": "74087b03-26ad-4535-a841-f6bd4848ae13",
+  "preview_source": "custom",
+  "custom_image_url": "https://images.prismic.io/coachtube/Zv8HcrVsGrYSwWgq_1183806582.0.jpg?auto=format,compress",
+  "name": "Pick and Roll",
+  "category": "Offense",
+  "sub_category": "Actions",
+  "description": "A fundamental 2-man play. One offensive player sets a screen for the ball handler, then moves (rolls) toward the basket to receive a pass.",
+  "tags": [
+    "2-Man Game",
+    "On-Ball Screen",
+    "Fundamental"
+  ],
+  "external_links": {
+    "article": "https://en.wikipedia.org/wiki/Pick_and_roll",
+    "video": "https://www.youtube.com/watch?v=ffjo8ReDzhA"
+  },
+  "preview_image": "https://images.prismic.io/coachtube/Zv8HcrVsGrYSwWgq_1183806582.0.jpg?auto=format,compress",
+  "animation_data": {
+    "meta": {
+      "version": "2.0",
+      "timestamp": "2026-01-28T08:53:10.285Z",
+      "viewMode": "full",
+      "frameCount": 3,
+      "name": "Pick and Roll",
+      "description": "A fundamental 2-man play. One offensive player sets a screen for the ball handler, then moves (rolls) toward the basket to receive a pass."
+    },
+    "frames": [
+      {
+        "id": "1",
+        "description": "",
+        "entities": [
+          {
+            "id": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 400.54731433003684,
+              "y": 339.1029731102969
+            },
+            "rotation": 174.80814127451396
+          },
+          {
+            "id": "1f10627e-127c-4be4-8d41-80202d2baf12",
+            "type": "ball",
+            "position": {
+              "x": 420.5434361062633,
+              "y": 344.1044918877349
+            },
+            "ownerId": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed"
+          },
+          {
+            "id": "0c5b8f5a-f980-4375-af48-346d21ad0eef",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 289.56883847197975,
+              "y": 421.1278810602802
+            },
+            "rotation": 34.97862614226151
+          },
+          {
+            "id": "0a6835fd-cfdf-4d0d-96ab-59e7b68ce711",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 358.5554585999612,
+              "y": 338.1026693548093
+            },
+            "rotation": 76.75312175358806
+          }
+        ],
+        "actions": [
+          {
+            "id": "3d069491-a149-4148-b6d4-267596e5c586",
+            "type": "screen",
+            "playerId": "0c5b8f5a-f980-4375-af48-346d21ad0eef",
+            "path": [
+              {
+                "x": 289.56883847197975,
+                "y": 421.1278810602802
+              },
+              {
+                "x": 310.68474306767496,
+                "y": 400.001465744382
+              },
+              {
+                "x": 331.8006476633701,
+                "y": 378.8750504284839
+              },
+              {
+                "x": 353.1067486790326,
+                "y": 358.8180732899869
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "1718a021-86db-48e7-ba70-4d4bc79de4ab",
+        "description": "",
+        "entities": [
+          {
+            "id": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 400.54731433003684,
+              "y": 339.1029731102969
+            },
+            "rotation": 174.80814127451396
+          },
+          {
+            "id": "1f10627e-127c-4be4-8d41-80202d2baf12",
+            "type": "ball",
+            "position": {
+              "x": 415.5444056622067,
+              "y": 345.1047956432225
+            },
+            "ownerId": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed"
+          },
+          {
+            "id": "0c5b8f5a-f980-4375-af48-346d21ad0eef",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 353.55642815590454,
+              "y": 357.1084407090737
+            },
+            "rotation": 44.985743683204305
+          },
+          {
+            "id": "0a6835fd-cfdf-4d0d-96ab-59e7b68ce711",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 358.5554585999612,
+              "y": 338.1026693548093
+            },
+            "rotation": 191.08834052585667
+          }
+        ],
+        "actions": [
+          {
+            "id": "9c0aa617-1d06-465c-b781-1f6dce4416ad",
+            "type": "dribble",
+            "playerId": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed",
+            "path": [
+              {
+                "x": 400.54731433003684,
+                "y": 339.1029731102969
+              },
+              {
+                "x": 360.9549932131084,
+                "y": 375.0838991951859
+              },
+              {
+                "x": 300.36674423114215,
+                "y": 393.05935768129814
+              },
+              {
+                "x": 98.60587550901685,
+                "y": 360.1093519755365
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "c70aabae-bdde-4b5f-a805-8327e33d9d5e",
+        "entities": [
+          {
+            "id": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 98.60587550901685,
+              "y": 360.1093519755365
+            },
+            "rotation": -80.72478274010291
+          },
+          {
+            "id": "1f10627e-127c-4be4-8d41-80202d2baf12",
+            "type": "ball",
+            "position": {
+              "x": 94.60665115377155,
+              "y": 347.10540315419775
+            },
+            "ownerId": "3a6cd01b-8ea0-48ad-a4b6-51063a9a88ed"
+          },
+          {
+            "id": "0c5b8f5a-f980-4375-af48-346d21ad0eef",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 353.55642815590454,
+              "y": 357.1084407090737
+            },
+            "rotation": 44.985743683204305
+          },
+          {
+            "id": "0a6835fd-cfdf-4d0d-96ab-59e7b68ce711",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 358.5554585999612,
+              "y": 338.1026693548093
+            },
+            "rotation": 191.08834052585667
+          }
+        ],
+        "actions": []
+      }
+    ]
+  },
+  "updated_at": "2026-01-28T08:53:10.599702",
+  "created_at": "2026-01-28T08:53:10.599702"
+}

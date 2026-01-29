@@ -224,25 +224,48 @@ export const resolveCollisions = (
   const activePlayer = allPlayers.find(p => p.id === activePlayerId);
   if (!activePlayer) return { x: newX, y: newY };
 
-  const activeRadius = getPlayerRadius(activePlayer);
+  // Determine effective radius based on action state
+  // Check runtime property actionType injected by TacticsBoard
+  const activeAction = (activePlayer as any).actionType;
+  let activeRadius = getPlayerRadius(activePlayer);
+
+  // If screening or blocking, we allow tighter contact (smaller effective radius)
+  // This prevents jittering when setting picks or close defense
+  if (activeAction === 'screen' || activeAction === 'block') {
+      activeRadius *= 0.7; 
+  }
 
   // Check against all other players
   for (const other of allPlayers) {
     if (other.id === activePlayerId) continue;
 
-    const otherRadius = getPlayerRadius(other);
-    const minDist = activeRadius + otherRadius; // Minimum distance to avoid overlap
+    const otherAction = (other as any).actionType;
+    let otherRadius = getPlayerRadius(other);
+    
+    // If the other player is screening, they also have smaller effective radius
+    if (otherAction === 'screen' || otherAction === 'block') {
+        otherRadius *= 0.7;
+    }
+
+    // Allow slight visual overlap (0.85 factor) for smoother interactions generally
+    // This reduces the "bouncing" effect
+    const minDist = (activeRadius + otherRadius) * 0.9; 
 
     const dx = correctedX - other.position.x;
     const dy = correctedY - other.position.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < minDist && dist > 0) {
+    if (dist < minDist && dist > 1) { // Ensure dist > 1 to avoid div by zero
       // Collision detected!
       // Push active player out along the vector connecting centers
       const overlap = minDist - dist;
-      const pushX = (dx / dist) * overlap;
-      const pushY = (dy / dist) * overlap;
+      
+      // Soft resolution: only push 50% of the overlap per pass
+      // This acts as a damper to prevent violent jittering
+      const pushFactor = 0.5;
+      
+      const pushX = (dx / dist) * overlap * pushFactor;
+      const pushY = (dy / dist) * overlap * pushFactor;
 
       correctedX += pushX;
       correctedY += pushY;
@@ -252,16 +275,18 @@ export const resolveCollisions = (
   // Check against obstacles (Ghost Defenders)
   for (const obs of obstacles) {
     const obsRadius = obs.radius;
-    const minDist = activeRadius + obsRadius;
+    const minDist = (activeRadius + obsRadius) * 0.9;
 
     const dx = correctedX - obs.position.x;
     const dy = correctedY - obs.position.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < minDist && dist > 0) {
+    if (dist < minDist && dist > 1) {
       const overlap = minDist - dist;
-      const pushX = (dx / dist) * overlap;
-      const pushY = (dy / dist) * overlap;
+      const pushFactor = 0.5; // Soft resolution
+
+      const pushX = (dx / dist) * overlap * pushFactor;
+      const pushY = (dy / dist) * overlap * pushFactor;
 
       correctedX += pushX;
       correctedY += pushY;

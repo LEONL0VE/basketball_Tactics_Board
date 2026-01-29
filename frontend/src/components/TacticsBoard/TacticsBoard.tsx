@@ -9,7 +9,7 @@ import ActionLayer from './ActionLayer';
 import PlayerInfoPanel from './PlayerInfoPanel';
 import { BoardEntity, ViewMode, Player as PlayerType, Ball as BallType, TeamType, Action, ActionType, Position } from '../../types';
 import { COURT_WIDTH, COURT_HEIGHT, APP_BACKGROUND } from '../../utils/constants';
-import { Button, Tooltip, Menu, Dropdown, Slider, message, Modal, List, Card, Tag, Spin, Input, Avatar } from 'antd';
+import { Button, Tooltip, Menu, Dropdown, Slider, message, Modal, List, Card, Tag, Spin, Input, Avatar, Form, Select, Row, Col, Upload, Space, Radio } from 'antd';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { 
   ExpandOutlined, 
@@ -27,6 +27,7 @@ import {
   ScissorOutlined,
   CameraOutlined,
   LinkOutlined,
+  PlayCircleOutlined,
   DownloadOutlined,
   RetweetOutlined,
   LineChartOutlined,
@@ -42,9 +43,10 @@ import {
 
 import GhostDefenseLayer from './GhostDefenseLayer';
 import TacticsLibrary from './TacticsLibrary';
+import ChatPanel from './ChatPanel';
 import { resolveCollisions, calculateGhostDefender } from '../../utils/playerUtils';
 import { API_ENDPOINTS } from '../../config/api';
-import { BookOutlined } from '@ant-design/icons';
+import { BookOutlined, RobotOutlined } from '@ant-design/icons';
 
 interface Frame {
   id: string;
@@ -105,6 +107,18 @@ const TacticsBoard: React.FC = () => {
   // Tactics Library State
   const [isTacticsLibraryVisible, setIsTacticsLibraryVisible] = useState(false);
   const [currentTacticDescription, setCurrentTacticDescription] = useState<string>('');
+  
+  // Save Tactic State
+  const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
+  const [saveForm] = Form.useForm();
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [savePreviewImage, setSavePreviewImage] = useState<string>('');
+  // Edit Mode State
+  const [currentTacticId, setCurrentTacticId] = useState<string | null>(null);
+  const [currentTacticMetadata, setCurrentTacticMetadata] = useState<any>(null);
+
+  // AI Chat State
+  const [isChatPanelVisible, setIsChatPanelVisible] = useState(false);
 
 
   // Player Assignment State
@@ -242,6 +256,9 @@ const TacticsBoard: React.FC = () => {
     return { x, y };
   };
 
+  // Actions for current viewMode (MUST be before getRenderEntities)
+  const actions = actionsMap[viewMode];
+
   // Interpolated Entities for Rendering
   const getRenderEntities = () => {
     // If not in animation mode, or if we are at the very end of the animation sequence
@@ -347,8 +364,11 @@ const TacticsBoard: React.FC = () => {
             const p1 = entity as PlayerType;
             const p2 = nextEntity as PlayerType;
             if (p1.rotation !== undefined && p2.rotation !== undefined) {
-               // Rotation should also follow local t
-               rot = p1.rotation + (p2.rotation - p1.rotation) * t;
+              // Rotation should follow shortest path
+              let delta = p2.rotation - p1.rotation;
+              if (delta > 180) delta -= 360;
+              if (delta < -180) delta += 360;
+              rot = p1.rotation + delta * t;
             }
          }
       } else {
@@ -359,11 +379,14 @@ const TacticsBoard: React.FC = () => {
         };
         
         if (entity.type === 'player' && nextEntity.type === 'player') {
-           const p1 = entity as PlayerType;
-           const p2 = nextEntity as PlayerType;
-           if (p1.rotation !== undefined && p2.rotation !== undefined) {
-              rot = p1.rotation + (p2.rotation - p1.rotation) * animationProgress;
-           }
+            const p1 = entity as PlayerType;
+            const p2 = nextEntity as PlayerType;
+            if (p1.rotation !== undefined && p2.rotation !== undefined) {
+              let delta = p2.rotation - p1.rotation;
+              if (delta > 180) delta -= 360;
+              if (delta < -180) delta += 360;
+              rot = p1.rotation + delta * animationProgress;
+            }
         }
       }
 
@@ -396,6 +419,56 @@ const TacticsBoard: React.FC = () => {
           p.position.y = y;
         });
       }
+
+      // --- Ball Offset from Owner (Prevent overlapping with player number) ---
+      if (ball && ball.ownerId) {
+              // Pass/Shoot logic: Ball moves independently of player
+              const ballAction = actions.find(a => a.playerId === ball.ownerId && (a.type === 'pass' || a.type === 'shoot'));
+              if (ballAction && ballAction.path.length >= 2 && isPlaying) {
+                // Interpolate ball movement
+                let t = animationProgress;
+                let speedMultiplier = 1.5;
+                if (ballAction.speed === 'walk') speedMultiplier = 1.0;
+                if (ballAction.speed === 'sprint') speedMultiplier = 2.5;
+                let localProgress = Math.min(1, animationProgress * speedMultiplier);
+                t = localProgress;
+                if (t >= 1) {
+                  ball.position = ballAction.path[ballAction.path.length - 1];
+                } else {
+                  ball.position = getPointOnSpline(ballAction.path, t);
+                }
+              } else {
+                // Ball following owner logic
+                const owner = renderedEntities.find(e => e.id === ball.ownerId) as PlayerType | undefined;
+                if (owner) {
+                  // --- FIX START: Improved ball positioning logic ---
+                  
+                  // 1. Set ball distance from player center (pixels)
+                  // Increased slightly to prevent overlap with body
+                  const offsetDistance = 22; 
+
+                  // 2. Get current player rotation (default 0)
+                  const rotation = owner.rotation || 0;
+
+                  // 3. Set dribble offset angle relative to player facing direction
+                  // +50 degrees puts the ball to the front-right side
+                  // This ensures the ball is always on the side, never behind
+                  const dribbleAngleOffset = -50; 
+
+                  // 4. Convert total angle to radians for calculation
+                  // Simple addition handles all quadrants correctly
+                  const totalAngleRad = ((rotation + dribbleAngleOffset) * Math.PI) / 180;
+
+                  // 5. Calculate new ball coordinates
+                  ball.position = {
+                    x: owner.position.x + Math.cos(totalAngleRad) * offsetDistance,
+                    y: owner.position.y + Math.sin(totalAngleRad) * offsetDistance
+                  };
+                  
+                  // --- FIX END ---
+                }
+              }
+      }
     }
 
     return renderedEntities;
@@ -403,7 +476,6 @@ const TacticsBoard: React.FC = () => {
 
   const renderEntities = getRenderEntities();
   const entities = renderEntities; // Override for rendering
-  const actions = actionsMap[viewMode]; // Actions don't interpolate for now
 
   const isVertical = viewMode === 'half';
   const stageWidth = isVertical ? COURT_HEIGHT : COURT_WIDTH;
@@ -599,34 +671,6 @@ const TacticsBoard: React.FC = () => {
     }
 
     if (!isEntity) {
-      // If we clicked an action (handled by ActionLayer onClick), we don't want to deselect it here
-      // But ActionLayer onClick fires BEFORE Stage onClick (bubbling?)
-      // Actually Konva events bubble up.
-      // If we clicked an action, we should have set selectedActionId already.
-      // But if we clicked empty space, we want to clear everything.
-      // Let's rely on the fact that if we clicked an entity, isEntity is true.
-      // If we clicked an action, we need to know.
-      // Since ActionLayer handles its own clicks, we might need to be careful.
-      // A simple way is to check if selectedActionId changed recently? No.
-      
-      // Better: ActionLayer stops propagation?
-      // If ActionLayer stops propagation, this won't fire.
-      // But we didn't add e.cancelBubble in ActionLayer.
-      
-      // Let's just clear player selection if not entity.
-      // And clear action selection if not action?
-      // We'll let ActionLayer handle action selection.
-      // If we are here, it means we clicked something that is NOT an entity group.
-      // It could be an action, or empty space.
-      
-      // If we clicked empty space (Stage), we handled it above.
-      // If we clicked Court background, e.target is Rect.
-      
-      // So if we are here, we clicked something on the stage that is not the stage itself, and not an entity.
-      // Could be an action line.
-      // If it is an action line, we want to keep selectedActionId.
-      // If it is background, we want to clear.
-      
       // Let's check if we clicked the court background
       const name = e.target && e.target.attrs ? e.target.attrs.name : null;
       const parentName = (e.target && e.target.getParent && e.target.getParent())?.attrs?.name;
@@ -882,6 +926,12 @@ const TacticsBoard: React.FC = () => {
   };
 
   const clearBoard = () => {
+    // Reset Edit State
+    setCurrentTacticId(null);
+    setCurrentTacticMetadata(null);
+    setCurrentTacticDescription('');
+    
+    // Clear Board
     setEntitiesMap(prev => ({
       ...prev,
       [viewMode]: []
@@ -890,6 +940,16 @@ const TacticsBoard: React.FC = () => {
       ...prev,
       [viewMode]: []
     }));
+    
+    // Reset Animation Frames
+    const initialFrame: Frame = {
+        id: uuidv4(),
+        entitiesMap: { full: [], half: [] },
+        actionsMap: { full: [], half: [] }
+    };
+    setFrames([initialFrame]);
+    setCurrentFrameIndex(0);
+    setIsPlaying(false);
   };
 
   // CSS transform for perspective view
@@ -2014,15 +2074,33 @@ const TacticsBoard: React.FC = () => {
     message.success('Sketch data (with EPV trajectory) exported to JSON!');
   };
 
-  const handleLoadTactic = async (tacticId: string) => {
+  const handleLoadTactic = async (tacticId: string, loadMode: 'play' | 'edit' = 'play') => {
     try {
       const response = await fetch(`${API_ENDPOINTS.BASE_URL}/api/tactics/${tacticId}`);
       if (!response.ok) throw new Error('Failed to fetch tactic details');
-      const data = await response.json();
+      const responseData = await response.json();
+      
+      // Unwrap animation_data if present (New Schema Support)
+      const data = responseData.animation_data || responseData;
+
+      // Store metadata for editing
+      setCurrentTacticId(tacticId);
+      setCurrentTacticMetadata({
+          name: responseData.name,
+          description: responseData.description,
+          category: responseData.category,
+          sub_category: responseData.sub_category,
+          tags: responseData.tags,
+          external_links: responseData.external_links,
+          preview_image: responseData.preview_image
+      });
 
       // Check if it's the new Export format (Sketch Data)
-      if (data.frames && Array.isArray(data.frames) && data.meta) {
-          const loadedViewMode = data.meta.viewMode || 'full';
+      if (data.frames && Array.isArray(data.frames)) {
+          // If meta is missing, mock it
+          const meta = data.meta || { viewMode: 'full' };
+          const loadedViewMode = meta.viewMode || 'full';
+          
           const newFrames: Frame[] = data.frames.map((f: any) => {
               // Reconstruct entities and actions for the specific viewMode
               const entities = f.entities || [];
@@ -2055,9 +2133,16 @@ const TacticsBoard: React.FC = () => {
               message.info(`Switched to ${loadedViewMode} court view`);
           }
 
-          setIsPlaying(true);
-          setIsAnimationMode(true);
-          message.success(`Loaded tactic: ${data.meta.name || 'Custom Tactic'}`);
+          // Only auto-play if mode is 'play'
+          if (loadMode === 'play') {
+              setIsPlaying(true);
+              setIsAnimationMode(true);
+          } else {
+              // Edit mode: don't auto-play
+              setIsPlaying(false);
+              setIsAnimationMode(false);
+          }
+          message.success(`Loaded tactic: ${data.meta?.name || responseData.name || 'Custom Tactic'}`);
           return;
       }
 
@@ -2175,6 +2260,93 @@ const TacticsBoard: React.FC = () => {
     } catch (error) {
       console.error('Error loading tactic:', error);
       message.error('Failed to load tactic');
+    }
+  };
+
+  const handleOpenSaveModal = () => {
+    // Capture screenshot
+    if (stageRef.current) {
+        try {
+            const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+            setSavePreviewImage(dataUrl);
+        } catch (e) {
+            console.error("Screenshot failed", e);
+        }
+    }
+    
+    // Pre-fill form if editing
+    if (currentTacticId && currentTacticMetadata) {
+        saveForm.setFieldsValue({
+            name: currentTacticMetadata.name,
+            description: currentTacticMetadata.description,
+            category: currentTacticMetadata.category,
+            sub_category: currentTacticMetadata.sub_category,
+            tags: currentTacticMetadata.tags,
+            external_links: currentTacticMetadata.external_links,
+            preview_source: currentTacticMetadata.preview_image ? 'custom' : 'auto',
+            custom_image_url: currentTacticMetadata.preview_image
+        });
+    } else {
+        saveForm.resetFields();
+    }
+
+    setIsSaveModalVisible(true);
+  };
+
+  const handleSaveTactic = async (values: any) => {
+    setSaveLoading(true);
+    try {
+        // Determine preview image source
+        let finalPreviewImage = savePreviewImage;
+        if ((values.preview_source === 'custom' || values.preview_source === 'upload') && values.custom_image_url) {
+            finalPreviewImage = values.custom_image_url;
+        }
+
+        const tacticData = {
+            id: currentTacticId || uuidv4(),
+            ...values,
+            preview_image: finalPreviewImage,
+            animation_data: {
+                meta: {
+                  version: "2.0",
+                  timestamp: new Date().toISOString(),
+                  viewMode: viewMode,
+                  frameCount: frames.length,
+                  name: values.name,
+                  description: values.description
+                },
+                frames: frames.map(f => ({
+                    id: f.id,
+                    description: f.description,
+                    entities: f.entitiesMap[viewMode], 
+                    actions: f.actionsMap[viewMode],
+                }))
+            }
+        };
+
+        const response = await fetch(API_ENDPOINTS.TACTICS, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tacticData)
+        });
+
+        if (!response.ok) throw new Error("Save failed");
+        
+        // Update state to reflect saved tactic (becomes currently edited)
+        setCurrentTacticId(tacticData.id);
+        setCurrentTacticMetadata({
+            ...values,
+            preview_image: finalPreviewImage
+        });
+        
+        message.success("Tactic saved to Gallery!");
+        setIsSaveModalVisible(false);
+        // saveForm.resetFields(); // Don't reset, so we keep values if we open again
+    } catch (e) {
+        console.error(e);
+        message.error("Failed to save tactic");
+    } finally {
+        setSaveLoading(false);
     }
   };
 
@@ -2399,8 +2571,21 @@ const TacticsBoard: React.FC = () => {
         <SidebarButton 
           icon={<BookOutlined />} 
           onClick={() => setIsTacticsLibraryVisible(true)}
-          tooltip="Tactics Library"
+          tooltip="Tactics Gallery"
           active={isTacticsLibraryVisible}
+        />
+
+        <SidebarButton 
+          icon={<SaveOutlined />} 
+          onClick={handleOpenSaveModal}
+          tooltip="Save to Gallery"
+        />
+
+        <SidebarButton 
+          icon={<RobotOutlined />} 
+          onClick={() => setIsChatPanelVisible(true)}
+          tooltip="AI 战术助手"
+          active={isChatPanelVisible}
         />
 
         <SidebarButton 
@@ -2496,54 +2681,56 @@ const TacticsBoard: React.FC = () => {
                       onSelectAction={handleActionSelect}
                       onActionPointChange={handleActionPointChange}
                       viewMode={viewMode}
-                    />{entities.map(entity => {
-                      if (entity.type === 'player') {
-                        // Check if this player has the ball
-                        const hasBall = entities.some(e => e.type === 'ball' && (e as BallType).ownerId === entity.id);
-                        
-                        return (
-                          <Player 
-                            key={entity.id} 
-                            player={entity as PlayerType} 
-                            onDragMove={handleEntityDrag}
-                            rotationOffset={isVertical ? -90 : 0}
-                            isSelected={selectedId === entity.id}
-                            hasBall={hasBall}
-                            draggable={!activeTool} // Disable drag when drawing
-                            onSelect={() => {
-                              setSelectedId(entity.id);
-                              setSelectedActionId(null); // Deselect action
-                            }}
-                            onRotate={handleEntityRotate}
-                            stageWidth={stageWidth}
-                            stageHeight={stageHeight}
-                            onContextMenu={handlePlayerContextMenu}
-                            viewMode={viewMode}
-                            scale={(entity as any).scale || 1}
-                            armExtension={(entity as any).armExtension || 0}
-                            actionType={(entity as any).actionType}
-                          />
-                        );
-                      } else if (entity.type === 'ball') {
-                        return (
-                          <Ball 
-                            key={entity.id} 
-                            ball={entity as BallType} 
-                            onDragMove={handleEntityDrag}
-                            draggable={!activeTool} // Disable drag when drawing
-                            stageWidth={stageWidth}
-                            stageHeight={stageHeight}
-                            isSelected={selectedId === entity.id}
-                            onSelect={() => {
-                              setSelectedId(entity.id);
-                              setSelectedActionId(null);
-                            }}
-                            viewMode={viewMode}
-                          />
-                        );
-                      }
-                      return null;
-                    })}
+                    />
+                    
+                    {/* --- Z-Index Fix: Render Layers in Order --- */}
+
+                    {/* 1. Render Players First (Bottom Layer) */}
+{/* 1. 先渲染所有球员 (底层) */}
+                  {entities.filter(e => e.type === 'player').map(entity => {
+                      const hasBall = entities.some(e => e.type === 'ball' && (e as BallType).ownerId === entity.id);
+                      return (
+                        <Player 
+                          key={entity.id} 
+                          player={entity as PlayerType} 
+                          onDragMove={handleEntityDrag}
+                          rotationOffset={isVertical ? -90 : 0}
+                          isSelected={selectedId === entity.id}
+                          hasBall={hasBall}
+                          draggable={!activeTool} 
+                          onSelect={() => {
+                            setSelectedId(entity.id);
+                            setSelectedActionId(null); 
+                          }}
+                          onRotate={handleEntityRotate}
+                          stageWidth={stageWidth}
+                          stageHeight={stageHeight}
+                          onContextMenu={handlePlayerContextMenu}
+                          viewMode={viewMode}
+                          scale={(entity as any).scale || 1}
+                          armExtension={(entity as any).armExtension || 0}
+                          actionType={(entity as any).actionType}
+                        />
+                      );
+                  })}
+
+                  {/* 2. 后渲染所有球 (顶层 - 确保球永远浮在球员上方) */}
+                  {entities.filter(e => e.type === 'ball').map(entity => (
+                      <Ball 
+                        key={entity.id} 
+                        ball={entity as BallType} 
+                        onDragMove={handleEntityDrag}
+                        draggable={!activeTool}
+                        stageWidth={stageWidth}
+                        stageHeight={stageHeight}
+                        isSelected={selectedId === entity.id}
+                        onSelect={() => {
+                          setSelectedId(entity.id);
+                          setSelectedActionId(null);
+                        }}
+                        viewMode={viewMode}
+                      />
+                  ))}
                   </Layer>
                 </Stage>
 
@@ -2731,8 +2918,6 @@ const TacticsBoard: React.FC = () => {
                                         labelFormatter={(label) => `Time: ${Number(label).toFixed(2)}s`}
                                         formatter={(value: number) => [value.toFixed(3), 'Exp. Score']}
                                     />
-                                    {/* Full Line (Hidden or faint) - Optional */}
-                                    {/* <Line type="monotone" dataKey="epv" stroke="#333" strokeWidth={1} dot={false} isAnimationActive={false} /> */}
                                     
                                     {/* Progressive Line */}
                                     <Line 
@@ -2939,6 +3124,373 @@ const TacticsBoard: React.FC = () => {
         visible={isTacticsLibraryVisible}
         onClose={() => setIsTacticsLibraryVisible(false)}
         onSelectTactic={handleLoadTactic}
+      />
+      
+      <Modal
+        title={currentTacticId ? "Update Tactic" : "Save Tactic to Gallery"}
+        visible={isSaveModalVisible}
+        onCancel={() => setIsSaveModalVisible(false)}
+        onOk={() => saveForm.submit()}
+        confirmLoading={saveLoading}
+        width={600}
+      >
+        <Form
+            form={saveForm}
+            layout="vertical"
+            onFinish={handleSaveTactic}
+            initialValues={{ category: 'Offense', tags: [], sub_category: 'Actions', preview_source: 'auto' }}
+        >
+            {/* Dynamic Preview Section */}
+            <Form.Item noStyle shouldUpdate={(prev, curr) => prev.preview_source !== curr.preview_source || prev.custom_image_url !== curr.custom_image_url}>
+                {({ getFieldValue }) => {
+                    const source = getFieldValue('preview_source');
+                    const customUrl = getFieldValue('custom_image_url');
+                    const displayImage = (source === 'custom' || source === 'upload') && customUrl ? customUrl : savePreviewImage;
+
+                    return (
+                        <div style={{ marginBottom: 16, textAlign: 'center', background: '#f0f0f0', padding: 8 }}>
+                            {displayImage ? (
+                                <img 
+                                    src={displayImage} 
+                                    alt="Preview" 
+                                    style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }} 
+                                    onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400x200?text=Invalid+Image+URL')}
+                                />
+                            ) : (
+                                <div style={{ height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+                                    No Preview Available
+                                </div>
+                            )}
+                            <div style={{ fontSize: 12, color: '#999', marginTop: 4 }}>
+                                {source === 'auto' ? 'Auto-generated Preview' : 'Custom Preview'}
+                            </div>
+                        </div>
+                    );
+                }}
+            </Form.Item>
+
+            <Form.Item name="preview_source" label="Preview Image Source">
+                <Radio.Group buttonStyle="solid">
+                    <Radio.Button value="auto">Auto-Generated</Radio.Button>
+                    <Radio.Button value="custom">URL</Radio.Button>
+                    <Radio.Button value="upload">Upload</Radio.Button>
+                </Radio.Group>
+            </Form.Item>
+
+            <Form.Item 
+                noStyle 
+                shouldUpdate={(prev, curr) => prev.preview_source !== curr.preview_source || prev.custom_image_url !== curr.custom_image_url}
+            >
+                {({ getFieldValue, setFieldsValue }) => {
+                    const source = getFieldValue('preview_source');
+
+                    if (source === 'custom') {
+                        return (
+                            <Form.Item name="custom_image_url" label="Image URL" rules={[{ required: true, message: 'Please enter image URL' }]}>
+                                <Input placeholder="https://example.com/my-tactic.jpg" />
+                            </Form.Item>
+                        );
+                    }
+                    
+                    if (source === 'upload') {
+                        return (
+                            <Form.Item label="Upload Image">
+                                <Upload
+                                    beforeUpload={(file) => {
+                                        const reader = new FileReader();
+                                        reader.onload = e => {
+                                            if (e.target && e.target.result) {
+                                                setFieldsValue({ custom_image_url: e.target.result });
+                                            }
+                                        };
+                                        reader.readAsDataURL(file);
+                                        return false; // Prevent auto upload
+                                    }}
+                                    showUploadList={false}
+                                >
+                                    <Button>Click to Upload Image</Button>
+                                </Upload>
+                                <Form.Item name="custom_image_url" noStyle>
+                                    <Input type="hidden" />
+                                </Form.Item>
+                                {getFieldValue('custom_image_url') && <div style={{marginTop: 8, color: 'green'}}>Image Loaded Successfully</div>}
+                            </Form.Item>
+                        );
+                    }
+                    
+                    return null;
+                }}
+            </Form.Item>
+
+            <Form.Item name="name" label="Tactic Name" rules={[{ required: true }]}>
+                <Input placeholder="e.g. Horns Flex Offense" />
+            </Form.Item>
+
+            <Row gutter={16}>
+                <Col span={12}>
+                    <Form.Item name="category" label="Category" rules={[{ required: true }]}>
+                        <Select onChange={() => saveForm.setFieldsValue({ sub_category: null })}>
+                            <Select.Option value="Offense">Offense</Select.Option>
+                            <Select.Option value="Defense">Defense</Select.Option>
+                            <Select.Option value="Strategy & Concepts">Strategy & Concepts</Select.Option>
+                        </Select>
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item 
+                        noStyle 
+                        shouldUpdate={(prev, curr) => prev.category !== curr.category}
+                    >
+                        {({ getFieldValue }) => {
+                            const category = getFieldValue('category');
+                            let currentSubCategories: string[] = [];
+                            if (category === 'Offense') {
+                                currentSubCategories = ['Set Offense', 'Motion Offense', 'Actions'];
+                            } else if (category === 'Defense') {
+                                currentSubCategories = ['Man', 'Zone', 'Press'];
+                            } else {
+                                currentSubCategories = ['General Strategy', 'Concept', 'Lineup'];
+                            }
+                            
+                            return (
+                                <Form.Item name="sub_category" label="Sub-Category" rules={[{ required: true }]}>
+                                    <Select placeholder="Type">
+                                        {currentSubCategories.map(sub => (
+                                            <Select.Option key={sub} value={sub}>{sub}</Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            );
+                        }}
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            
+            <Form.Item name="description" label="Description">
+                <Input.TextArea rows={3} placeholder="Briefly describe the tactic..." />
+            </Form.Item>
+
+            <Form.Item name="tags" label="Tags">
+                <Select mode="tags" placeholder="Press enter to add tags (e.g. Pick and Roll, Spacing)" />
+            </Form.Item>
+
+            <Form.Item label="External Links">
+                <Input.Group compact>
+                    <Form.Item name={['external_links', 'article']} noStyle>
+                        <Input style={{ width: '50%' }} prefix={<LinkOutlined />} placeholder="Article / Wikipedia URL" />
+                    </Form.Item>
+                    <Form.Item name={['external_links', 'video']} noStyle>
+                        <Input style={{ width: '50%' }} prefix={<PlayCircleOutlined />} placeholder="Video URL" />
+                    </Form.Item>
+                </Input.Group>
+            </Form.Item>
+        </Form>
+      </Modal>
+
+      <ChatPanel
+        visible={isChatPanelVisible}
+        onClose={() => setIsChatPanelVisible(false)}
+        currentTactic={{
+          meta: {
+            name: currentTacticDescription || 'Current Tactic',
+            frameCount: frames.length,
+          },
+          frames: frames.map((frame, idx) => ({
+            id: frame.id,
+            index: idx,
+            entities: frame.entitiesMap[viewMode],
+            actionsMap: frame.actionsMap,
+          })),
+        }}
+        onApplyTactic={(tactic) => {
+          // Apply the AI-generated tactic to the board
+          console.log('Applying tactic:', tactic);
+          
+          try {
+            // Convert AI tactic format to internal format
+            const newFrames: Frame[] = [];
+            const tacticFrames = tactic.frames || [];
+            
+            // Helper function to convert coordinates
+            const convertCoord = (val: number, max: number) => {
+              if (typeof val !== 'number' || isNaN(val)) return max / 2;
+              // If value looks like percentage (0-100), convert to pixels
+              if (val >= 0 && val <= 100) {
+                return (val / 100) * max;
+              }
+              return val;
+            };
+            
+            // If no frames but has steps, convert steps to a single frame
+            if (tacticFrames.length === 0 && tactic.steps) {
+              // Create entities from steps (use unique start positions)
+              const playerPositions = new Map<string, { x: number; y: number }>();
+              const actions: Action[] = [];
+              let ballOwnerId: string | undefined;
+              
+              tactic.steps.forEach((step: any, idx: number) => {
+                const playerNum = String(step.player_number || step.playerNumber || '1');
+                const startPos = step.start_pos || step.startPos || { x: 400, y: 300 };
+                const endPos = step.end_pos || step.endPos || startPos;
+                
+                const startX = convertCoord(startPos.x, 800);
+                const startY = convertCoord(startPos.y, 682);
+                const endX = convertCoord(endPos.x, 800);
+                const endY = convertCoord(endPos.y, 682);
+                
+                // Store initial position
+                if (!playerPositions.has(playerNum)) {
+                  playerPositions.set(playerNum, { x: startX, y: startY });
+                  // First player with dribble action owns the ball
+                  if (!ballOwnerId && (step.action === 'dribble' || step.action === 'pass')) {
+                    ballOwnerId = `ai-player-red-${playerNum}`;
+                  }
+                }
+                
+                // Create action with valid path
+                const playerId = `ai-player-red-${playerNum}`;
+                actions.push({
+                  id: `ai-action-${idx}`,
+                  type: (step.action || 'move') as ActionType,
+                  playerId,
+                  path: [
+                    { x: startX, y: startY },
+                    { x: endX, y: endY }
+                  ],
+                });
+              });
+              
+              // Create player entities
+              const entities: BoardEntity[] = [];
+              playerPositions.forEach((pos, num) => {
+                entities.push({
+                  id: `ai-player-red-${num}`,
+                  type: 'player',
+                  number: num,
+                  team: 'red',
+                  position: { x: pos.x, y: pos.y },
+                });
+              });
+              
+              // Add ball
+              const ballOwnerPos = ballOwnerId ? 
+                playerPositions.get(ballOwnerId.replace('ai-player-red-', '')) : 
+                playerPositions.get('1');
+              entities.push({
+                id: 'ai-ball',
+                type: 'ball',
+                position: ballOwnerPos ? { x: ballOwnerPos.x, y: ballOwnerPos.y } : { x: 400, y: 300 },
+                ownerId: ballOwnerId || (playerPositions.has('1') ? 'ai-player-red-1' : undefined),
+              });
+              
+              newFrames.push({
+                id: 'ai-frame-1',
+                entitiesMap: { full: entities, half: [] },
+                actionsMap: { full: actions, half: [] },
+              });
+            } else if (tacticFrames.length > 0) {
+              // Process frames format
+              tacticFrames.forEach((frame: any, frameIdx: number) => {
+                const entities: BoardEntity[] = [];
+                const actions: Action[] = [];
+                let ballOwnerId: string | undefined;
+                
+                // Process players
+                const players = frame.players || [];
+                players.forEach((p: any) => {
+                  const x = convertCoord(p.x, 800);
+                  const y = convertCoord(p.y, 682);
+                  const playerId = `ai-player-${p.team || 'red'}-${p.number}`;
+                  
+                  entities.push({
+                    id: playerId,
+                    type: 'player',
+                    number: String(p.number),
+                    team: (p.team || 'red') as TeamType,
+                    position: { x, y },
+                  });
+                  
+                  // Track ball owner
+                  if (p.has_ball || p.hasBall) {
+                    ballOwnerId = playerId;
+                  }
+                });
+                
+                // Add ball entity
+                const ballOwner = entities.find(e => e.id === ballOwnerId);
+                entities.push({
+                  id: `ai-ball-${frameIdx}`,
+                  type: 'ball',
+                  position: ballOwner ? { ...ballOwner.position } : { x: 400, y: 400 },
+                  ownerId: ballOwnerId,
+                });
+                
+                // Process actions
+                const frameActions = frame.actions || [];
+                frameActions.forEach((a: any, actionIdx: number) => {
+                  const playerNum = String(a.player_number || a.playerNumber);
+                  // Find player by number in any team
+                  const player = entities.find(e => 
+                    e.type === 'player' && (e as PlayerType).number === playerNum
+                  );
+                  const playerId = player?.id || `ai-player-red-${playerNum}`;
+                  
+                  // Convert path coordinates
+                  const rawPath = a.path || [];
+                  const path: Position[] = rawPath.map((pt: any) => {
+                    if (Array.isArray(pt)) {
+                      return { 
+                        x: convertCoord(pt[0], 800), 
+                        y: convertCoord(pt[1], 682) 
+                      };
+                    }
+                    return { 
+                      x: convertCoord(pt.x, 800), 
+                      y: convertCoord(pt.y, 682) 
+                    };
+                  }).filter((pt: Position) => !isNaN(pt.x) && !isNaN(pt.y));
+                  
+                  // Ensure path has at least 2 points
+                  if (path.length === 1 && player) {
+                    path.unshift({ ...player.position });
+                  } else if (path.length === 0 && player) {
+                    path.push({ ...player.position }, { ...player.position });
+                  }
+                  
+                  if (path.length >= 2) {
+                    actions.push({
+                      id: `ai-action-${frameIdx}-${actionIdx}`,
+                      type: (a.action_type || a.actionType || 'move') as ActionType,
+                      playerId,
+                      path,
+                    });
+                  }
+                });
+                
+                newFrames.push({
+                  id: `ai-frame-${frameIdx + 1}`,
+                  entitiesMap: { full: entities, half: [] },
+                  actionsMap: { full: actions, half: [] },
+                });
+              });
+            }
+            
+            if (newFrames.length > 0) {
+              setFrames(newFrames);
+              setCurrentFrameIndex(0);
+              setEntitiesMap(newFrames[0].entitiesMap);
+              setActionsMap(newFrames[0].actionsMap);
+              setCurrentTacticDescription(tactic.name || tactic.tactic_name || 'AI Generated Tactic');
+              message.success(`Tactic "${tactic.name || tactic.tactic_name || 'AI Tactic'}" applied!`);
+            } else {
+              message.warning('No valid frames found in tactic data');
+            }
+          } catch (error) {
+            console.error('Error applying tactic:', error);
+            message.error('Failed to apply tactic: ' + String(error));
+          }
+        }}
       />
     </div>
   );

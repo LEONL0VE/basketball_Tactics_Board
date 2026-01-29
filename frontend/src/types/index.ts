@@ -65,3 +65,28 @@ export interface Action {
 export type BoardEntity = Player | Ball;
 
 export type ToolType = 'move' | 'pass' | 'dribble' | 'screen' | 'steal' | 'block' | 'select';
+
+export interface TacticExternalLinks {
+    video?: string;
+    article?: string;
+}
+
+export type TacticCategory = 'Offense' | 'Defense' | 'Strategy & Concepts';
+export type TacticSubCategory = 
+  | 'Set Offense' | 'Motion Offense' | 'Actions'  // Offense
+  | 'Man' | 'Zone' | 'Press'                    // Defense
+  | 'General Strategy' | 'Concept' | 'Lineup';  // Strategy & Concepts
+
+export interface Tactic {
+    id: string;
+    name: string;
+    category: TacticCategory | string;
+    sub_category?: TacticSubCategory | string;
+    description: string;
+    tags: string[];
+    external_links: TacticExternalLinks;
+    preview_image?: string;
+    animation_data?: any;
+    created_at?: string;
+    updated_at?: string;
+}
