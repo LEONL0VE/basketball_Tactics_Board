@@ -1,0 +1,1514 @@
+{
+  "id": "884e15b9-5487-4e90-bd75-d4a693e4a139",
+  "preview_source": "custom",
+  "name": "2-3 Zone Defense",
+  "category": "Defense",
+  "sub_category": "Zone",
+  "description": "A zone defense with two players at the top and three at the base. Excellent for protecting the paint and rebounding but vulnerable to 3-point shooting.",
+  "tags": [
+    "Paint Protection",
+    "Rebounding",
+    "Standard"
+  ],
+  "external_links": {
+    "article": "https://en.wikipedia.org/wiki/2%E2%80%933_zone_defense",
+    "video": "https://www.youtube.com/watch?v=X1oPIiy5AKk"
+  },
+  "custom_image_url": "data:image/jpeg;base64,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",
+  "preview_image": "data:image/jpeg;base64,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",
+  "animation_data": {
+    "meta": {
+      "version": "2.0",
+      "timestamp": "2026-01-31T02:04:18.943Z",
+      "viewMode": "full",
+      "frameCount": 7,
+      "name": "2-3 Zone Defense",
+      "description": "A zone defense with two players at the top and three at the base. Excellent for protecting the paint and rebounding but vulnerable to 3-point shooting."
+    },
+    "frames": [
+      {
+        "id": "1",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 283.195557305304,
+              "y": 444.4938923171911
+            },
+            "rotation": 82.2311068982203
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 273.197479377491,
+              "y": 231.43135412008144
+            },
+            "rotation": 97.30927107356429
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 119.22707928917036,
+              "y": 505.51180231730257
+            },
+            "rotation": 88.53048589768215
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 114.22804032526386,
+              "y": 349.46599969406714
+            },
+            "rotation": 95.94973195410242
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 131.224772802546,
+              "y": 147.40669116910857
+            },
+            "rotation": 84.6415876677101
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 597.1352042386332,
+              "y": 337.4624764153568
+            },
+            "rotation": -77.3136543902811
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 346.4651188743896
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 588.1369341036016,
+              "y": 355.46776133342235
+            },
+            "ownerId": "24c704a9-5b94-4300-bada-49e5d5a769ff"
+          }
+        ],
+        "actions": [
+          {
+            "id": "6774e49b-3689-4bf8-b5b2-bfc5150941b0",
+            "type": "dribble",
+            "playerId": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "path": [
+              {
+                "x": 597.1352042386332,
+                "y": 337.4624764153568
+              },
+              {
+                "x": 529.8281436285959,
+                "y": 362.5498400678615
+              },
+              {
+                "x": 462.52108301855856,
+                "y": 387.6372037203663
+              },
+              {
+                "x": 393.1744145112474,
+                "y": 413.484790513856
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "a0794d11-3fc0-4fab-a218-61c93c976180",
+            "type": "move",
+            "playerId": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "path": [
+              {
+                "x": 283.195557305304,
+                "y": 444.4938923171911
+              },
+              {
+                "x": 308.60067331987693,
+                "y": 435.25117939258416
+              },
+              {
+                "x": 334.00578933444984,
+                "y": 426.00846646797714
+              },
+              {
+                "x": 360.1807573494644,
+                "y": 416.4856713335336
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "f1ddea6a-b212-4de3-874f-e23b3a9246c5",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 360.1807573494644,
+              "y": 416.4856713335336
+            },
+            "rotation": 70.00795253350988
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 273.197479377491,
+              "y": 231.43135412008144
+            },
+            "rotation": 97.30927107356429
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 119.22707928917036,
+              "y": 505.51180231730257
+            },
+            "rotation": 88.53048589768215
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 114.22804032526386,
+              "y": 349.46599969406714
+            },
+            "rotation": 95.94973195410242
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 131.224772802546,
+              "y": 147.40669116910857
+            },
+            "rotation": 84.6415876677101
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 346.4651188743896
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 391.1747989256848,
+              "y": 395.47950559579044
+            },
+            "ownerId": "24c704a9-5b94-4300-bada-49e5d5a769ff"
+          }
+        ],
+        "actions": [
+          {
+            "id": "8121148d-ec0c-4ee3-b84a-24783a608194",
+            "type": "pass",
+            "playerId": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "path": [
+              {
+                "x": 393.1744145112474,
+                "y": 413.484790513856
+              },
+              {
+                "x": 352.92215277387214,
+                "y": 313.13533590383696
+              },
+              {
+                "x": 312.66989103649684,
+                "y": 212.78588129381794
+              },
+              {
+                "x": 271.1978637919284,
+                "y": 109.39553411985894
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "61461095-f80a-4787-b152-f83f2a4b94f1",
+            "type": "move",
+            "playerId": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "path": [
+              {
+                "x": 273.197479377491,
+                "y": 231.43135412008144
+              },
+              {
+                "x": 254.39109479527468,
+                "y": 188.1886615085272
+              },
+              {
+                "x": 235.58471021305837,
+                "y": 144.94596889697294
+              },
+              {
+                "x": 241.2036300084893,
+                "y": 114.39700215265495
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "fd21e96b-1906-461b-99c0-36f7faf11e00",
+            "type": "move",
+            "playerId": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "path": [
+              {
+                "x": 360.1807573494644,
+                "y": 416.4856713335336
+              },
+              {
+                "x": 329.826592760624,
+                "y": 370.93230049082763
+              },
+              {
+                "x": 299.47242817178363,
+                "y": 325.3789296481216
+              },
+              {
+                "x": 268.1984404135845,
+                "y": 278.44515362836387
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "69ccdf46-e613-4a75-9176-cfeeec1e7bd5",
+            "type": "move",
+            "playerId": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "path": [
+              {
+                "x": 119.22707928917036,
+                "y": 505.51180231730257
+              },
+              {
+                "x": 163.10864331434175,
+                "y": 480.4244386647978
+              },
+              {
+                "x": 206.99020733951312,
+                "y": 455.337075012293
+              },
+              {
+                "x": 252.20151572908367,
+                "y": 429.4894882188032
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "95b7ab23-3577-4340-a41c-79e0502a6383",
+            "type": "move",
+            "playerId": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "path": [
+              {
+                "x": 114.22804032526386,
+                "y": 349.46599969406714
+              },
+              {
+                "x": 138.64334662498328,
+                "y": 339.56309298913106
+              },
+              {
+                "x": 163.0586529247027,
+                "y": 329.66018628419494
+              },
+              {
+                "x": 188.21381699108028,
+                "y": 319.4571914972911
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "4947c08c-ef5b-44f2-aa7f-c51afb3ab4b4",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 268.1984404135845,
+              "y": 278.44515362836387
+            },
+            "rotation": -33.67722241791536
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 241.2036300084893,
+              "y": 114.39700215265495
+            },
+            "rotation": 10.422016813395842
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 252.20151572908367,
+              "y": 429.4894882188032
+            },
+            "rotation": 60.24312733677884
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 188.21381699108028,
+              "y": 319.4571914972911
+            },
+            "rotation": 67.92240760263138
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 131.224772802546,
+              "y": 147.40669116910857
+            },
+            "rotation": 84.6415876677101
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 346.4651188743896
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 271.1978637919284,
+              "y": 109.39553411985894
+            },
+            "ownerId": "65d04b17-9b18-4604-8128-753359a5d691"
+          }
+        ],
+        "actions": [
+          {
+            "id": "a464eaae-d911-4d7c-b70d-5fb9c4013145",
+            "type": "pass",
+            "playerId": "65d04b17-9b18-4604-8128-753359a5d691",
+            "path": [
+              {
+                "x": 258.20036248577145,
+                "y": 88.38936838211569
+              },
+              {
+                "x": 302.7417996541785,
+                "y": 190.05921055279288
+              },
+              {
+                "x": 347.2832368225856,
+                "y": 291.7290527234701
+              },
+              {
+                "x": 393.1744145112474,
+                "y": 396.47979920234957
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "d7ca7553-3d7f-4ade-9e46-e755469c02e3",
+            "type": "move",
+            "playerId": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "path": [
+              {
+                "x": 241.2036300084893,
+                "y": 114.39700215265495
+              },
+              {
+                "x": 247.14248829761024,
+                "y": 158.6299854347028
+              },
+              {
+                "x": 253.0813465867312,
+                "y": 202.8629687167507
+              },
+              {
+                "x": 259.2001702785528,
+                "y": 248.43634543158785
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "0bf73df7-7101-499d-96b0-05dca2157d15",
+            "type": "move",
+            "playerId": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "path": [
+              {
+                "x": 268.1984404135845,
+                "y": 278.44515362836387
+              },
+              {
+                "x": 296.9029221443357,
+                "y": 314.7558115464629
+              },
+              {
+                "x": 325.6074038750869,
+                "y": 351.06646946456186
+              },
+              {
+                "x": 355.1817183855579,
+                "y": 388.477450349876
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "e28414b5-f464-478e-b826-a6c591610f98",
+            "type": "move",
+            "playerId": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "path": [
+              {
+                "x": 252.20151572908367,
+                "y": 429.4894882188032
+              },
+              {
+                "x": 212.60912713494406,
+                "y": 460.84869278443415
+              },
+              {
+                "x": 173.01673854080445,
+                "y": 492.20789735006514
+              },
+              {
+                "x": 132.2245805953273,
+                "y": 524.5173808419273
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "25b0723b-96a5-41a4-b5ef-1a2f66fecabb",
+            "type": "move",
+            "playerId": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "path": [
+              {
+                "x": 188.21381699108028,
+                "y": 319.4571914972911
+              },
+              {
+                "x": 168.41762269401048,
+                "y": 327.04941997107545
+              },
+              {
+                "x": 148.6214283969407,
+                "y": 334.6416484448598
+              },
+              {
+                "x": 128.2253494242021,
+                "y": 342.46394444815274
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "9eef6390-c3a5-4955-9028-344462169e6e",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 355.1817183855579,
+              "y": 388.477450349876
+            },
+            "rotation": 141.67274904730488
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 259.2001702785528,
+              "y": 248.43634543158785
+            },
+            "rotation": 172.35302076685306
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 132.2245805953273,
+              "y": 524.5173808419273
+            },
+            "rotation": 231.6189683400429
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 128.2253494242021,
+              "y": 342.46394444815274
+            },
+            "rotation": 249.01720229149922
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 131.224772802546,
+              "y": 147.40669116910857
+            },
+            "rotation": 84.6415876677101
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 346.4651188743896
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 396.47979920234957
+            },
+            "ownerId": "24c704a9-5b94-4300-bada-49e5d5a769ff"
+          }
+        ],
+        "actions": [
+          {
+            "id": "1dca3040-5240-4cf6-8061-37bdc39d973f",
+            "type": "pass",
+            "playerId": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "path": [
+              {
+                "x": 393.1744145112474,
+                "y": 413.484790513856
+              },
+              {
+                "x": 354.2418990603435,
+                "y": 462.3391302582074
+              },
+              {
+                "x": 315.3093836094395,
+                "y": 511.19347000255874
+              },
+              {
+                "x": 266.19882482802194,
+                "y": 577.5329419895648
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "c4116640-d359-4990-9f0e-4e7605825922",
+            "type": "move",
+            "playerId": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "path": [
+              {
+                "x": 132.2245805953273,
+                "y": 524.5173808419273
+              },
+              {
+                "x": 155.65007718019322,
+                "y": 537.3911595583443
+              },
+              {
+                "x": 179.07557376505918,
+                "y": 550.2649382747612
+              },
+              {
+                "x": 203.21093388279982,
+                "y": 563.5288314977362
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "2ff383eb-a432-4eb8-911e-39172479d027",
+            "type": "move",
+            "playerId": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "path": [
+              {
+                "x": 131.224772802546,
+                "y": 147.40669116910857
+              },
+              {
+                "x": 143.4324259524057,
+                "y": 185.36783353803025
+              },
+              {
+                "x": 155.64007910226542,
+                "y": 223.3289759069519
+              },
+              {
+                "x": 181.21516244161117,
+                "y": 290.4486769070743
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "2e994bd7-2b15-4a32-8089-7fb7fa608bd6",
+            "type": "move",
+            "playerId": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "path": [
+              {
+                "x": 128.2253494242021,
+                "y": 342.46394444815274
+              },
+              {
+                "x": 119.3170619905207,
+                "y": 364.9105329793412
+              },
+              {
+                "x": 110.40877455683928,
+                "y": 387.3571215105297
+              },
+              {
+                "x": 101.23053901910691,
+                "y": 410.4839096941784
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "165db9c3-0b21-4a3e-9420-c35a9a344438",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 355.1817183855579,
+              "y": 388.477450349876
+            },
+            "rotation": 141.67274904730488
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 259.2001702785528,
+              "y": 248.43634543158785
+            },
+            "rotation": 172.35302076685306
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 203.21093388279982,
+              "y": 563.5288314977362
+            },
+            "rotation": 118.79155294699225
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 101.23053901910691,
+              "y": 410.4839096941784
+            },
+            "rotation": 112.62974841393583
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 181.21516244161117,
+              "y": 290.4486769070743
+            },
+            "rotation": 159.14131280480518
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 341.46365084159356
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 266.19882482802194,
+              "y": 577.5329419895648
+            },
+            "ownerId": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83"
+          }
+        ],
+        "actions": [
+          {
+            "id": "24a045c3-81ec-4b07-bc6b-bb29c592bb97",
+            "type": "move",
+            "playerId": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "path": [
+              {
+                "x": 259.2001702785528,
+                "y": 248.43634543158785
+              },
+              {
+                "x": 210.6994942507318,
+                "y": 244.80527963977795
+              },
+              {
+                "x": 162.19881822291077,
+                "y": 241.17421384796805
+              },
+              {
+                "x": 112.22842473970125,
+                "y": 237.43311575943665
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "6d215014-e325-4d78-bb9c-d078989f8675",
+            "type": "move",
+            "playerId": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "path": [
+              {
+                "x": 181.21516244161117,
+                "y": 290.4486769070743
+              },
+              {
+                "x": 201.67122988191662,
+                "y": 306.62342452513656
+              },
+              {
+                "x": 222.1272973222221,
+                "y": 322.7981721431988
+              },
+              {
+                "x": 237.1381897285411,
+                "y": 338.82432647903727
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "707d1716-8578-4e53-bb18-2f75fd5461a1",
+            "type": "move",
+            "playerId": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "path": [
+              {
+                "x": 203.21093388279982,
+                "y": 563.5288314977362
+              },
+              {
+                "x": 215.74852360427735,
+                "y": 516.655073094372
+              },
+              {
+                "x": 228.28611332575488,
+                "y": 469.7813146910078
+              },
+              {
+                "x": 241.2036300084893,
+                "y": 421.4871393663296
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "7d329892-7179-489d-8a91-2317f545a00d",
+            "type": "move",
+            "playerId": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "path": [
+              {
+                "x": 355.1817183855579,
+                "y": 388.477450349876
+              },
+              {
+                "x": 339.67469951951983,
+                "y": 344.57456395799267
+              },
+              {
+                "x": 324.16768065348185,
+                "y": 300.67167756610934
+              },
+              {
+                "x": 308.1907521248366,
+                "y": 255.43840067750227
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "73855e07-1306-478c-a149-892dd342d7f8",
+            "type": "pass",
+            "playerId": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "path": [
+              {
+                "x": 247.20247676517715,
+                "y": 585.5352908420385
+              },
+              {
+                "x": 258.7502567718012,
+                "y": 507.63242476320795
+              },
+              {
+                "x": 270.2980367784252,
+                "y": 429.72955868437737
+              },
+              {
+                "x": 282.19574951252275,
+                "y": 349.46599969406714
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "4e26593d-2272-47cd-9e33-e59431bca7f5",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 308.1907521248366,
+              "y": 255.43840067750227
+            },
+            "rotation": -19.45382325406929
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 112.22842473970125,
+              "y": 237.43311575943665
+            },
+            "rotation": -85.71846477836661
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 241.2036300084893,
+              "y": 421.4871393663296
+            },
+            "rotation": 14.9746833464811
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 101.23053901910691,
+              "y": 410.4839096941784
+            },
+            "rotation": 112.62974841393583
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 243.20324559405194,
+              "y": 339.46306362847514
+            },
+            "rotation": 128.3336549179968
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 341.46365084159356
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 282.19574951252275,
+              "y": 349.46599969406714
+            },
+            "ownerId": "3d5ba9e4-906b-4d39-a073-0151461ef186"
+          }
+        ],
+        "actions": [
+          {
+            "id": "029b3eb2-2931-47ec-8dab-76f059c19acf",
+            "type": "pass",
+            "playerId": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "path": [
+              {
+                "x": 262.1995936568967,
+                "y": 341.46365084159356
+              },
+              {
+                "x": 299.48242624971147,
+                "y": 363.91023937278203
+              },
+              {
+                "x": 336.7652588425263,
+                "y": 386.35682790397044
+              },
+              {
+                "x": 375.17787424118393,
+                "y": 409.48361608761917
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "60f77c0c-581a-4c90-8fad-abe85a17e17b",
+            "type": "move",
+            "playerId": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "path": [
+              {
+                "x": 241.2036300084893,
+                "y": 421.4871393663296
+              },
+              {
+                "x": 278.1565260296863,
+                "y": 424.78810826797496
+              },
+              {
+                "x": 315.10942205088327,
+                "y": 428.08907716962034
+              },
+              {
+                "x": 353.1821027999953,
+                "y": 431.49007543192164
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "7f8920b8-7065-4d1b-b22a-19613616d10e",
+            "type": "move",
+            "playerId": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "path": [
+              {
+                "x": 243.20324559405194,
+                "y": 339.46306362847514
+              },
+              {
+                "x": 208.5599055741798,
+                "y": 341.11354807929786
+              },
+              {
+                "x": 173.91656555430762,
+                "y": 342.7640325301205
+              },
+              {
+                "x": 138.22342735201514,
+                "y": 344.46453166127117
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "146f84d4-1760-4242-b1b3-3492268529b2",
+            "type": "move",
+            "playerId": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "path": [
+              {
+                "x": 101.23053901910691,
+                "y": 410.4839096941784
+              },
+              {
+                "x": 98.59104644616427,
+                "y": 438.8722422483285
+              },
+              {
+                "x": 95.95155387322164,
+                "y": 467.26057480247863
+              },
+              {
+                "x": 93.2320766768565,
+                "y": 496.50915985826964
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "29f4b27e-6c6e-4a9f-a254-8f4878c4a106",
+        "entities": [
+          {
+            "id": "9e270db7-c3ee-4417-97c4-08edcd1ac0ce",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 308.1907521248366,
+              "y": 255.43840067750227
+            },
+            "rotation": -19.45382325406929
+          },
+          {
+            "id": "effa1639-d4ac-48c5-8dbb-67fe8d26a376",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 112.22842473970125,
+              "y": 237.43311575943665
+            },
+            "rotation": -85.71846477836661
+          },
+          {
+            "id": "37b40aa3-8c4a-4cc5-b601-ef8f18e21156",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 353.1821027999953,
+              "y": 431.49007543192164
+            },
+            "rotation": 95.10463133603542
+          },
+          {
+            "id": "a398fa16-59aa-487b-b1d8-0412790b8c86",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 93.2320766768565,
+              "y": 496.50915985826964
+            },
+            "rotation": 185.31197931698128
+          },
+          {
+            "id": "40a474f8-1450-49e8-bea4-87fb91205171",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 138.22342735201514,
+              "y": 344.46453166127117
+            },
+            "rotation": 267.27236627217496
+          },
+          {
+            "id": "24c704a9-5b94-4300-bada-49e5d5a769ff",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 393.1744145112474,
+              "y": 413.484790513856
+            },
+            "rotation": 249.55806403527438
+          },
+          {
+            "id": "65d04b17-9b18-4604-8128-753359a5d691",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 258.20036248577145,
+              "y": 88.38936838211569
+            },
+            "rotation": 209.73289288774617
+          },
+          {
+            "id": "79b5d5dd-2ccc-4f64-bfb6-6d3f2e08ff83",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 247.20247676517715,
+              "y": 585.5352908420385
+            },
+            "rotation": 87.57931652463002
+          },
+          {
+            "id": "3d5ba9e4-906b-4d39-a073-0151461ef186",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 262.1995936568967,
+              "y": 341.46365084159356
+            },
+            "rotation": 103.63336925305742
+          },
+          {
+            "id": "8f74a0dc-b378-4d80-a414-8143f4841911",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 109.22900136135733,
+              "y": 206.4240139561015
+            },
+            "rotation": 85.23405428139026
+          },
+          {
+            "id": "ebc764b8-b155-4c56-a3ba-ed5e529d830b",
+            "type": "ball",
+            "position": {
+              "x": 375.17787424118393,
+              "y": 409.48361608761917
+            },
+            "ownerId": "24c704a9-5b94-4300-bada-49e5d5a769ff"
+          }
+        ],
+        "actions": []
+      }
+    ]
+  },
+  "updated_at": "2026-01-31T02:04:19.256566",
+  "created_at": "2026-01-31T02:04:19.256566"
+}

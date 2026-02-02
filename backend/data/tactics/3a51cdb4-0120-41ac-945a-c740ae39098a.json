@@ -1,0 +1,854 @@
+{
+  "id": "3a51cdb4-0120-41ac-945a-c740ae39098a",
+  "preview_source": "custom",
+  "name": "Four Corners Offense",
+  "category": "Offense",
+  "sub_category": "Set Offense",
+  "description": "A delay tactic used to run out the clock. Four players stand in the corners of the half-court while the point guard handles the ball in the middle.",
+  "tags": [
+    "Delay",
+    "Isolation",
+    "Spread"
+  ],
+  "external_links": {
+    "article": "https://en.wikipedia.org/wiki/Four_corners_offense",
+    "video": "https://www.youtube.com/watch?v=nJLj1SgD0eQ"
+  },
+  "custom_image_url": "data:image/jpeg;base64,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",
+  "preview_image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMWFhUXFxcYFRgYGBgaGBcXFxgYGBUYFxgaHSggGBolHRUXITEhJSkrLi4uFx8zODMtNygtLi0BCgoKDg0OGxAQGy0lHyYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKMBNQMBIgACEQEDEQH/xAAcAAAABwEBAAAAAAAAAAAAAAAAAQIDBAUHBgj/xABKEAABAwIDBQUGAwQGCAYDAAABAgMRAAQSITEFE0FRYQYHInGBFDKRobHwwdHhI0JScxU0NWJy8SQzQ4KSsrPCCBcldKK0U4OE/8QAGQEAAwEBAQAAAAAAAAAAAAAAAAECAwQF/8QAIxEAAgIBBQEBAQEBAQAAAAAAAAECESEDEhMxUUEiYXEyFP/aAAwDAQACEQMRAD8AyaUTwjMGT8DrRFSeETlr8+OtMFpPWhuk9fjWe1m/KiRKJ4ROfDLpnQtQDl/e+WVRw2OtJUvCQETPGjaweqqHlLzVyCjHlJp1FxpwqCsEamZ49aebSI1NaPqqMU83ZIunRI4jOflypK8AGUH45ycjryppSZ1J+NJ3Q6/Gs9rNlqokHBMeGOc9D18qbTGE6TlGY6zx8qYUlJMCacSyOZo2sOVDiymMonL9eP4UYw5aSRnnprnryim9ynrQ3I6/frT2vwXKhzw5nKIMZ5yOk0oBOWmonPQQOvnTO5HWj3SevxpbWHIhwFPpnnOc8MvhUPOVQJyP38qkhodaO1ASV4gcxl+vnlVRiyZ6iaI1stWcAkkRlNSG1NwnUrOpClCCfvQU1buqCFJ0B156c6QkFMEaiTEdP1qqZnaEOJjw8ifyoRkJyz65aa0a2/DJmaW6DCQST6/nSphaCKQJ1/u/GiCRx5GfPh5fpTm6EHIjjANBKPPkR9+lFMLiNMzM8tY60QHh/H8KUESCc+n61JLo3QSE5zJGfoZ9KKYbkRHU5DLMZef5ilMZqnKBnlxj7FSLtQMJSCQBl+PX/KmUojKDB4/OnTC0LbTBCsidSM9DqRzpmIka8J0+VOiZmNMh9D6UhSOn3zpUx7oiCPDHHXpEDrSkOxhIHumT1Mz9KeQwVDKBkZJ0yOQmo7yTMGcss+mVAnSJCr5YUc45R8jnTbjylKyJMaTTRQZyBNOot41GdNoE0xlJk59aNIGEmc9KcTb5Z0oMidcgf8sqjcitrIwHx5VKtUET4MRM5ZacfXOk3KADI/KfnToXy46RwHHyqkrE8DVo37wI4R8OH0p8twMKR455QPL600XACmOUHPqePoPjTjhxyQSD1yPXSqjFVbJbfQ04EmJV0oU20kq5Zc6FFseC6Ngnl8xQ9gT1+Ip9X3nRCsud+FcC9Gf6PT9qFRhYpScRmOOYy/OpzioFW2x+zN5cI3jNst1ElOJMRI1GZ6ijmfgcK9Of9kSRI9Mx86cbsEwNfiK6VfYDaWZFk7ocvDy4eKkjsZtJCSV2bqUpBJJwQEgSdFcBNVyy8FxR9OXurYJAgEkmInhzypblin7UKUTIBJ46jhAmnMRmiWq0C0kxlvZyR/mKV7CPsinyqimp534PgXoz7En7IoexJ+yKemgVUf8AofgcC9GfYR9kUBYj7Ip0qoYqOd+BwL0bNkI1+YojZTn0HEcqfmlYqOd+BwL0hIsCTwjzH50V62SpMDPPiMtKsmG1rIbbSpSz7qUJKlHySMzV3a93u1VQr2JyNc1spOn8KnAflT5pPpC4Yr6cncMxGgyzzGvPXSiVaE5pA+I+WdXe3dg3FuQLhlxqTliHhUeQWPCT5Gq5C4y4U+d+C4I+kBLCuA+YobpROmfmKsUKGgoBGGTnnnnS52PgRAatlKMRmNSTp51JY2eSjGSAM/l1qS3AJIGZ1qSmCIOh1FUtVsXEkVSrLwhRIGI+HPPpROWkGOojPXnrVi8saCMtOnKmCoEgxmNKl6jGtJEVNoJAkTHP74Uk2gz0ka56+XpU4KGtJdUcJjWPs6UuVj4kR8aSjAhPhj3jzyzPz+VRmrTHmCKnM+FOYjKTyn0pFouEJyjLSlyNZG9NPAyzakQTlB58AOHWjuxJ5ch+tS1qkH0/L8qamujT/StnPqfl0iFdMlIkkRx50wh0AlRHAR6Z88z+VWyoIgiqSBM5xpWMMWjeSumOXSwoEnWQBGgGtKsbMOKOcJ5cSOnSoozBjzz/AA+NT9lLIkzkfw4k8KtZZLwMXTASQUqkTGQ05edSbRIEzr15VHublMEI9Tzpdqs6njyj4mrjSdMmWeiO4lSSYEfpR06QVZyPWhT2isuDRDyoyKT5n7+FeedgTiZjICt87kf7OP8AOc+iawMq+/sVvXcef/TT/Pc+ia00/wDoifRN7Yd4jNg+GHGXVkthyUFEQpSkgeJQM+Gua2n3v27rLrQtnwVtrQCS3AKklIJhWmddv2guNlpdi8NmHcAP7fdY93Jw+/nhxT0ma4HvNutkmwV7GbIvY243O6xxiGKMGcRrWsr9IjXhnPZfszcXzxat0ghABWpUpbRmYJVB1zgAEnPLImtCa7k3IlV8gK5C3JHlO9H0rqe5e0SjZbawBidW6tZ5kLKB8EoSKzft321vUbRuQ3cuNpZcKW0JMJASkap0XJknFOsaVLSSTY03eCJ2u7B3VgneLwusyBvUT4SchjSc0ScgZI0EyRS+xHYRe0W3HEPJa3awghSCqZSFSIUOdbw40m6tMLgGF5nxDhC0Z/Ws/wC4H+q3P85P/TRS2LcPc6My7bdnVbOf3C3A6d0l3ElJSIUVjDBJz8Hzrsv/ACaewY/bG4w4o3SuUx79Vvfv/aH/API3/wA79bon+rj+V/20KCtg5NJHnbsJ2PXtMuhDyWt0lsnEkqneY4iCIjd/Oujte565U8ttT6Etoww7gUcZIkhLeIaaElX4xL/8PPvXn8u1+r9dP3p9t3rDct26UFxwKUVLBUEpSQAAkESSSc5yjrQox22wbe6kY92s2GbK6XbFwOYAk4wnDOJIV7uIxExrVOpWWselTdu7Zdu3lPvFO8VhBwjCnwpCRlJjIc6rXdD5Gsn3gtHonut7LN2lohwpG/fSFuLPvAK8SGweAAIkDUyagdo+9di2uFMJYW9u1FLiwpKQFD3kpB94g5GYzru9mrBZbKfdKEEeRSIry52iBTd3QUIIuH5n+av79a3k3FYMoq3k9LMrt9oWgUUhxh9EwocDwI/dUDy0IrzbtzYi2bx20QFLWl3doAEqXObeQ4lJT8a6Tsx2c2w9bIctXnEsHFgAuVIAhagqETl4gqr3ux2I4na7xulY32GiSVKxneL3aQrGdSEKKf8AeqX+qGvzZH2R3M3K0pU/cNMq1wBsvEdCcSRPlPnTm3e6S4baKmHG31AThCN0ox/DKlAnoSKv++vb79s3bNsOKb3qnCtSCQohsIhMjMCXJyI92p3c5tx66tHd8suFp4oSpXvYShCgCTmqCo5mqqN0K3VmKdnNkqurtu1xbtTilJlQPgKEqUQpORnwERwNd3c90l0hbaEPIcCyQpWFSQ2kCZOZxToBz9SJu07NDfam3w5bwB1QH8RYfQfju58ya0Ltzt82Nm5cJSFLThSgHQqWoJExnAmY4xQopdjcvDIe0Xdou3ftWRdBZuVqRO6KQ2UgGSN4cQz6U5tbuju2t2GnUPqWvAQEqQEDCpWNaiT4fDGmpFNbI7YXV/tKwFwW4bflGBBT7yYMkkzoK1nvH2u7abOffZOFxO7SlUA4S46hsqAORICyROUgUJRYNtYM+T3KvYZ9tbxx7u5Vhnlj3k+uH0rNu0Gy3LZx23eGFbeSuREBQUkzmkggz/lW2dzO3ri6t3/aHS6UOgJUoDFhKEmCQBImdeflVD25skO9orNpYBSttgqHBWBb6oPnuwPKk4qrQJu6ZQdnO6i8u2Q464m2SsSkLQVOFJ0JQFDD6megq0u+5F8J/Z3ra1AZJUypsH/eDi4+Faz2jZUu3cQi4FspQAD0A4JImJIzIkAzlM1zXY3ZnsS3C5tYXKFj3HFg4VA5KSpTiiMpBA1y5VW1dC3MwXauz3LV1xh9BQ6kZgxBESFJIPiSYyI+td7tTucuWmytt9DypSA2G1JJxLSmcRUQAMWImNAal9/CWXDaPNrQpYLjasKkqlBwqAMHgcX/ABGtkvLgNtrcOiEqUfJIk/Sqg9uEROO7LMJ7Sd2LllZrul3KFlGDE2GiB41pRk4V8MUyUielQuz/AHNXV2kPOOptm1+JCSlS3IOYJRKQkHWCZ5gUz2i7yby9aWy4llLKyDgSk4gEqCkjGVZ5gSYzzyFbvs7aNvf2xLLkocQUqwKKVoxCCDHibWJ8xSqpsadwVGRXncK6lB3V624rUJcZU2Cf8SVqjzisq2tsl+1fXbPowOIMEGM590pPEEGQa9J2HYZ+1SsWe0rhOMgxcJRcJBExhBCSnXONYHKsM70279N/F+pCnQ2kNuISEoW2CopUIAzkqBkSI8jVdCObY2coqIUNOWQPrxpmcMpgyDnB1jT0qQX1ggyYJzA5Ex8cxUXeDESMgTxM+efGgBTSxnJ++NFSVlIOgoVaeCKOhikGeFD0ooH2K4DsCWOn1ree5FQGzjoP27nHomsGKegoikfwiqjLa7JkrNE77iP6QH/tWv8Aqu1m5MnKnCnwnhp9aJtFOTvIJfDXe5ztgy00bF9aWyFlTKlGEqCzKkEnIKxEkTrijhXRdoO6qzvLpV0px5OMguIQpOBZAAJkpJTIGcHyg1geHypYcWE4QtQHJKlAfAGKpanxicM2j0F2+7ZMWVutptaTcFGBptJBKJGELWB7qRrnrECuP7itstNl61WQhSylbUmMZAwrSOoASY4yeVZGhvDJgenXjT8g0nPNgo4o9Gds+yFhcrTdXiigNpwrOMIQtAJUEuSNJUrQg51d2m02n7YOtK/ZrbJRwygxkcx5V5cddKoxKUqNMSiY8pOVNFAp8n8Fs/pqf/h6WMV5OX7O1+r9Nd/RBubX+Uvj/fFZgQKAT1FS5/mitubDjzoyOtJzpQJqSjaO6rt8yWG7O5cS262MDSlmEuIHuJxHILAhMHWAROcdXtnsFs+7d37zGJwxiUla0Y4yBUEKAUYAEnlXmtQnI0y9eONIhC1AcgpQHwBrWM/hnKP09R7V21abOYCSUICEw0yiMRAEBKUjQddBxrGOz3bUW+0TeOp8Lylh/DmQlwg+EanCUpy1gHjXE2t6FJxZydc+PnFIXzIz4D8T+VDk2xKJ6T7R7As9s27ZD0pScbbrKkkiRCgZBBBESCOA5UrZGz7LY1qUl0IRiK1rcUMS1kAZAASYSAEpHCvNjTqkkqSpSSdSDB+IoOKKjKiSeZMn4mjk/gbDQNibe9t7Qs3PuoLiktpOobQw6Eznqc1HqoitC75Fj+jHIP8AtGf+oK8+mKCU/f2KSngpxydD2C/tK0/nJ5cjxrZu+FYOyLnMe9b/AP2Wa87lNNhvkPpRGVIHG2bZ3BKAt7rP/bJ1/lpqg739oKt9sMXDcFTTDCwOBwvPEpJ4SJHrWZ4enxp0aUb8UG3Nno9u9sdtWS2kuSlwDGkEB1paSFCUmYIUkGYIMcQarezfdhZ2a1uuq38pwgPIb3aBIJOEgjFkM/PnXnLaCSIWCQQYkZHPkfvWnbS8cdSULWpQTHvKUdZPE9Ku01uoimnRoHeztWxcdbZsW2QG8W9cZQlKVrVACQpI8YSAZOknoa3TtA4PZbjMf6l3j/cVXlRKSMzRhvGcokD6HKjTdydhqYjgatrkN4FFOPCUqKCYCgCCUk8AdPWt82T2f2PtC2UuxwNLUmN4ySl9lWRgiZSQRmNCOhmvPV62UmDGk+kgR8ahBZCpSSCNCCQfQitJNORnBNRPVvY/s89YIc9p2i7dJMFJeyDYEz4lKUc55xlpWI99vaVm9vUC3UFoZbwbwe6tZUSrAeKRkJ5z51wV1dOLEKcUoclKUfqaMg4MjkNepnhS/wAK/wBHW2fBnlzz9fypq4RAAERJIPHLh8x8afbJOXPPQ5+Zpl1Q4a8vr9BV01GyftDSGpoU4l4oyxKHRJ0oVmUXajQ+NJjPSiFcp0DlFScRpJV0+tADgGR8x+NFFED4T5j6GkDypsQ7RTRDyoxSGGKIny+NGTV52F2em42hasrEpU5KhwIbSpwgjkcEHzoSsR0vZHupeukJeuF7htQlCcMuqSdCQYDYPWT0FdWe5Wzj+sXM85a+m7ruO1O1Da2b9wAFKbbUpIOhVokHpJFefW+3u0g5vfa3CZnCcJbOehbjDHDKD1rZqMezNOUi37Zd2L9khTzSw+ykErOHCttI1UpOYUkcSNOUSa5Xs7sk3V0zbg4S6vCTySAVKMcSEpNem9jXwubZl7DAeaQ5hOcBxAVhPPWKzfu5sbG3vbphYa9pRdOJtMQ/aBrdyAg8sJV86HpqxqTovXuwGx7VgqfbSECAp151YMnIeLEAkkkZJjWs47M9kWL3ab7Lav8ARGitYKFFRUgKCW0pWZkGfemYB451tXahVoGD7du9xiTO8EpxT4ZHOapOwK9nEu+xhneYnMe7EHd75e6nLTDEVTirRKk6IO3ux+xbZqHkNsyFbsqecSpSgJyUVyrhzrz3cg4ZIk4dOvGvTfbhezQEe3hnHhc3O9En93FhyyzwfKs/7r+7tu5ZTdXgKkK/1TUkBQTkVuEZmSDCRlAkzMBSX6wNPGTGtnFQVMZRmOE/u1ZBPE61u6r7s8i4NjubQOheBQ9nBSFkxhU7gwgzA1yOWtU/eZ3dMNMLu7RO73fidbBJQUfvKSCfCU6kDKAcponF9hFox+aBrae6fszZ3FhvH7Zpxe9cGJaQTAiBPKrCz7KbGs7gtvlhb7zilNtvFJCUrWd02ho+ED90EiSR6CVDFlbjBhRlJ+zW595fYO0Nm9cMMoZdZSXJbSEpWlGa0qSnInCDBiQQOEiuW7pew7N4ldzcgrQhe7bbkgKUAFKUuIJHiAA6GZyo2O6DcqszTD9zRT0+db3tG62FbXIsnrRhtailOJVqkNysAp/aFOeoz0HE5Vyfed2W2c2wbmydaSpKkhbKHEqSpK1BOJCZJSQSMhlE5UOAlIzBJFOCtT7r+7pq4ZTd3YKkqnctSQkpBjG5GapIyTpGZmculXfdn03HsZZtd5j3f9XGHHMYC7gwzOWuuWtGyx7jzxtJeiY1IM8Kl2luEjhzJ5/pWs96vdwy0wq7tE4A2QXWpJTgkAuInNJTMkaROQjPJQI5x9KJWlQRy7HH1+EkcBTduQYBURrPnSlqyIiBBz5edN26wpIHL5U9PsnUWBu7SZKBJiRprMEEcxKY9ar2LNajpHU1b3SkA8VRExIyAiJ4iTMUHGyOGRrSbaVkQq6KV9vCYzpS1EpH4fj8alXmgxAkfBQ8jy6GoxTizSQegyI64fyoi7QSVMSxxkxAy6ngBTjk4dAPrlp86aQgn3QZ1MU4plzrVrrJLwxCTxyoUndkag0Knay9yL8mklXlSCU8z8P1oxHAn4frWPDLwvlh6LxGkldA4RqSfvnRb0cJHoPqTNNaMmS9aKFY/D6/hSZ+5pRd8IzOp5chSd6OOfoPwqnoMS10HNFNGAk6TPLL5UkEdflUcMvCuWPoqfuKv+76/SxtK1dUYSHMJPAB1KmpPIAuAz0rnpT1+VA4eR+VNaU18Dlh6eqO12y1XVlcW6SApxtQTOmLVM9JArzmjsjfqd3Is3wuYzbUEDqXYwYesxXZ9ku95bDaWbttbyUiEuJKd5hGgWFQFkfxSDzk511v/nDs/DOG48t2mf8Anj51pOF5ZENRdI7PYNh7PasMEzuWW2yrnu0BJPymsS7MbQTcdoUvJMpW++UHgUhp0IPqkA+tL7cd6rt00pi2bLDSwQtSiC6pJ1SMOSARrBJPMVyHY7byLO9YuFoWptrEpeCCoAtrQIBIGqhxqJO2qLSpOzb++g/+mL/ms/8AOK5DuFV/pF1/Kb/51VF7fd5lrtCyLDLTyVKW2oFwICYQqTOFZM5cqpe7DtU1s519x5txYcQhKd3hJBSpRM4lDnQ2t1gk9tHWd/vv2f8Ahf8AqzXfd3TqVbMsyn/8CAf8SRhWPPEDWL96nbZm/VbqaQ42GQ6FbwJE4y3hjCpX8B+NH2B7yHLEblSN8wfFhBhbalCVFE5EGfdMZ5yM5E/02DWKOm2p222YzcuNr2MgvpeUlR3TGNS8ZAUJTJKjBHE4geNdl2j2rdG0uQvZ6koLLoUovsEAYFSSArOKpz3r7LKg4pl3eAZEsoKx5KCvxrkO3/ekq8ZVb2zSmml5OLWRjWnigJTISDxMkxIyqrXpNfw7ruS/s3/9zn/bWbd4yz/TznGHrSOn7Ng/U1ad3XePbWFnuHWnlq3i1SgNlMKiPeWDOXKuV7S7ebutqKvEJWG1OMqCVQFw2htJ0JEygxnyojFSVeClLaz0F25/s69/9s//ANNVZX3T7YvrZtWGxeuLVxZUFN4cSFiELwhSgFA4QIyzE8as+03ezav2lwwli5CnWnW0qKWsIUpKkCYcJAnpXG93veI5s4KaW3vrdSsWEGFoUclFBORBgSkxmJkZzey8k70sGwMdv9nOum2cWW3cW7LbzakwsmMJUQUTJ51Q963Ye09jdumWkMvNALJbASHE4hjC0jImCSDrIGcTTSu9DY61B5dsvfCIUphsuAjSF4jp51yXeD3nm+aNsw0pplRBWpZGNeE4kphJISmQCcyTHDi9lhvSNe7vHEnZllh4WzKT/iSgJX/8gazy97dbNbuVtHYyS8l4oP7NjGXAuARIkkqgg8ZBrme77vHc2encuILtuSVBIIC2yfewE5EE54TGcma7097eyiQ6pl3ecCWUFfkFBX40OIlMte2O1LpVhdpXYKSg274UsvskJBbVKoCpMawM688tkYRzgV3vb7vVVfNKtbZpTTK8nFrI3i0zOAJSSEpMCcySMsuOfDIRS4t3Ycu3oJ5XCfSmrSJw6Z/Ik0tSKi4VYssqOKg5my0bcUQuciIgkZZ/XSjdBEHmNIj49aiPvLBAn/M508p5SoxGYpuLaYoySaGnX8I8WYn4T8vlSAlK/dcIPVIj9Kj3rxKhiGQmBz5UuwTCVHmYA9Pv4VELZpOkHcW6sRKAqMpM65a/Ooji1D94+pNSLRZzmSeZPHT1pN6FFR5TkenAelNJvoVr6RHlknWaKluIzoUWFFtTizGQ9T+HlSWdZ5An8vmRSK3OYBNJNKqSmEDISqMRngKGNIjqHhHmfw/Kkg1M9rUdMOZiM5+FIu2gIMROo5GpT9G14MU6TIniNeopsUtkZxzy+NUyUIFHSRSqYApbavhxpNAUNWCdZDeR+nUUcBLZVE4tRwPD5Clq90T1+GX60yScIEZZ5zlr+lciW2TR2XuimFbKxcRoPvppUlKY40xaTnlHpHyqSKyl2aLoZuRlETNV1yzuySk+7nnqMzB6ireKgKYAUocMREeuf2edXBkzQ8wSpIUeIHzp4pyj8KUkUCKzbspEYAjyokKgjzH1p1YpleVdGj9MNf4SgYUoESnP46/H9KYfZjxJzSdPyNTM8SjigZHQHUfpSHFEpMYVDjGR84rRMzaIFHRxQitDMIUYTOVHRp0Pp8PuKAAMI0E/L6UCsch8/wA6TRGgQZVSSaI0RpgOr4Hp9MvwFCjaEgAmIJz8xP4VIFqInGI5/ZqbS7HtbIDlqcWImZ+Q5U4rKB9akpMaZ5/jUC8cEpzghUk8R1rHTxZvPNEm5clI1lJlXrpFRVgFyCY/HLITwk0862lcqxnPJKfL9frUG6VK8jl4c+A6nyrRSpEOP6LEW7ZAJyOc6jiaKoyn8/fnIZjLPiKFKkx20WDZGeQ0PPz59KbU3lIk0YVBkfhRr5iYPyPI1GjO8MrWhWUNlB5GpISFAAykjKYOY5VHxnmfjRYzzNbtGCdFnY7KU+6202cTjiglAyz6+QAJngBNXjnZdhb4s273HcglASm3cUzvB7yC8FFWUZrwYRBnQ0/3T3jaNqMFwgFaFtpJ0xrScPkTmOpVXO27d5ZXgbbLiLxCyhOEStSjKZSFA4goGZIIIM1CRbIFwyptxTaxhWhakKTxC0EhQy1gg6UhtwayI8+Og+dd9tBt+z2etbbv+lu37jV2+0slYKUqXuw6IKAVeI6Zk1a2V0sXexXwopfu0EXRT4S+lC0htbkRixgTJ1wjlVWLaZSVDWfsZmjKhxP2dK06x2y6pO2ULWChjEthEJKWFNvrDamwRCVCAZ5iTnNRbzarymNj3RcV7Qp24aU7J3im03CEBKlaq8MjP+I86l6qRS0mzPkifTXp+vSr5Ww0ew+2NP4odQytBawlLikYzCyshQAjPCJrv07Qdd28/ZOeK1cLiHGCP2eDc7zeER75VhVj18UTpXHW0DYT8Kkf0giFRr/o4gx86ynqN9GsNJLs5N5cZ6weOk8JqZabNUbZy6yS02422Z0U4sKUQDzSEgn/ABJrSe0O0mrK/ZtkLudwlDKU2jbLS2LlDoAVixPp3q3CSMakkg6TGdc3tZ1nZN0WXX2ktbQ3bYxELbawE7rwk6cYJkg1nWDQzpS5UIIk6Rx4+tSEr8jWgO2/sWz1uKffbuF3zrd0/bJStzE3iIbLinGyhBIK5BklWeRrnO1l628th5DbqVOMILjjjbbZuFJKkb8JQpQ8WEyZ/dqXHA08itn7BBthd3Lwt2FKKGvAXHHlJnFgQCAEiCMSiMx5VA2z2b9nbbum1b22fUoIcU2pteISSlSVEzlJCkkgwc8q6Ltqgu7L2Y+3my00th4j/ZujADi/hxFCsz05ij7FW712qxTcrxWCH90htZGFTgbcWEoEftE+EJMkxjwjU1SE8nApfKSBIIOY6jpzqYFgiZy49OU13Wxb128uL9i8cUq39nuVqQvNFsplQDa2gcmcGYyjrNTuxr7iXNlMuxbBTRHszanHFXaFhRL77WTTSSApRKsSjByyEGy+g3V2Zo4AOUU1astuPJbccLaSYKgjGQSPD4ApMyYGvGa0Ds3swtJ2jdNoGNlu49j91RQptwoccSjPNtJTBI/eqhf20q5s2A426661dgrvHHC4IcCylhJVJGQCsIMfs5/eq9JUyNWmhjtJso2l09alW8KEoSVgYQZSCDBJj3oieFR9m2bO5fW6+G3U4A0zhJLuIwohQMCNfrWpvbacXt9yzKh7OpLqHGYGBZ9m3mJYjxLkDPgBFcT2LvFq2VtNta1KbQi0wpUolKSt9WOAchigTzrX4ZfTiErnQzwyzo8QiZy51oPaDtFctbL2c8h5YfKr0F6ZdwtvwlGM54MkynjgSDkKuby2QnbV+6hCS61YruWUYQQbjctQsJ0JlRPmZqlIhxMlUsAwSAeU1a9ndiO3b25awjwlbilnChttMY1rVwAkesV1lptq4d2JfOOOKWsvstF0++ttUYmlL1UkBxWR0DkaQKZ7tm96xtS2b/171oNynisI3m8QPPGgevSm3gEslfZdlGblZZsrwvvhKlJSbZbbbgQJOFzEoo6FaQCSBOdcljExxGoOo5yK7Puwt0uXoZDl20+oKSF25bTu0YSXN8FoJAlKRwzjjFTbu7B2NdpQ48ppq+aQ1vlBS0JwCRKQAAVlRy50rCsHBWhQpaAtwIQVpStfvBCVKAUogawJMcYp7bDDbbziGXg82lWFt0DCHBlmB5yOsTxrvO0e0nx/QbxdcDq2vEvEQtQW62FSrUhSVR1Bqffnd3faC5b/AKwwloMqjxNpd8LziOSgkAzw9aLHtOKvez6EWSLtu43iXHtyUlotlC0IK1Z41YgMxoJqAlnwYSoa5GePEfWuzXcrudlbP9qUVBzam6W4onEttSC2pal6qIBUnETPgHKr3aW1GW9ouWaxdOMkKZFihhrcYAiUBoF8BJEhwOYAcuA0ltlJIyh0lHX9aqX+BP72p9dPgBVpfRgSpIyI/KqtTciOGtQ6TLjbQTPQ60SE5EFMwZmpFszHHOnHG5yM1k9TNGq0/pAw8sqKn1o6geZoq0TZDii4g9fl+dJkg8fvnSvSgTXMmbUJIB6H5fnSS0enxFLUmkKTW0daSMZaMWLcQZB0gJ4gQQB1ro09u9o4MCr1cRhCglsuBPEb3Bj9cU9a5t73vQfQUkRTes+gjpIstnbYuLcLS04lKFxvEKSh1KyMwVIcSpJPWJp1PaO6S97Tv8T5ASFlLasCEwQEJUjC3BAjCkRnzNVIowoVL1WxrSSLlrtbeJLhDyRvTLv7C28eQHiG6zGQy0mTqSaf2d2gccLLNzcYLdpSVJAt2lQULSrCnAhKwVYc1TnGc1QyKGVZ7maUjse2HaxTlw8u1uSW3wUqlhDbiGzH7LfFJcUgmTAUAJiKo2+0d0GfZw4ncx7m5tyPdwySW8RVGWKcXWquaKfKjc2Oki6Y7V3zbSWkPqCUDCjwNlaE6YW3VJLiBHJQjhFMbH23c2wUlhzAlZBUkobWkqTmlWFxKgFA8RnVYCelKk9KLYUWuz+0F0yXC28RvVFToUlDiXFTJUpLiVJKpOsTUDat27cLLryytwgAqMaAQAAAAlI4BIA6UyTRTSthRYbC27dWmL2Z9TeL30whSFcJKFpKZjKYmndo7cublSVvPKWtEbs5JwQZ8CWwlKDkDIHAcqqwOtGnIzTthRcX/aS7ebW249KXI3mFtpCnI03i0ICnP94moFz2tvkNNoTdKCW8CUQlsLSlBxITvQnGpAIHhJI0pkpHoarrtIKwnhMn4T+FVFuyZLBeNdq75brdwbhQeSFYVoS2gALJUoYEJCFYjmZBkxOgh+97SXbqm1reCi2SWxu2QhJUIUd0EYCojiUk1T26IEU4U+dNajTsThaotT2vv96Xt+N6RBXubbHEEa7rkSJ5ZUy12qvUpWhLqAlyN4kW9tCo0kbrOOHKq0o6GklHSq5mTxL0s3u1N4tCG1OpUhsyhJYtoSZkwN1xIk8+M1ZbF7ROv39u7eXi2gkql9ttlK0SggBRS3CkmEpOIKAB0Ak1zIA5fKjHl9KOZhxI7Hbe3QLBy1VcNPuvPpWAyGw20w3mkHdJS3vFKMkJnjJrkbN5xpaXGlqQtJlKkmFJPQjpI9aZda40zbX6ZwqkdT95U1qy+CelH6dNddutorjFdqkKSoYUMoJUghSCoobBXBAMKkZZiqnZfaC6t94GncKXSC4kobWlRBkEocQpIUCdQJqOtwDTOkJEmk9Z+AtJel0/2tvV7vG+FloktlbNutSSZmFKbJOpOZ5chDS+1V7v/aN+d8UlClhtoY0K95LiQjC4D/eB4VXRTRB50uZj4kWF12mu3GlMreCmlGd2W2cKSAEjdgI/ZCBojCNeZm0V2qv1t7s3PhgtypKN4Wzogu4d4UwR+9nxrlp6/KpWLwKBIEpBE8xIy/4RWkZuREobRb7asBkpyM5TIn/OoRQJz+VTi8k4vEPEkceInL5ioGlTq32VpNdDpZSBMn5fnS5Th4nU8BTR90zpTbLw0E55Dl1rFJs2bSIrzuZySfNM0VNvIKTB8/MUK6UlRg27L0n7zosqbxUVctG9ilUhQpaW1EEgTHSmSTy+VUhWPvDxHzqTc2aQkKH386iPe+r/ABH61OKU4Mxn50mCIe6yn8aRNSxBb90YuJqEaAHAPL5UEpmpVklMGUg5UVikYzIEdaAGFJik05doIOgHlTSTQOxQPnR4qSonr9+VCgBwK60WvGimjikAIpQpEUqKAHUHgfTzqGAoLMxHHLMRpn60+RRNnF5/UfnVITAojUetKBnnTa2+VIBikFj5HT7+FIVHSi60oKoGJSRSxSQaMD7ypALUmRVJeZKOWgHT7/SrnOCJM84FV9xbGM1EwdT186uDSZM1Y/ZtkISOJ66DlUlKY40lnPPllw9c6NQM8al9lLoZ354xQJnj+FBpOZ4+c0S2uIy+lABGeX41JsjmJ6j6EfQ1GSSenxpaFRPOQfLOD8lVcP8AoifQ8u9UCRAyPX86hrNSnLcFSpUcgCfWenSmnrXCcjIIkVtqU4mOnalki3QVGUxyoWN2gYUqGQmFT/FrIp1TwiMqYZbxBQGcYdBnrnHwqNO66NZ1fYi/dGPLIaCOX2TQpV3ZERnrNCr2kWTqQqhQrnNi1sVnBUW5HiHn+NFQpAISP2h/xH61Ou2wEaUKFIF8IAFEoUKFMYRyqdskeL760KFBL6C2srP76UylIgeVChQxroS9w++VIoUKSBhIo0mhQpgOxSSKFCkMC9PhTbR+tChTAkO8DzFRnKFCmIUjSinOhQpDDw05gFChQA5FQrxAKc/4vwoqFOPYn0OMOGP8qAoUKQ0G3qfvjQKjJ8qFCgBl4SDTLHH/AAq+hoqFXDsifRbH3ldUZ/OozxlDfl+VChW0ujFdleoZ0kLIyBgZ6ZfOhQpR6LkHeuHw58PyoUKFWxH/2Q==",
+  "animation_data": {
+    "meta": {
+      "version": "2.0",
+      "timestamp": "2026-01-30T04:13:13.943Z",
+      "viewMode": "full",
+      "frameCount": 5,
+      "name": "Four Corners Offense",
+      "description": "A delay tactic used to run out the clock. Four players stand in the corners of the half-court while the point guard handles the ball in the middle."
+    },
+    "frames": [
+      {
+        "id": "1",
+        "entities": [
+          {
+            "id": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 564.1415470768501,
+              "y": 333.46130198911993
+            },
+            "rotation": -65.64845602598419
+          },
+          {
+            "id": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 497.1544249605028,
+              "y": 20.36940313609007
+            },
+            "rotation": 184.571709257129
+          },
+          {
+            "id": "29c25ef1-f2a6-4fdd-bbb9-f3a82a54a8ba",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 503.1532717171906,
+              "y": 640.5514392027947
+            },
+            "rotation": 0
+          },
+          {
+            "id": "6aea38e5-5dcd-4795-9901-6e7448bc1e92",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 34.24341690275963,
+              "y": 653.5552560880642
+            },
+            "rotation": 0
+          },
+          {
+            "id": "082c825e-478a-4dfc-9374-5253096b5c17",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 38.24264807388484,
+              "y": 44.376449693510885
+            },
+            "rotation": 188.96833971612665
+          },
+          {
+            "id": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 492.15538599659646,
+              "y": 339.46306362847514
+            },
+            "rotation": 79.50353837557189
+          },
+          {
+            "id": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 446.16422752865645,
+              "y": 67.38320264437247
+            },
+            "rotation": 230.51388093228258
+          },
+          {
+            "id": "d566aec5-f1fb-4ff9-b72f-042d40db445b",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 450.1634586997817,
+              "y": 600.5396949404266
+            },
+            "rotation": 199.43130099004162
+          },
+          {
+            "id": "aac8665c-34ac-49a2-b100-acc10e9fa091",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 51.24014938004177,
+              "y": 605.5411629732226
+            },
+            "rotation": 224.98608316630114
+          },
+          {
+            "id": "b8536625-0735-4617-a926-a9811ba5747e",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 54.23957275838568,
+              "y": 87.38907477555652
+            },
+            "rotation": 0
+          },
+          {
+            "id": "a7b0d38d-c196-438b-b2ab-07197cde090a",
+            "type": "ball",
+            "position": {
+              "x": 576.1392405902258,
+              "y": 313.45542985793594
+            },
+            "ownerId": "f09b7311-dcfb-4e14-aed7-be667317116b"
+          }
+        ],
+        "actions": [
+          {
+            "id": "e3390019-363d-45ee-8170-55d166d8d464",
+            "type": "move",
+            "playerId": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "path": [
+              {
+                "x": 564.1415470768501,
+                "y": 333.46130198911993
+              },
+              {
+                "x": 503.4332178991694,
+                "y": 282.2962840136168
+              },
+              {
+                "x": 442.7248887214887,
+                "y": 231.13126603811367
+              },
+              {
+                "x": 380.17691320509044,
+                "y": 178.4157929724438
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "f2738b6a-2acd-47d0-aa8f-9d31c13abd08",
+            "type": "move",
+            "playerId": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "path": [
+              {
+                "x": 492.15538599659646,
+                "y": 339.46306362847514
+              },
+              {
+                "x": 442.9948368255398,
+                "y": 291.92911144478194
+              },
+              {
+                "x": 393.8342876544831,
+                "y": 244.39515926108868
+              },
+              {
+                "x": 343.18402487218225,
+                "y": 195.4207842839502
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "fd95699c-e46c-426a-9c48-b19f6c636860",
+            "type": "move",
+            "playerId": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "path": [
+              {
+                "x": 446.16422752865645,
+                "y": 67.38320264437247
+              },
+              {
+                "x": 417.1298092262874,
+                "y": 86.19872538375105
+              },
+              {
+                "x": 388.0953909239184,
+                "y": 105.01424812312963
+              },
+              {
+                "x": 358.1811417639018,
+                "y": 124.39993821824696
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "8ead2cf5-27bf-4b21-a7f0-0b122b7a4dab",
+        "entities": [
+          {
+            "id": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 380.17691320509044,
+              "y": 178.4157929724438
+            },
+            "rotation": -49.87578961613812
+          },
+          {
+            "id": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 497.1544249605028,
+              "y": 20.36940313609007
+            },
+            "rotation": 184.571709257129
+          },
+          {
+            "id": "29c25ef1-f2a6-4fdd-bbb9-f3a82a54a8ba",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 503.1532717171906,
+              "y": 640.5514392027947
+            },
+            "rotation": 0
+          },
+          {
+            "id": "6aea38e5-5dcd-4795-9901-6e7448bc1e92",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 34.24341690275963,
+              "y": 653.5552560880642
+            },
+            "rotation": 0
+          },
+          {
+            "id": "082c825e-478a-4dfc-9374-5253096b5c17",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 38.24264807388484,
+              "y": 44.376449693510885
+            },
+            "rotation": 188.96833971612665
+          },
+          {
+            "id": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 343.18402487218225,
+              "y": 195.4207842839502
+            },
+            "rotation": 138.38028112539976
+          },
+          {
+            "id": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 358.1811417639018,
+              "y": 124.39993821824696
+            },
+            "rotation": 237.0550674628142
+          },
+          {
+            "id": "d566aec5-f1fb-4ff9-b72f-042d40db445b",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 450.1634586997817,
+              "y": 600.5396949404266
+            },
+            "rotation": 199.43130099004162
+          },
+          {
+            "id": "aac8665c-34ac-49a2-b100-acc10e9fa091",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 51.24014938004177,
+              "y": 605.5411629732226
+            },
+            "rotation": 224.98608316630114
+          },
+          {
+            "id": "b8536625-0735-4617-a926-a9811ba5747e",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 54.23957275838568,
+              "y": 87.38907477555652
+            },
+            "rotation": 0
+          },
+          {
+            "id": "a7b0d38d-c196-438b-b2ab-07197cde090a",
+            "type": "ball",
+            "position": {
+              "x": 391.1747989256848,
+              "y": 169.413150513411
+            },
+            "ownerId": "f09b7311-dcfb-4e14-aed7-be667317116b"
+          }
+        ],
+        "actions": [
+          {
+            "id": "9dece511-9596-48f7-8188-cf1c01f706f5",
+            "type": "pass",
+            "playerId": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "path": [
+              {
+                "x": 380.17691320509044,
+                "y": 178.4157929724438
+              },
+              {
+                "x": 414.16038008172694,
+                "y": 130.22164700842148
+              },
+              {
+                "x": 448.14384695836344,
+                "y": 82.0275010443992
+              },
+              {
+                "x": 483.15711586156465,
+                "y": 32.372926414800475
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "a6b5780a-99b8-4746-be22-88e52498e0ab",
+        "entities": [
+          {
+            "id": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 380.17691320509044,
+              "y": 178.4157929724438
+            },
+            "rotation": -49.87578961613812
+          },
+          {
+            "id": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 497.1544249605028,
+              "y": 20.36940313609007
+            },
+            "rotation": 184.571709257129
+          },
+          {
+            "id": "29c25ef1-f2a6-4fdd-bbb9-f3a82a54a8ba",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 503.1532717171906,
+              "y": 640.5514392027947
+            },
+            "rotation": 0
+          },
+          {
+            "id": "6aea38e5-5dcd-4795-9901-6e7448bc1e92",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 34.24341690275963,
+              "y": 653.5552560880642
+            },
+            "rotation": 0
+          },
+          {
+            "id": "082c825e-478a-4dfc-9374-5253096b5c17",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 38.24264807388484,
+              "y": 44.376449693510885
+            },
+            "rotation": 188.96833971612665
+          },
+          {
+            "id": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 343.18402487218225,
+              "y": 195.4207842839502
+            },
+            "rotation": 138.38028112539976
+          },
+          {
+            "id": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 358.1811417639018,
+              "y": 124.39993821824696
+            },
+            "rotation": 237.0550674628142
+          },
+          {
+            "id": "d566aec5-f1fb-4ff9-b72f-042d40db445b",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 450.1634586997817,
+              "y": 600.5396949404266
+            },
+            "rotation": 199.43130099004162
+          },
+          {
+            "id": "aac8665c-34ac-49a2-b100-acc10e9fa091",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 51.24014938004177,
+              "y": 605.5411629732226
+            },
+            "rotation": 224.98608316630114
+          },
+          {
+            "id": "b8536625-0735-4617-a926-a9811ba5747e",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 54.23957275838568,
+              "y": 87.38907477555652
+            },
+            "rotation": 0
+          },
+          {
+            "id": "a7b0d38d-c196-438b-b2ab-07197cde090a",
+            "type": "ball",
+            "position": {
+              "x": 483.15711586156465,
+              "y": 32.372926414800475
+            },
+            "ownerId": "666ca3ed-902d-4942-bcf1-d71228d7fc28"
+          }
+        ],
+        "actions": [
+          {
+            "id": "079e5337-4399-4074-8763-266be97230b6",
+            "type": "dribble",
+            "playerId": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "path": [
+              {
+                "x": 497.1544249605028,
+                "y": 20.36940313609007
+              },
+              {
+                "x": 492.5353129578532,
+                "y": 120.05866396578003
+              },
+              {
+                "x": 487.91620095520364,
+                "y": 219.74792479547
+              },
+              {
+                "x": 483.15711586156465,
+                "y": 322.4580723169687
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "79cfa27c-3b54-4196-8320-e1405cca42f5",
+            "type": "move",
+            "playerId": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "path": [
+              {
+                "x": 343.18402487218225,
+                "y": 195.4207842839502
+              },
+              {
+                "x": 371.55857003131564,
+                "y": 234.70231421353003
+              },
+              {
+                "x": 399.933115190449,
+                "y": 273.9838441431099
+              },
+              {
+                "x": 429.16749505137426,
+                "y": 314.4557234644951
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "534e67a9-4ef0-47ca-b74f-dbd9f5cd719e",
+        "entities": [
+          {
+            "id": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 380.17691320509044,
+              "y": 178.4157929724438
+            },
+            "rotation": -49.87578961613812
+          },
+          {
+            "id": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 483.15711586156465,
+              "y": 322.4580723169687
+            },
+            "rotation": 182.65290828918876
+          },
+          {
+            "id": "29c25ef1-f2a6-4fdd-bbb9-f3a82a54a8ba",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 503.1532717171906,
+              "y": 640.5514392027947
+            },
+            "rotation": 0
+          },
+          {
+            "id": "6aea38e5-5dcd-4795-9901-6e7448bc1e92",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 34.24341690275963,
+              "y": 653.5552560880642
+            },
+            "rotation": 0
+          },
+          {
+            "id": "082c825e-478a-4dfc-9374-5253096b5c17",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 38.24264807388484,
+              "y": 44.376449693510885
+            },
+            "rotation": 188.96833971612665
+          },
+          {
+            "id": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 429.16749505137426,
+              "y": 314.4557234644951
+            },
+            "rotation": 144.15798444042852
+          },
+          {
+            "id": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 358.1811417639018,
+              "y": 124.39993821824696
+            },
+            "rotation": 237.0550674628142
+          },
+          {
+            "id": "d566aec5-f1fb-4ff9-b72f-042d40db445b",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 450.1634586997817,
+              "y": 600.5396949404266
+            },
+            "rotation": 199.43130099004162
+          },
+          {
+            "id": "aac8665c-34ac-49a2-b100-acc10e9fa091",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 51.24014938004177,
+              "y": 605.5411629732226
+            },
+            "rotation": 224.98608316630114
+          },
+          {
+            "id": "b8536625-0735-4617-a926-a9811ba5747e",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 54.23957275838568,
+              "y": 87.38907477555652
+            },
+            "rotation": 0
+          },
+          {
+            "id": "a7b0d38d-c196-438b-b2ab-07197cde090a",
+            "type": "ball",
+            "position": {
+              "x": 483.15711586156465,
+              "y": 322.4580723169687
+            },
+            "ownerId": "666ca3ed-902d-4942-bcf1-d71228d7fc28"
+          }
+        ],
+        "actions": [
+          {
+            "id": "730aa76e-69fa-41f1-be1e-fcbb58dcb015",
+            "type": "move",
+            "playerId": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "path": [
+              {
+                "x": 380.17691320509044,
+                "y": 178.4157929724438
+              },
+              {
+                "x": 401.95272693186723,
+                "y": 127.58087188710522
+              },
+              {
+                "x": 423.72854065864396,
+                "y": 76.74595080176663
+              },
+              {
+                "x": 459.16172883481335,
+                "y": 45.37674330007009
+              }
+            ],
+            "color": "#ff4d4f"
+          },
+          {
+            "id": "76b13a98-a42b-4c03-8060-702d8bb4e2ef",
+            "type": "move",
+            "playerId": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "path": [
+              {
+                "x": 358.1811417639018,
+                "y": 124.39993821824696
+              },
+              {
+                "x": 381.27670177714987,
+                "y": 96.34170255426137
+              },
+              {
+                "x": 404.372261790398,
+                "y": 68.28346689027578
+              },
+              {
+                "x": 428.167687258593,
+                "y": 39.37498166071488
+              }
+            ],
+            "color": "#ff4d4f"
+          }
+        ]
+      },
+      {
+        "id": "6978ba03-d628-4603-94ea-87d463e662ba",
+        "entities": [
+          {
+            "id": "f09b7311-dcfb-4e14-aed7-be667317116b",
+            "type": "player",
+            "team": "red",
+            "number": "1",
+            "position": {
+              "x": 459.16172883481335,
+              "y": 45.37674330007009
+            },
+            "rotation": -88.49183210558965
+          },
+          {
+            "id": "666ca3ed-902d-4942-bcf1-d71228d7fc28",
+            "type": "player",
+            "team": "red",
+            "number": "2",
+            "position": {
+              "x": 483.15711586156465,
+              "y": 322.4580723169687
+            },
+            "rotation": 182.65290828918876
+          },
+          {
+            "id": "29c25ef1-f2a6-4fdd-bbb9-f3a82a54a8ba",
+            "type": "player",
+            "team": "red",
+            "number": "3",
+            "position": {
+              "x": 503.1532717171906,
+              "y": 640.5514392027947
+            },
+            "rotation": 0
+          },
+          {
+            "id": "6aea38e5-5dcd-4795-9901-6e7448bc1e92",
+            "type": "player",
+            "team": "red",
+            "number": "4",
+            "position": {
+              "x": 34.24341690275963,
+              "y": 653.5552560880642
+            },
+            "rotation": 0
+          },
+          {
+            "id": "082c825e-478a-4dfc-9374-5253096b5c17",
+            "type": "player",
+            "team": "red",
+            "number": "5",
+            "position": {
+              "x": 38.24264807388484,
+              "y": 44.376449693510885
+            },
+            "rotation": 188.96833971612665
+          },
+          {
+            "id": "274a3307-c3c7-4376-a1eb-254cbf571551",
+            "type": "player",
+            "team": "white",
+            "number": "1",
+            "position": {
+              "x": 429.16749505137426,
+              "y": 314.4557234644951
+            },
+            "rotation": 144.15798444042852
+          },
+          {
+            "id": "0a777b6c-4565-4a9f-8e89-7236d0b1fbb5",
+            "type": "player",
+            "team": "white",
+            "number": "2",
+            "position": {
+              "x": 428.167687258593,
+              "y": 39.37498166071488
+            },
+            "rotation": 39.45880190128522
+          },
+          {
+            "id": "d566aec5-f1fb-4ff9-b72f-042d40db445b",
+            "type": "player",
+            "team": "white",
+            "number": "3",
+            "position": {
+              "x": 450.1634586997817,
+              "y": 600.5396949404266
+            },
+            "rotation": 199.43130099004162
+          },
+          {
+            "id": "aac8665c-34ac-49a2-b100-acc10e9fa091",
+            "type": "player",
+            "team": "white",
+            "number": "4",
+            "position": {
+              "x": 51.24014938004177,
+              "y": 605.5411629732226
+            },
+            "rotation": 224.98608316630114
+          },
+          {
+            "id": "b8536625-0735-4617-a926-a9811ba5747e",
+            "type": "player",
+            "team": "white",
+            "number": "5",
+            "position": {
+              "x": 54.23957275838568,
+              "y": 87.38907477555652
+            },
+            "rotation": 0
+          },
+          {
+            "id": "a7b0d38d-c196-438b-b2ab-07197cde090a",
+            "type": "ball",
+            "position": {
+              "x": 496.1546171677216,
+              "y": 327.4595403497647
+            },
+            "ownerId": "666ca3ed-902d-4942-bcf1-d71228d7fc28"
+          }
+        ],
+        "actions": []
+      }
+    ]
+  },
+  "updated_at": "2026-01-30T04:13:13.945381",
+  "created_at": "2026-01-30T04:13:13.945381"
+}
