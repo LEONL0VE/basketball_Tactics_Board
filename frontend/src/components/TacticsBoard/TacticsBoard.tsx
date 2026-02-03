@@ -10,7 +10,7 @@ import PlayerInfoPanel from './PlayerInfoPanel';
 import { BoardEntity, ViewMode, Player as PlayerType, Ball as BallType, TeamType, Action, ActionType, Position } from '../../types';
 import { COURT_WIDTH, COURT_HEIGHT, APP_BACKGROUND } from '../../utils/constants';
 import { Button, Tooltip, Menu, Dropdown, Slider, message, Modal, List, Card, Tag, Spin, Input, Avatar, Form, Select, Row, Col, Upload, Space, Radio } from 'antd';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { 
   ExpandOutlined, 
   CompressOutlined, 
@@ -128,6 +128,7 @@ const TacticsBoard: React.FC = () => {
   const [loadingPlayers, setLoadingPlayers] = useState(false);
   const [targetPlayerId, setTargetPlayerId] = useState<string | null>(null);
 
+  /* 
   // EPV Analysis State
   const [epvData, setEpvData] = useState<any>(null);
   const [isEpvModalVisible, setIsEpvModalVisible] = useState(false);
@@ -140,6 +141,11 @@ const TacticsBoard: React.FC = () => {
     dribble: -0.5,
     defense: 0.5
   });
+  */
+  // Commented out to hide analysis feature
+  const isAnalyzing = false;
+  const showAnalysisPanel = false;
+  const epvData = null;
 
   // Sync current state to current frame when it changes
   React.useEffect(() => {
@@ -614,6 +620,7 @@ const TacticsBoard: React.FC = () => {
   // Memoize Court to prevent re-renders during animation
   const memoizedCourt = React.useMemo(() => <Court viewMode={viewMode} />, [viewMode]);
 
+  /*
   // Throttle chart updates to ~20 FPS to prevent animation lag
   React.useEffect(() => {
     if (showAnalysisPanel && epvData) {
@@ -625,6 +632,7 @@ const TacticsBoard: React.FC = () => {
       }
     }
   }, [currentFrameIndex, animationProgress, showAnalysisPanel, epvData]);
+  */
 
   // Handle rotating entities
   const handleEntityRotate = React.useCallback((id: string, rotation: number) => {
@@ -1639,6 +1647,7 @@ const TacticsBoard: React.FC = () => {
     </div>
   );
 
+  /*
   // Recommendation Handler
   const handleAnalyzeEPV = async (silent = false, slidersOverride: any = null) => {
     if (frames.length < 2) {
@@ -1820,6 +1829,7 @@ const TacticsBoard: React.FC = () => {
         setIsAnalyzing(false);
     }
   };
+  */
 
   // Auto-Analyze when frames change (Debounced) - DISABLED
   // React.useEffect(() => {
@@ -2594,6 +2604,7 @@ const TacticsBoard: React.FC = () => {
           tooltip="Recommend Tactic (AI)"
         />
 
+        {/* Commented out Analyze button
         <SidebarButton 
           icon={isAnalyzing ? <Spin indicator={<LineChartOutlined spin />} /> : <LineChartOutlined />} 
           onClick={() => {
@@ -2607,6 +2618,7 @@ const TacticsBoard: React.FC = () => {
           tooltip="Analyze Expected Score"
           active={showAnalysisPanel}
         />
+        */}
 
         <SidebarButton 
           icon={showGhostDefense ? <EyeOutlined /> : <EyeInvisibleOutlined />} 
@@ -2777,6 +2789,7 @@ const TacticsBoard: React.FC = () => {
               justifyContent: 'center',
               transition: 'width 0.3s ease'
           }}>
+             {/* showAnalysisPanel is hardcoded to false, hiding the analysis panel code below */}
              {showAnalysisPanel ? (
                  <div style={{ 
                      width: '100%', 
@@ -2787,162 +2800,7 @@ const TacticsBoard: React.FC = () => {
                      display: 'flex',
                      flexDirection: 'column'
                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ color: 'white', fontWeight: 'bold' }}>Expected Score Analysis</span>
-                            <Button 
-                                type="text" 
-                                size="small"
-                                icon={<ReloadOutlined spin={isAnalyzing} />} 
-                                onClick={() => {
-                                    const defaults = { base: 0.0, dribble: -0.5, defense: 0.5 };
-                                    setEpvSliders(defaults);
-                                    handleAnalyzeEPV(false, defaults);
-                                }}
-                                style={{ color: 'rgba(255,255,255,0.7)' }}
-                                title="Reset & Re-analyze"
-                            />
-                        </div>
-                        <Button 
-                            type="text" 
-                            icon={<ExpandOutlined rotate={90} />} 
-                            onClick={() => setShowAnalysisPanel(false)}
-                            style={{ color: 'white' }}
-                        />
-                    </div>
-
-                    {/* Sliders Section */}
-                    <div style={{ marginBottom: '15px', padding: '10px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                            <Tooltip title="Base shooting capability (Intercept)">
-                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Base Ability:</span>
-                            </Tooltip>
-                            <Slider 
-                                min={-5} max={5} step={0.1} 
-                                value={epvSliders.base} 
-                                onChange={(v) => setEpvSliders(prev => ({ ...prev, base: v }))}
-                                style={{ flex: 1, margin: '0 10px' }}
-                            />
-                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
-                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
-                                    {epvSliders.base > 0 ? '+' : ''}{epvSliders.base}
-                                </span>
-                                <span style={{ color: '#888', fontSize: '10px' }}>
-                                    {epvSliders.base === 0 ? 'Average' : epvSliders.base > 0 ? 'Good' : 'Poor'}
-                                </span>
-                            </div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                            <Tooltip title="Impact of dribbling on shot accuracy (Negative means harder)">
-                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Dribble Impact:</span>
-                            </Tooltip>
-                            <Slider 
-                                min={-5} max={5} step={0.1} 
-                                value={epvSliders.dribble} 
-                                onChange={(v) => setEpvSliders(prev => ({ ...prev, dribble: v }))}
-                                style={{ flex: 1, margin: '0 10px' }}
-                            />
-                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
-                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
-                                    {epvSliders.dribble > 0 ? '+' : ''}{epvSliders.dribble}
-                                </span>
-                                <span style={{ color: '#888', fontSize: '10px' }}>
-                                    {epvSliders.dribble === 0 ? 'None' : epvSliders.dribble < 0 ? 'Penalty' : 'Bonus'}
-                                </span>
-                            </div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                            <Tooltip title="Impact of defensive pressure (Positive means open shots are better)">
-                                <span style={{ color: '#ccc', fontSize: '12px', width: '120px', cursor: 'help' }}>Defense Impact:</span>
-                            </Tooltip>
-                            <Slider 
-                                min={-5} max={5} step={0.1} 
-                                value={epvSliders.defense} 
-                                onChange={(v) => setEpvSliders(prev => ({ ...prev, defense: v }))}
-                                style={{ flex: 1, margin: '0 10px' }}
-                            />
-                            <div style={{ width: '70px', textAlign: 'right', lineHeight: '1.2' }}>
-                                <span style={{ color: '#fff', fontSize: '12px', display: 'block' }}>
-                                    {epvSliders.defense > 0 ? '+' : ''}{epvSliders.defense}
-                                </span>
-                                <span style={{ color: '#888', fontSize: '10px' }}>
-                                    {epvSliders.defense === 0 ? 'Ignored' : 'Sensitive'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {epvData ? (
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            
-                            <div style={{ flex: 1, minHeight: 0 }}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart
-                                    data={epvData.epv_curve} // Pass full data to establish domain
-                                    margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-                                    onClick={(e: any) => {
-                                        if (e && e.activeLabel) {
-                                            const time = Number(e.activeLabel);
-                                            const frameIdx = Math.floor(time);
-                                            const progress = time - frameIdx;
-                                            if (frameIdx < frames.length - 1) {
-                                                setCurrentFrameIndex(frameIdx);
-                                                setAnimationProgress(progress);
-                                                setEntitiesMap(frames[frameIdx].entitiesMap);
-                                                setActionsMap(frames[frameIdx].actionsMap);
-                                                setIsPlaying(false);
-                                            }
-                                        }
-                                    }}
-                                    style={{ cursor: 'pointer' }}
-                                    >
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                                    <XAxis 
-                                        dataKey="timestamp" 
-                                        stroke="#888" 
-                                        tickFormatter={(val: any) => Number(val).toFixed(1)}
-                                        type="number"
-                                        domain={[0, epvData.epv_curve.length > 0 ? epvData.epv_curve[epvData.epv_curve.length - 1].timestamp : 'auto']}
-                                        height={20}
-                                        tick={{fontSize: 10}}
-                                    />
-                                    <YAxis 
-                                        domain={[0, 1]} 
-                                        stroke="#888" 
-                                        width={30}
-                                        tick={{fontSize: 10}}
-                                    />
-                                    <RechartsTooltip 
-                                        contentStyle={{ backgroundColor: '#333', border: 'none', color: '#fff', fontSize: '12px' }}
-                                        itemStyle={{ color: '#fff' }}
-                                        labelFormatter={(label) => `Time: ${Number(label).toFixed(2)}s`}
-                                        formatter={(value: number) => [value.toFixed(3), 'Exp. Score']}
-                                    />
-                                    
-                                    {/* Progressive Line */}
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="epv" 
-                                        stroke="#8884d8" 
-                                        strokeWidth={2} 
-                                        dot={false} 
-                                        activeDot={{ r: 6 }} 
-                                        isAnimationActive={false}
-                                        data={epvData.epv_curve.filter((d: any) => d.timestamp <= throttledTime)}
-                                    />
-                                    <ReferenceLine x={throttledTime} stroke="red" strokeDasharray="3 3" />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
-                            <div style={{ marginTop: '5px', textAlign: 'center', color: '#aaa', fontSize: '10px' }}>
-                                Click chart to seek
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' }}>
-                            {isAnalyzing ? <Spin tip="Analyzing..." /> : "No Data"}
-                        </div>
-                    )}
+                    {/* ... EPV Panel JSX ... */}
                  </div>
              ) : (
                  !isAnimationMode && <AssetsBar onDragStart={() => {}} vertical={true} />
