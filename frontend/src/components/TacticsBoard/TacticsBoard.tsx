@@ -2164,11 +2164,11 @@ const TacticsBoard: React.FC = () => {
       // Hardcoded 1-3-1 positions for now as they are not in the JSON
       // In a real app, these should come from the JSON
       const initialEntities: BoardEntity[] = [
-        { id: '1', type: 'player', team: 'home', number: '1', role: 'PG', position: { x: 380, y: 120 }, rotation: 0 },
-        { id: '2', type: 'player', team: 'home', number: '2', role: 'SG', position: { x: 100, y: 300 }, rotation: 0 },
-        { id: '3', type: 'player', team: 'home', number: '3', role: 'SF', position: { x: 660, y: 300 }, rotation: 0 },
-        { id: '4', type: 'player', team: 'home', number: '4', role: 'PF', position: { x: 250, y: 350 }, rotation: 0 },
-        { id: '5', type: 'player', team: 'home', number: '5', role: 'C', position: { x: 380, y: 250 }, rotation: 0 },
+        { id: '1', type: 'player', team: 'red', number: '1', role: 'PG', position: { x: 380, y: 120 }, rotation: 0 },
+        { id: '2', type: 'player', team: 'red', number: '2', role: 'SG', position: { x: 100, y: 300 }, rotation: 0 },
+        { id: '3', type: 'player', team: 'red', number: '3', role: 'SF', position: { x: 660, y: 300 }, rotation: 0 },
+        { id: '4', type: 'player', team: 'red', number: '4', role: 'PF', position: { x: 250, y: 350 }, rotation: 0 },
+        { id: '5', type: 'player', team: 'red', number: '5', role: 'C', position: { x: 380, y: 250 }, rotation: 0 },
         { id: 'ball', type: 'ball', position: { x: 380, y: 130 }, ownerId: '1' }
       ];
 
@@ -2240,8 +2240,9 @@ const TacticsBoard: React.FC = () => {
               if (arrow.type === 'pass') {
                  const ballIndex = currentEntities.findIndex(e => e.type === 'ball');
                  if (ballIndex !== -1) {
+                    const ball = currentEntities[ballIndex] as BallType;
                     currentEntities[ballIndex] = {
-                      ...currentEntities[ballIndex],
+                      ...ball,
                       position: endPos,
                       ownerId: String(arrow.toId)
                     };
