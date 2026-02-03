@@ -1,13 +1,3 @@
-"""
-AI Chat Service for Basketball Tactics Board
-Supports: Gemini (Google), OpenAI GPT-4, DeepSeek
-
-This module provides:
-1. Text-to-Tactics: Generate tactics from natural language
-2. Tactics-to-Text: Explain existing tactics in natural language
-3. Interactive Chat: Answer basketball-related questions
-"""
-
 import os
 import json
 import asyncio
@@ -15,7 +5,6 @@ from typing import List, Dict, Any, Optional, AsyncGenerator
 from dataclasses import dataclass
 from enum import Enum
 
-# Try to import AI libraries
 try:
     import google.genai as genai
     GEMINI_AVAILABLE = True
@@ -29,9 +18,6 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
     print("Warning: openai not installed. OpenAI/DeepSeek will not be available.")
-
-
-# ============== Configuration ==============
 
 class AIProvider(Enum):
     GEMINI = "gemini"
@@ -50,10 +36,7 @@ class AIConfig:
     max_tokens: int = 4096
 
 
-# ============== Court Spatial Semantics ==============
-
 COURT_REGIONS = {
-    # Full court regions (800x682 canvas, hoop at ~(400, 620))
     "backcourt": {"x_range": (0, 800), "y_range": (0, 200), "name": "Backcourt"},
     "midcourt": {"x_range": (0, 800), "y_range": (200, 350), "name": "Midcourt"},
     "top_of_key": {"x_range": (300, 500), "y_range": (350, 450), "name": "Top of Key"},
@@ -73,6 +56,8 @@ def get_court_region(x: float, y: float) -> str:
     """Convert x,y coordinates to semantic court region name"""
     for region_id, region in COURT_REGIONS.items():
         x_min, x_max = region["x_range"]
+    for region_id, region in COURT_REGIONS.items():
+        x_min, x_max = region["x_range"]
         y_min, y_max = region["y_range"]
         if x_min <= x <= x_max and y_min <= y <= y_max:
             return region["name"]
@@ -80,7 +65,6 @@ def get_court_region(x: float, y: float) -> str:
 
 
 def get_position_role(number: str) -> str:
-    """Map player number to position role"""
     roles = {
         "1": "Point Guard (PG)",
         "2": "Shooting Guard (SG)", 
@@ -89,11 +73,6 @@ def get_position_role(number: str) -> str:
         "5": "Center (C)"
     }
     return roles.get(number, f"Player {number}")
-
-
-# ============== System Prompts ==============
-
-SYSTEM_PROMPT_GENERATE = """You are a professional basketball tactics analyst and coaching assistant. Your task is to generate basketball tactics based on user's natural language description.
 
 ## Court Coordinate System
 - Canvas size: 800 x 682 pixels

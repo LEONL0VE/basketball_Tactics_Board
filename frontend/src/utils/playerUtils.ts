@@ -1,13 +1,6 @@
 import { Player, Position, Ball } from '../types';
 import { COURT_WIDTH, COURT_HEIGHT, SCALE } from './constants';
 
-/**
- * Calculates the visual radius of a player based on their physical stats.
- * Base radius is 14px.
- * Height bonus: +0.3px per inch over 6'0".
- * Weight bonus: +0.05px per lb over 180lbs.
- * Max radius capped at 22px.
- */
 export const getPlayerRadius = (player: Player): number => {
   const baseRadius = 14;
   if (!player.profile?.stats) return baseRadius;
@@ -15,30 +8,25 @@ export const getPlayerRadius = (player: Player): number => {
   const { height, weight } = player.profile.stats;
   let bonus = 0;
 
-  // Parse Height (e.g., "6'3")
   if (height) {
     const parts = height.split("'");
     if (parts.length === 2) {
       const feet = parseInt(parts[0]);
       const inches = parseInt(parts[1]);
       const totalInches = feet * 12 + inches;
-      // Base height ~ 6'0 (72 inches)
       if (totalInches > 72) {
         bonus += (totalInches - 72) * 0.3;
       }
     }
   }
 
-  // Parse Weight (e.g., "185")
   if (weight) {
     const lbs = parseInt(weight);
-    // Base weight ~ 180 lbs
     if (!isNaN(lbs) && lbs > 180) {
       bonus += (lbs - 180) * 0.05;
     }
   }
 
-  // Cap the bonus to avoid overly large players
   return Math.min(baseRadius + 8, baseRadius + bonus);
 };
 

@@ -9,24 +9,12 @@ HOOP_Y = 7.62
 METER_TO_FEET = 3.28084
 
 def get_nba_zone(x_m, y_m):
-    """
-    Map court coordinates (meters) to NBA Shot Zone Basic and Area.
-    Returns a key matching the shot chart JSON format, e.g., "Mid-Range (Center(C))"
-    """
-    # Convert to feet relative to hoop
     dx_ft = (x_m - HOOP_X) * METER_TO_FEET
     dy_ft = (y_m - HOOP_Y) * METER_TO_FEET
     dist_ft = np.sqrt(dx_ft**2 + dy_ft**2)
     
-    # Determine Angle (degrees)
-    # angle 0 is straight out from hoop (towards center court)
-    # dy > 0 is Left (if Y increases "down" and we look from center to hoop? 
-    # Let's assume standard: Y increases down. Hoop is Left.
-    # Looking from X=14 to X=1.5. Y=0 is Right. Y=15 is Left.
-    # So dy < 0 is Right, dy > 0 is Left.
     angle = np.degrees(np.arctan2(dy_ft, dx_ft))
     
-    # Determine Area
     area = ""
     area_code = ""
     
@@ -46,28 +34,22 @@ def get_nba_zone(x_m, y_m):
         area = "Right Side"
         area_code = "R"
         
-    # Determine Basic Zone
     basic = ""
     
-    # Corner 3 logic: Y distance > 22ft (sideline is 25ft from center) and X < 14ft (approx)
-    # Actually Corner 3 is defined by the line.
-    # 3PT Line: 23.75ft arc, but 22ft at corners.
-    # Simple logic:
-    is_corner = (dx_ft < 14.0) and (abs(dy_ft) > 21.0) # Approx corner box
+    is_corner = (dx_ft < 14.0) and (abs(dy_ft) > 21.0)
     
     if dist_ft < 4.0:
         basic = "Restricted Area"
-        area = "Center" # RA is always Center in stats usually
+        area = "Center"
         area_code = "C"
     elif dist_ft < 16.0:
-        if abs(dy_ft) < 6.0: # Inside Key width (approx 12ft)
+        if abs(dy_ft) < 6.0:
             basic = "In The Paint (Non-RA)"
         else:
             basic = "Mid-Range"
     elif dist_ft < 23.75 and not is_corner:
         basic = "Mid-Range"
     else:
-        # 3 Point
         if is_corner:
             if dy_ft > 0:
                 basic = "Left Corner 3"
@@ -83,27 +65,14 @@ def get_nba_zone(x_m, y_m):
     return f"{basic} ({area}({area_code}))"
 
 def calculate_epv_series(kinematics_df, shot_charts_map=None, shot_chart_data=None, sliders=None):
-    """
-    Calculate ESV (Expected Shot Value) based on User's Formula.
+    if kinematics_df.empty:
     
-    Formula:
-    ESV = P(Make) * Points
-    P(Make) = Sigmoid(LogOdds)
-    LogOdds = Beta_Base + Beta_Dribble * D + Beta_Def * Ndef + f_Identity(x, y)
-    
-    Ndef = ln(1 + d_min_ft)
-    f_Identity = Real Shooting % (Logit transformed? Or just added?)
-    
-    D (Dribble) is inferred from possession duration.
-    If possession > 1.0s, D = 1 (Pull-up). Else D = 0 (Catch & Shoot).
-    """
-    
-    if sliders is None:
-        sliders = {
-            'base': 0.0,      # Intercept
-            'dribble': -0.5,  # Penalty for dribbling
-            'defense': 0.5    # Benefit of openness (Positive because Ndef increases with openness)
-        }
+        if sliders is None:
+            sliders = {
+                'base': 0.0,      # Intercept
+                'dribble': -0.5,  # Penalty for dribbling
+                'defense': 0.5    # Benefit of openness (Positive because Ndef increases with openness)
+            }
         
     epv_curve = []
     

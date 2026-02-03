@@ -17,20 +17,15 @@ def get_player_id(player_name):
     return None
 
 def fetch_shot_chart_by_id(player_id, season='2023-24'):
-    # 1. Check Cache
     cache_file = os.path.join(CACHE_DIR, f"shot_chart_{player_id}.json")
     if os.path.exists(cache_file):
-        print(f"Loading cached shot chart for Player ID: {player_id}")
         try:
             with open(cache_file, 'r') as f:
                 return json.load(f)
         except Exception as e:
             print(f"Error reading cache: {e}")
 
-    print(f"Fetching shot chart for Player ID: {player_id} Season: {season}...")
-    
     try:
-        # Fetch shot chart data
         shot_chart = shotchartdetail.ShotChartDetail(
             team_id=0,
             player_id=player_id,
@@ -38,12 +33,9 @@ def fetch_shot_chart_by_id(player_id, season='2023-24'):
             context_measure_simple='FGA'
         )
         
-        # Get DataFrame
         df = shot_chart.get_data_frames()[0]
         
-        # Check if data is empty
         if df.empty:
-            print("No shot data found.")
             return None
 
         # Group by Shot Zone

@@ -28,15 +28,10 @@ def get_distance_sq(p1, p2):
     return (p1.x - p2.x)**2 + (p1.y - p2.y)**2
 
 def evaluate_state(players, handler_id):
-    """
-    Simplified EPV evaluation for a simulation state.
-    Focuses on: Distance to Hoop, Openness (Distance to nearest defender).
-    """
     handler = next((p for p in players if p.id == handler_id), None)
     if not handler:
         return 0.0
 
-    # 1. Base Value based on Distance to Hoop
     dist_to_hoop = math.sqrt((handler.x - HOOP_X)**2 + (handler.y - HOOP_Y)**2)
     
     is_3pt = dist_to_hoop > 6.75
@@ -50,7 +45,6 @@ def evaluate_state(players, handler_id):
         base_pct = 0.45 - (dist_to_hoop - 1.5) * 0.01
     base_pct = max(0.0, base_pct)
 
-    # 2. Defense Pressure
     min_def_dist = 999.0
     for p in players:
         if p.team != handler.team:
@@ -66,32 +60,19 @@ def evaluate_state(players, handler_id):
     else:
         pressure_factor = 1.0 - (min_def_dist - 0.5) / 2.5
 
-    # Impact
     impact_multiplier = 1.1 - (pressure_factor * 0.8)
     final_pct = base_pct * impact_multiplier
     
     return shot_value * final_pct
 
 def run_monte_carlo_simulation(current_players, handler_id, steps=10, simulations=20, dt=0.04):
-    """
-    Runs Monte Carlo simulations to predict future EPV.
-    
-    Args:
-        current_players: List of MCPlayer objects
-        handler_id: ID of the ball handler
-        steps: How many frames to look ahead (e.g., 10 frames = 0.4s)
-        simulations: Number of simulation runs (e.g., 20)
-        dt: Time step in seconds
-    """
     total_score = 0.0
     
-    # Physics Parameters
-    MAX_SPEED = 8.0 # m/s
-    ACCEL = 4.0 # m/s^2
+    MAX_SPEED = 8.0
+    ACCEL = 4.0
     FRICTION = 0.95
     
     for _ in range(simulations):
-        # Clone state
         sim_players = [p.clone() for p in current_players]
         handler = next((p for p in sim_players if p.id == handler_id), None)
         
@@ -99,14 +80,10 @@ def run_monte_carlo_simulation(current_players, handler_id, steps=10, simulation
             continue
 
         for _ in range(steps):
-            # Update each player
             for p in sim_players:
-                # --- 1. Determine Intention Force ---
                 fx, fy = 0.0, 0.0
                 
                 if p.role == 'handler':
-                    # Attacker: Drive to hoop + Random Noise
-                    # Vector to hoop
                     dx = HOOP_X - p.x
                     dy = HOOP_Y - p.y
                     dist = math.sqrt(dx*dx + dy*dy)

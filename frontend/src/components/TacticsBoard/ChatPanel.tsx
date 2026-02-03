@@ -15,8 +15,6 @@ const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { Panel } = Collapse;
 
-// ============== Types ==============
-
 interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
@@ -49,17 +47,13 @@ export interface GeneratedTactic {
   frames?: any[];
 }
 
-// ============== Props ==============
-
 interface ChatPanelProps {
   visible: boolean;
   onClose: () => void;
-  currentTactic?: any;  // Current board state
+  currentTactic?: any;
   onApplyTactic?: (tactic: GeneratedTactic) => void;
   onExecuteCommand?: (command: ToolCall) => void;
 }
-
-// ============== Quick Prompts ==============
 
 const QUICK_PROMPTS = [
   { icon: <ThunderboltOutlined />, text: "Draw a high pick and roll", category: "generate" },
@@ -69,8 +63,6 @@ const QUICK_PROMPTS = [
   { icon: <BulbOutlined />, text: "What are the weaknesses of this tactic?", category: "analyze" },
   { icon: <BulbOutlined />, text: "How to defend pick and roll?", category: "question" },
 ];
-
-// ============== Main Component ==============
 
 const ChatPanel: React.FC<ChatPanelProps> = ({
   visible,
@@ -88,14 +80,12 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
 
-  // Check AI service status on mount
   useEffect(() => {
     if (visible) {
       checkAIStatus();
     }
   }, [visible]);
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);

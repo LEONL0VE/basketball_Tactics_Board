@@ -12,28 +12,23 @@ from uuid import uuid4
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
 from nba_api.stats.static import players as nba_players_static
 from nba_api.stats.endpoints import commonplayerinfo, playercareerstats
 
-# Import local modules
 from epv_analytics import calculate_epv_series
 from fetch_shot_chart import fetch_player_shot_chart, fetch_shot_chart_by_id
 
 app = FastAPI()
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# --- Data Models ---
 
 class TrajectoryFrame(BaseModel):
     timestamp: float
@@ -42,11 +37,9 @@ class TrajectoryFrame(BaseModel):
 class AnalysisRequest(BaseModel):
     trajectory: List[TrajectoryFrame]
     court_type: Optional[str] = "full"
-    player_id: Optional[int] = None # Deprecated, kept for backward compatibility
-    player_map: Optional[Dict[str, int]] = None # New: Map of entity_id -> nba_player_id
+    player_id: Optional[int] = None
+    player_map: Optional[Dict[str, int]] = None
     sliders: Optional[Dict[str, float]] = None
-
-# --- Endpoints ---
 
 @app.get("/")
 async def root():
@@ -89,12 +82,10 @@ async def get_player_stats(player_id: int):
         headers = info.get_dict()['resultSets'][0]['headers']
         player_info = dict(zip(headers, data))
         
-        # Fetch career stats for averages
         career = playercareerstats.PlayerCareerStats(player_id=player_id)
         career_df = career.get_data_frames()[0]
         
         print(f"Fetching stats for player {player_id}")
-        print(f"Career DF empty? {career_df.empty}")
         
         stats = {
             "ppg": "-", "rpg": "-", "apg": "-", 
@@ -102,9 +93,7 @@ async def get_player_stats(player_id: int):
         }
         
         if not career_df.empty:
-            # Get latest season
             latest = career_df.iloc[-1]
-            print(f"Latest season data: {latest.to_dict()}")
             
             gp = latest['GP']
             if gp > 0:
