@@ -32,7 +32,7 @@ interface ToolCall {
   result?: any;
 }
 
-interface TacticStep {
+export interface TacticStep {
   order: number;
   player_number: string;
   action: string;
@@ -41,10 +41,12 @@ interface TacticStep {
   description: string;
 }
 
-interface GeneratedTactic {
+export interface GeneratedTactic {
   tactic_name: string;
+  name?: string;
   description: string;
   steps: TacticStep[];
+  frames?: any[];
 }
 
 // ============== Props ==============
