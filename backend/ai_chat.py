@@ -74,6 +74,9 @@ def get_position_role(number: str) -> str:
     }
     return roles.get(number, f"Player {number}")
 
+
+SYSTEM_PROMPT_GENERATE = """You are a professional basketball tactics analyst and coaching assistant. Your task is to generate basketball tactics based on user's natural language description.
+
 ## Court Coordinate System
 - Canvas size: 800 x 682 pixels
 - Basket position: approximately (400, 620)
