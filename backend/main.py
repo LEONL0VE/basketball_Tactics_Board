@@ -403,26 +403,48 @@ async def delete_tactic(tactic_id: str):
 # --- AI Chat Endpoints ---
 
 class ChatMessage(BaseModel):
-    role: str  # "user" or "assistant"
+    role: str
     content: str
+
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     current_tactic: Optional[Dict[str, Any]] = None
     stream: bool = True
 
+
 class GenerateTacticRequest(BaseModel):
     prompt: str
     stream: bool = True
+
 
 class ExplainTacticRequest(BaseModel):
     tactic_data: Dict[str, Any]
     stream: bool = True
 
 
+class AgentMessage(BaseModel):
+    role: str
+    content: str
+
+
+class AgentRequest(BaseModel):
+    messages: List[AgentMessage]
+    board_state: Optional[Dict[str, Any]] = None
+    max_steps: int = 6
+
+
 # Try to import AI service
 try:
-    from ai_chat import get_ai_service, AIConfig, AIProvider, TACTIC_TEMPLATES, get_court_region, get_position_role
+    from ai_chat import (
+        get_ai_service,
+        AIConfig,
+        AIProvider,
+        TACTIC_TEMPLATES,
+        get_court_region,
+        get_position_role,
+        run_agent,
+    )
     AI_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: AI chat module not available: {e}")
@@ -452,6 +474,37 @@ async def get_ai_status():
         "providers": providers,
         "default_provider": providers[0] if providers else None
     }
+
+
+@app.post("/api/agent")
+async def agent_chat(request: AgentRequest):
+    """Agent chat with tool use (SSE)."""
+    if not AI_AVAILABLE:
+        raise HTTPException(status_code=503, detail="AI service not available")
+
+    try:
+        _ = get_ai_service()
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"AI service initialization failed: {str(e)}")
+
+    formatted_messages = [{"role": m.role, "content": m.content} for m in request.messages]
+
+    async def event_stream():
+        try:
+            async for event in run_agent(
+                formatted_messages,
+                board_state=request.board_state,
+                max_steps=request.max_steps,
+            ):
+                yield "data: " + json.dumps(event) + "\n\n"
+        except Exception as e:
+            yield "data: " + json.dumps({"type": "error", "error": str(e)}) + "\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
+    )
 
 
 @app.post("/api/ai/chat")

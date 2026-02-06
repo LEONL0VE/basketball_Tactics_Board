@@ -2,6 +2,7 @@ import os
 import json
 import asyncio
 from typing import List, Dict, Any, Optional, AsyncGenerator
+from uuid import uuid4
 from dataclasses import dataclass
 from enum import Enum
 
@@ -27,11 +28,11 @@ class AIProvider(Enum):
 
 @dataclass
 class AIConfig:
-    provider: AIProvider = AIProvider.GEMINI
+    provider: AIProvider = AIProvider.OPENAI
     gemini_api_key: Optional[str] = None
     openai_api_key: Optional[str] = None
     deepseek_api_key: Optional[str] = None
-    model_name: str = "gemini-3-flash-preview"  # Changed to 1.5-flash for better stability
+    model_name: str = "gpt-4o"
     temperature: float = 0.7
     max_tokens: int = 4096
 
@@ -53,9 +54,6 @@ COURT_REGIONS = {
 
 
 def get_court_region(x: float, y: float) -> str:
-    """Convert x,y coordinates to semantic court region name"""
-    for region_id, region in COURT_REGIONS.items():
-        x_min, x_max = region["x_range"]
     for region_id, region in COURT_REGIONS.items():
         x_min, x_max = region["x_range"]
         y_min, y_max = region["y_range"]
@@ -198,6 +196,17 @@ Clear the tactics board.
 
 Please respond in English."""
 
+SYSTEM_PROMPT_AGENT = """
+You are an assistant that controls a basketball tactics board through tools. Decide whether to speak or to act. Prefer tools when a board change is needed. Keep coordinates within 0-800 (x) and 0-682 (y).
+
+Rules:
+- If user asks to draw, move, add, clear, or modify, call a tool (add_player, move_player, add_action, clear_board, generate_tactic, explain_tactic).
+- If user asks to explain or chat only, answer directly.
+- When calling tools, provide concise parameters. Use player_id when moving existing players; otherwise use number and team to create.
+- Do not invent unrealistic coordinates. Keep actions chronological and concise.
+- You may chain up to 6 steps: think -> call tool -> observe result -> continue.
+"""
+
 
 # ============== AI Service Class ==============
 
@@ -224,13 +233,14 @@ class AIService:
         elif self.config.provider == AIProvider.OPENAI:
             if not OPENAI_AVAILABLE:
                 raise ImportError("openai is not installed")
-            
+
             api_key = self.config.openai_api_key or os.getenv("OPENAI_API_KEY")
             if not api_key:
                 raise ValueError("OPENAI_API_KEY not provided")
-            
-            self.client = openai.AsyncOpenAI(api_key=api_key)
-            
+
+            base_url = os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
+            self.client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
+
         elif self.config.provider == AIProvider.DEEPSEEK:
             if not OPENAI_AVAILABLE:
                 raise ImportError("openai is not installed (needed for DeepSeek)")
@@ -589,6 +599,193 @@ TOOLS = [
 ]
 
 
+# ============== Agent Tooling (OpenAI-compatible) ==============
+
+def build_openai_tools() -> List[Dict[str, Any]]:
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": "generate_tactic",
+                "description": "Generate basketball tactics; returns a JSON tactic structure.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string",
+                            "description": "Tactic description, e.g., pick and roll",
+                        }
+                    },
+                    "required": ["description"],
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "explain_tactic",
+                "description": "Explain the current board or tactic in natural language.",
+                "parameters": {"type": "object", "properties": {}},
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "add_player",
+                "description": "Add a player to the board.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "team": {"type": "string", "enum": ["red", "blue"]},
+                        "number": {"type": "string", "enum": ["1", "2", "3", "4", "5"]},
+                        "x": {"type": "number"},
+                        "y": {"type": "number"},
+                    },
+                    "required": ["team", "number", "x", "y"],
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "move_player",
+                "description": "Move an existing player.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "player_id": {"type": "string"},
+                        "x": {"type": "number"},
+                        "y": {"type": "number"},
+                    },
+                    "required": ["player_id", "x", "y"],
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "add_action",
+                "description": "Add an action path for a player.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "player_id": {"type": "string"},
+                        "action_type": {"type": "string", "enum": ["move", "dribble", "pass", "screen", "shoot", "cut"]},
+                        "path": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {"x": {"type": "number"}, "y": {"type": "number"}},
+                                "required": ["x", "y"],
+                            },
+                        },
+                    },
+                    "required": ["player_id", "action_type", "path"],
+                },
+            },
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "clear_board",
+                "description": "Clear all entities and actions on the board.",
+                "parameters": {"type": "object", "properties": {}},
+            },
+        },
+    ]
+
+
+def ensure_board_state(board_state: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not board_state:
+        return {
+            "frames": [
+                {
+                    "entities": [],
+                    "actionsMap": {"full": []},
+                    "meta": {},
+                }
+            ]
+        }
+    if not board_state.get("frames"):
+        board_state["frames"] = [
+            {"entities": [], "actionsMap": {"full": []}, "meta": {}}
+        ]
+    for frame in board_state["frames"]:
+        frame.setdefault("entities", [])
+        frame.setdefault("actionsMap", {}).setdefault("full", [])
+    return board_state
+
+
+def _find_player(frame: Dict[str, Any], player_id: str) -> Optional[Dict[str, Any]]:
+    for entity in frame.get("entities", []):
+        if entity.get("type") == "player" and (
+            entity.get("id") == player_id or entity.get("number") == player_id
+        ):
+            return entity
+    return None
+
+
+def execute_tool_call(name: str, args: Dict[str, Any], board_state: Dict[str, Any]) -> Dict[str, Any]:
+    state = ensure_board_state(board_state)
+    frame = state["frames"][0]
+
+    if name == "clear_board":
+        return ensure_board_state({})
+
+    if name == "add_player":
+        player_id = str(uuid4())
+        frame["entities"].append(
+            {
+                "id": player_id,
+                "type": "player",
+                "team": args.get("team"),
+                "number": args.get("number"),
+                "position": {"x": args.get("x", 0), "y": args.get("y", 0)},
+            }
+        )
+        return state
+
+    if name == "move_player":
+        player = _find_player(frame, args.get("player_id", ""))
+        if player:
+            player.setdefault("position", {})
+            player["position"].update({"x": args.get("x", 0), "y": args.get("y", 0)})
+        return state
+
+    if name == "add_action":
+        frame.setdefault("actionsMap", {}).setdefault("full", []).append(
+            {
+                "playerId": args.get("player_id"),
+                "type": args.get("action_type"),
+                "path": args.get("path", []),
+            }
+        )
+        return state
+
+    if name == "generate_tactic":
+        description = (args.get("description") or "").lower()
+        if "pick" in description and "roll" in description:
+            tactic = TACTIC_TEMPLATES.get("pick_and_roll")
+        elif "triangle" in description:
+            tactic = TACTIC_TEMPLATES.get("triangle_offense")
+        else:
+            tactic = TACTIC_TEMPLATES.get("fast_break")
+        return tactic or state
+
+    if name == "explain_tactic":
+        return {"message": "Explanation requested", "summary": _convert_state_summary(state)}
+
+    return state
+
+
+def _convert_state_summary(state: Dict[str, Any]) -> str:
+    state = ensure_board_state(state)
+    lines = []
+    for i, frame in enumerate(state.get("frames", [])):
+        lines.append(f"Frame {i+1}: {len(frame.get('entities', []))} entities, {len(frame.get('actionsMap', {}).get('full', []))} actions")
+    return " | ".join(lines)
+
+
 # ============== Predefined Tactics Templates ==============
 
 TACTIC_TEMPLATES = {
@@ -726,6 +923,10 @@ def get_ai_service(config: Optional[AIConfig] = None) -> AIService:
                 config = AIConfig(provider=AIProvider.DEEPSEEK, model_name="deepseek-chat")
             else:
                 raise ValueError("No AI API key found in environment variables")
+
+        # Ensure model name matches provider
+        if config.provider == AIProvider.GEMINI:
+            config.model_name = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
         
         _ai_service = AIService(config)
     
@@ -736,3 +937,115 @@ def reset_ai_service():
     """Reset the AI service (useful for changing configuration)"""
     global _ai_service
     _ai_service = None
+
+
+async def run_agent(
+    messages: List[Dict[str, str]],
+    board_state: Optional[Dict[str, Any]] = None,
+    max_steps: int = 6,
+):
+    """Multi-step agent that can call tools and stream events."""
+    ai_service = get_ai_service()
+
+    if ai_service.config.provider == AIProvider.GEMINI:
+        # Gemini path: stream plain chat (no tool-calling)
+        async for chunk in ai_service.chat(messages, board_state):
+            yield {"type": "text", "content": chunk}
+        yield {"type": "done", "board_state": ensure_board_state(board_state)}
+        return
+
+    state = ensure_board_state(board_state)
+    conversation: List[Dict[str, Any]] = [{"role": "system", "content": SYSTEM_PROMPT_AGENT}]
+    conversation.extend(messages)
+
+    for _ in range(max_steps):
+        text_accumulator = ""
+        tool_call_buffer: Dict[str, Dict[str, Any]] = {}
+
+        response = await ai_service.client.chat.completions.create(
+            model=ai_service.config.model_name,
+            messages=conversation,
+            temperature=ai_service.config.temperature,
+            max_tokens=ai_service.config.max_tokens,
+            stream=True,
+            tools=build_openai_tools(),
+            tool_choice="auto",
+        )
+
+        async for chunk in response:
+            delta = chunk.choices[0].delta
+
+            content_delta = getattr(delta, "content", None)
+            if content_delta:
+                if isinstance(content_delta, str):
+                    text_piece = content_delta
+                else:
+                    text_piece = "".join(
+                        part.text for part in content_delta if getattr(part, "text", "")
+                    )
+                if text_piece:
+                    text_accumulator += text_piece
+                    yield {"type": "text", "content": text_piece}
+
+            tool_calls_delta = getattr(delta, "tool_calls", None)
+            if tool_calls_delta:
+                for call in tool_calls_delta:
+                    call_id = call.id or str(uuid4())
+                    buf = tool_call_buffer.setdefault(
+                        call_id,
+                        {
+                            "id": call_id,
+                            "type": "function",
+                            "function": {"name": None, "arguments": ""},
+                        },
+                    )
+                    if call.function:
+                        if call.function.name:
+                            buf["function"]["name"] = call.function.name
+                        if call.function.arguments:
+                            buf["function"]["arguments"] += call.function.arguments
+
+        if text_accumulator:
+            conversation.append({"role": "assistant", "content": text_accumulator})
+
+        if not tool_call_buffer:
+            break
+
+        conversation.append(
+            {
+                "role": "assistant",
+                "content": None,
+                "tool_calls": list(tool_call_buffer.values()),
+            }
+        )
+
+        for call_id, tool_call in tool_call_buffer.items():
+            tool_name = tool_call["function"].get("name") or ""
+            raw_args = tool_call["function"].get("arguments") or "{}"
+            try:
+                parsed_args = json.loads(raw_args)
+            except Exception:
+                parsed_args = {}
+
+            result = execute_tool_call(tool_name, parsed_args, state)
+
+            if tool_name in {"add_player", "move_player", "add_action", "clear_board"} and isinstance(result, dict):
+                state = ensure_board_state(result)
+
+            conversation.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": call_id,
+                    "content": json.dumps(result),
+                }
+            )
+
+            yield {
+                "type": "tool_result",
+                "tool_call_id": call_id,
+                "name": tool_name,
+                "result": result,
+                "board_state": state,
+            }
+
+    yield {"type": "done", "board_state": state}

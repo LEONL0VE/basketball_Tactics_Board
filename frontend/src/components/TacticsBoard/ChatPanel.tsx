@@ -119,10 +119,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const generateMessageId = () => `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Parse streaming NDJSON response
-  const parseStreamResponse = async (
+  const parseSSE = async (
     response: Response,
-    onChunk: (content: string) => void,
+    onText: (content: string) => void,
+    onToolResult: (event: any) => void,
     onDone: () => void,
     onError: (error: string) => void
   ) => {
@@ -138,34 +138,33 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     try {
       while (true) {
         const { done, value } = await reader.read();
-        
         if (done) {
           onDone();
           break;
         }
 
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
 
-        for (const line of lines) {
-          if (line.trim()) {
-            try {
-              const data = JSON.parse(line);
-              
-              if (data.type === 'text-delta') {
-                onChunk(data.content);
-              } else if (data.type === 'tool-call') {
-                // Handle tool calls
-                console.log('Tool call:', data);
-              } else if (data.type === 'error') {
-                onError(data.content);
-              } else if (data.type === 'done') {
-                onDone();
-              }
-            } catch (e) {
-              console.error('Failed to parse stream chunk:', line, e);
+        for (const evt of events) {
+          const line = evt.trim();
+          if (!line) continue;
+          const dataLine = line.startsWith('data:') ? line.slice(5).trim() : line;
+          if (!dataLine) continue;
+          try {
+            const payload = JSON.parse(dataLine);
+            if (payload.type === 'text') {
+              onText(payload.content || '');
+            } else if (payload.type === 'tool_result') {
+              onToolResult(payload);
+            } else if (payload.type === 'done') {
+              onDone();
+            } else if (payload.type === 'error') {
+              onError(payload.error || 'Unknown error');
             }
+          } catch (e) {
+            console.error('Failed to parse SSE chunk:', dataLine, e);
           }
         }
       }
@@ -209,13 +208,13 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
         .map(m => ({ role: m.role, content: m.content }));
       apiMessages.push({ role: 'user', content: content.trim() });
 
-      const response = await fetch(`${API_ENDPOINTS.BASE_URL}/api/ai/chat`, {
+      const response = await fetch(`${API_ENDPOINTS.BASE_URL}/api/agent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: apiMessages,
-          current_tactic: currentTactic,
-          stream: true,
+          board_state: currentTactic,
+          max_steps: 6,
         }),
       });
 
@@ -225,7 +224,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
       let fullContent = '';
 
-      await parseStreamResponse(
+      await parseSSE(
         response,
         (chunk) => {
           fullContent += chunk;
@@ -235,14 +234,15 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
               : m
           ));
         },
+        (event) => {
+          handleToolResult(event);
+        },
         () => {
           setMessages(prev => prev.map(m => 
             m.id === assistantMessageId 
               ? { ...m, isStreaming: false }
               : m
           ));
-          
-          // Check if response contains a generated tactic
           tryParseGeneratedTactic(fullContent);
         },
         (error) => {
@@ -264,6 +264,17 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleToolResult = (event: any) => {
+    const summary = event.name ? `Tool ${event.name} executed` : 'Tool executed';
+    const detail = event.result ? JSON.stringify(event.result) : '';
+    setMessages(prev => [...prev, {
+      id: generateMessageId(),
+      role: 'system',
+      content: `${summary}${detail ? ': ' + detail : ''}`,
+      timestamp: new Date(),
+    }]);
   };
 
   const tryParseGeneratedTactic = (content: string) => {
