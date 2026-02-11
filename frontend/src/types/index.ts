@@ -60,6 +60,7 @@ export interface Action {
   path: Position[];
   color?: string;
   speed?: SpeedLevel;
+  label?: string; // For "Danmaku" description
 }
 
 export type BoardEntity = Player | Ball;

@@ -6,6 +6,7 @@ import Player from './Player';
 import Ball from './Ball';
 import AssetsBar from './AssetsBar';
 import ActionLayer from './ActionLayer';
+import DanmakuLayer from './DanmakuLayer';
 import PlayerInfoPanel from './PlayerInfoPanel';
 import { BoardEntity, ViewMode, Player as PlayerType, Ball as BallType, TeamType, Action, ActionType, Position } from '../../types';
 import { COURT_WIDTH, COURT_HEIGHT, APP_BACKGROUND } from '../../utils/constants';
@@ -1216,6 +1217,24 @@ const TacticsBoard: React.FC = () => {
                     ⚡
                 </Button>
             </Tooltip>
+        </div>
+
+        {/* Label Input Row (Danmaku) */}
+        <div style={{ ...rowStyle, paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <Input 
+                placeholder="Action Label (e.g. Screen)" 
+                value={selectedAction.label || ''} 
+                onChange={(e) => {
+                    const newLabel = e.target.value;
+                    setActionsMap(prev => ({
+                        ...prev,
+                        [viewMode]: prev[viewMode].map(a => a.id === selectedActionId ? { ...a, label: newLabel } : a)
+                    }));
+                }}
+                size="small"
+                style={{ width: '100%', fontSize: '12px', background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }}
+                onClick={(e) => e.stopPropagation()} 
+            />
         </div>
 
         <div style={{ ...rowStyle, paddingTop: '4px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
@@ -2687,7 +2706,15 @@ const TacticsBoard: React.FC = () => {
                         viewMode={viewMode} 
                         currentFrameIndex={currentFrameIndex}
                       />
-                    )}<ActionLayer 
+                    )}
+                    <DanmakuLayer 
+                      actions={actions}
+                      entities={entities}
+                      viewMode={viewMode}
+                      isPlaying={isAnimationMode} // Or isPlaying state? isAnimationMode seems to be the mode toggle. isPlaying is the playback state.
+                      animationProgress={animationProgress}
+                    />
+                    <ActionLayer 
                       actions={actions}
                       currentAction={currentAction}
                       selectedActionId={selectedActionId}

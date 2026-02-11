@@ -19,7 +19,7 @@
   "animation_data": {
     "meta": {
       "version": "2.0",
-      "timestamp": "2026-01-29T07:28:13.817Z",
+      "timestamp": "2026-02-11T08:29:18.998Z",
       "viewMode": "full",
       "frameCount": 6,
       "name": "Flex Offense",
@@ -155,6 +155,7 @@
             "id": "9514c1f7-455e-404a-b493-5612c029f538",
             "type": "screen",
             "playerId": "9b48b8a6-48e5-40e7-b85e-0cf698b9d02f",
+            "label": "PF to set the screen for the PG",
             "path": [
               {
                 "x": 305.5657358929609,
@@ -179,6 +180,7 @@
       },
       {
         "id": "a0fbb644-ac56-47f8-8ca0-6d0ba16df041",
+        "description": "",
         "entities": [
           {
             "id": "277bc060-3cc1-40f6-9e22-7bbca361c69c",
@@ -323,7 +325,8 @@
                 "y": 453.64272083400954
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "label": "Cut to the rim"
           },
           {
             "id": "0712b046-b5d1-4d90-abae-49b90138e091",
@@ -347,7 +350,8 @@
                 "y": 418.9819477174426
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "label": "Defense"
           },
           {
             "id": "e9f69c87-ba58-499f-95cd-a663d744675a",
@@ -371,12 +375,14 @@
                 "y": 429.87805506060545
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "label": "Defense"
           }
         ]
       },
       {
         "id": "8ba3ea6d-7e80-42b1-9f67-9aa5ebb5070e",
+        "description": "",
         "entities": [
           {
             "id": "277bc060-3cc1-40f6-9e22-7bbca361c69c",
@@ -575,6 +581,7 @@
       },
       {
         "id": "9c6f386b-a01f-46c2-bc44-4384f6eb75f1",
+        "description": "",
         "entities": [
           {
             "id": "277bc060-3cc1-40f6-9e22-7bbca361c69c",
@@ -749,6 +756,7 @@
       },
       {
         "id": "fbe15388-5e3c-4bc4-8605-53a0dfa8c390",
+        "description": "",
         "entities": [
           {
             "id": "277bc060-3cc1-40f6-9e22-7bbca361c69c",
@@ -899,6 +907,7 @@
       },
       {
         "id": "6f6b594f-ca6f-48d7-bf8f-236bea5e0234",
+        "description": "",
         "entities": [
           {
             "id": "277bc060-3cc1-40f6-9e22-7bbca361c69c",
@@ -1023,6 +1032,6 @@
       }
     ]
   },
-  "updated_at": "2026-01-29T07:28:14.380478",
-  "created_at": "2026-01-29T07:28:14.380478"
+  "updated_at": "2026-02-11T08:29:19.308142",
+  "created_at": "2026-02-11T08:29:19.308142"
 }
