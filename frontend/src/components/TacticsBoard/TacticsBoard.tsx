@@ -3104,7 +3104,7 @@ const TacticsBoard: React.FC = () => {
                             const category = getFieldValue('category');
                             let currentSubCategories: string[] = [];
                             if (category === 'Offense') {
-                                currentSubCategories = ['Set Offense', 'Motion Offense', 'Actions'];
+                                currentSubCategories = ['Set', 'Motion', 'Actions', 'Continuity', 'Zone'];
                             } else if (category === 'Defense') {
                                 currentSubCategories = ['Man', 'Zone', 'Press'];
                             } else {

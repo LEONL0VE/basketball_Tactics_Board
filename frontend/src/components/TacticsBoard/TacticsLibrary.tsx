@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { 
   Drawer, Input, Card, Tag, Button, Typography, 
-  Space, Select, Empty, Spin, message, Row, Col, Badge, Tabs, Dropdown, Menu, Tooltip
+  Space, Select, Empty, Spin, message, Row, Col, Badge, Tabs, Dropdown, Menu, Tooltip, Modal
 } from 'antd';
 import { 
   SearchOutlined, PlayCircleOutlined, DeleteOutlined, EditOutlined, 
@@ -22,6 +22,26 @@ interface TacticsLibraryProps {
 
 const CATEGORIES = ['All', 'Offense', 'Defense', 'Strategy & Concepts'];
 
+const CATEGORY_TOOLTIPS: Record<string, string> = {
+  'Offense': 'Strategies to score points (e.g., Motion, Set)',
+  'Defense': 'Strategies to stop opponents (e.g., Man, Zone)',
+  'Strategy & Concepts': 'General game plans, philosophies, and learning modules',
+  'All': 'View all tactics'
+};
+
+const SUB_CATEGORY_TOOLTIPS: Record<string, string> = {
+  'Actions': 'Basic building blocks (Pick & Roll, cuts)',
+  'Motion': 'Read & React offense (Fluid, 4-Out, 5-Out)',
+  'Set': 'Fixed plays for specific shots (Horns, Quick hitters)',
+  'Continuity': 'Repeating structured patterns (Flex, Princeton)',
+  'Zone': 'Offense designed to beat Zone Defense / Defense guarding areas',
+  'Man': 'Man-to-Man defense assignments',
+  'Press': 'High-pressure full/half court defense',
+  'General Strategy': 'Overarching game plans',
+  'Concept': 'Theoretical ideas and principles',
+  'Lineup': 'Player combinations'
+};
+
 const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSelectTactic }) => {
   const [tactics, setTactics] = useState<Tactic[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,6 +49,26 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('All');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Preview Modal State
+  const [previewModal, setPreviewModal] = useState<{ visible: boolean, url: string, title: string }>({ 
+      visible: false, url: '', title: '' 
+  });
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return '';
+    // YouTube
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = '';
+        if (url.includes('v=')) {
+            videoId = url.split('v=')[1]?.split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1]?.split('?')[0];
+        }
+        if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  };
   
   // Extract all available sub-categories from current category
   const availableSubCategories = useMemo(() => {
@@ -220,11 +260,15 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                                     gap: 8
                                 }}>
                                      {tactic.external_links?.article && (
-                                        <a 
-                                            href={tactic.external_links.article} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            onClick={e => e.stopPropagation()}
+                                        <div 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setPreviewModal({
+                                                    visible: true,
+                                                    url: tactic.external_links.article!,
+                                                    title: 'Source Article'
+                                                });
+                                            }}
                                             style={{ 
                                                 flex: 1, 
                                                 display: 'flex', 
@@ -235,21 +279,26 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                                                 color: '#595959',
                                                 padding: '6px 8px',
                                                 borderRadius: 4,
-                                                textDecoration: 'none',
+                                                cursor: 'pointer',
                                                 transition: 'all 0.2s',
-                                                fontWeight: 500
+                                                fontWeight: 500,
+                                                userSelect: 'none'
                                             }}
                                             className="overlay-link article-link"
                                         >
-                                           <ReadOutlined style={{ marginRight: 6 }} /> Article
-                                        </a>
+                                           <ReadOutlined style={{ marginRight: 6 }} /> Source
+                                        </div>
                                     )}
                                     {tactic.external_links?.video && (
-                                        <a 
-                                            href={tactic.external_links.video} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            onClick={e => e.stopPropagation()}
+                                        <div 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setPreviewModal({
+                                                    visible: true,
+                                                    url: tactic.external_links.video!,
+                                                    title: 'Training Video'
+                                                });
+                                            }}
                                             style={{ 
                                                 flex: 1, 
                                                 display: 'flex', 
@@ -257,17 +306,18 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                                                 justifyContent: 'center',
                                                 fontSize: 12,
                                                 background: 'transparent',
-                                                color: '#595959', // Neutral Gray (Ghost Style)
+                                                color: '#595959',
                                                 padding: '6px 8px',
                                                 borderRadius: 4,
-                                                textDecoration: 'none',
+                                                cursor: 'pointer',
                                                 transition: 'all 0.2s',
-                                                fontWeight: 500
+                                                fontWeight: 500,
+                                                userSelect: 'none'
                                             }}
-                                            className="overlay-link video-link" // Keep class for hover differentiation if needed, or unify
+                                            className="overlay-link video-link"
                                         >
                                            <YoutubeOutlined style={{ marginRight: 6 }} /> Video
-                                        </a>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -430,7 +480,14 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                                 setSelectedSubCategory('All');
                             }} type="card" size="small">
                                 {CATEGORIES.map(cat => (
-                                    <TabPane tab={cat} key={cat} />
+                                    <TabPane 
+                                        tab={
+                                            <Tooltip title={CATEGORY_TOOLTIPS[cat]} placement="bottom">
+                                                <span>{cat}</span>
+                                            </Tooltip>
+                                        } 
+                                        key={cat} 
+                                    />
                                 ))}
                             </Tabs>
                             
@@ -440,10 +497,15 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                                     value={selectedSubCategory}
                                     onChange={setSelectedSubCategory}
                                     placeholder="Sub-Category"
+                                    optionLabelProp="label"
                                 >
-                                    <Select.Option value="All">All Types</Select.Option>
+                                    <Select.Option value="All" label="All Types">All Types</Select.Option>
                                     {availableSubCategories.map(sub => (
-                                        <Select.Option key={sub} value={sub}>{sub}</Select.Option>
+                                        <Select.Option key={sub} value={sub} label={sub}>
+                                            <Tooltip title={SUB_CATEGORY_TOOLTIPS[sub] || sub} placement="right">
+                                                <div style={{ width: '100%' }}>{sub}</div>
+                                            </Tooltip>
+                                        </Select.Option>
                                     ))}
                                 </Select>
                             )}
@@ -489,6 +551,35 @@ const TacticsLibrary: React.FC<TacticsLibraryProps> = ({ visible, onClose, onSel
                 )}
              </div>
         )}
+        {/* Content Preview Modal */}
+        <Modal
+            title={previewModal.title}
+            open={previewModal.visible}
+            onCancel={() => setPreviewModal(prev => ({ ...prev, visible: false }))}
+            footer={null}
+            width={900}
+            centered
+            destroyOnClose
+            bodyStyle={{ 
+                padding: 0, 
+                overflow: 'hidden', 
+                height: '65vh',
+                background: (previewModal.url.includes('youtube') || previewModal.url.includes('youtu.be')) ? '#000' : '#fff'
+            }}
+        >
+             <iframe
+                src={getEmbedUrl(previewModal.url)}
+                title={previewModal.title}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 0
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+            />
+        </Modal>
+
     </Drawer>
   );
 };

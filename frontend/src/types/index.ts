@@ -73,7 +73,7 @@ export interface TacticExternalLinks {
 
 export type TacticCategory = 'Offense' | 'Defense' | 'Strategy & Concepts';
 export type TacticSubCategory = 
-  | 'Set Offense' | 'Motion Offense' | 'Actions'  // Offense
+  | 'Set' | 'Motion' | 'Actions' | 'Continuity' // Offense
   | 'Man' | 'Zone' | 'Press'                    // Defense
   | 'General Strategy' | 'Concept' | 'Lineup';  // Strategy & Concepts
 

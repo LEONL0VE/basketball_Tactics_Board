@@ -232,7 +232,7 @@ class TacticMetadata(BaseModel):
     id: str
     name: str = "Untitled Tactic"
     category: str = "Strategy & Concepts"  # Offense, Defense, Strategy & Concepts
-    sub_category: Optional[str] = None # Set Offense, Motion Offense, Actions, Man, Zone, Press
+    sub_category: Optional[str] = None # Set, Motion, Actions, Man, Zone, Press
     description: str = ""
     tags: List[str] = []
     external_links: TacticExternalLinks = Field(default_factory=TacticExternalLinks)

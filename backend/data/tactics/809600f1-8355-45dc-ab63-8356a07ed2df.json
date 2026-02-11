@@ -1,9 +1,9 @@
 {
   "id": "809600f1-8355-45dc-ab63-8356a07ed2df",
   "preview_source": "custom",
-  "name": "Motion Offense",
+  "name": "Motion",
   "category": "Offense",
-  "sub_category": "Motion Offense",
+  "sub_category": "Motion",
   "description": "A flexible offensive system based on rules rather than set plays. Players constantly move, pass, and screen (cut) based on reading the defense.",
   "tags": [
     "Passing",
@@ -22,7 +22,7 @@
       "timestamp": "2026-01-29T03:15:23.739Z",
       "viewMode": "full",
       "frameCount": 1,
-      "name": "Motion Offense",
+      "name": "Motion",
       "description": "A flexible offensive system based on rules rather than set plays. Players constantly move, pass, and screen (cut) based on reading the defense."
     },
     "frames": [
