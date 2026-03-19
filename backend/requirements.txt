@@ -7,3 +7,4 @@ scipy
 nba_api
 requests
 python-dotenv
+httpx
