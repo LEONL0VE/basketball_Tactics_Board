@@ -3,7 +3,7 @@
 ## Project Introduction
 This is a basketball tactics board frontend project based on React + TypeScript + Konva.
 
-**Live Demo**: [https://basketball-tactics-board.vercel.app/](https://basketball-tactics-board.vercel.app/)
+**Live Demo**: 
 
 ## Quick Start
 
