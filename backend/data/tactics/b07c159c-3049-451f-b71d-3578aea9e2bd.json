@@ -6,7 +6,11 @@
   "category": "Offense",
   "sub_category": "Continuity",
   "description": "A classic set play popularized by John Wooden. Starts in a 1-4 High alignment. The point guard passes to the wing and cuts off a screen set by the high post player (the UCLA Cut) looking for a layup.",
-  "tags": [],
+  "tags": [
+    "Cut",
+    "Post_Up",
+    "Off_Screen"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/UCLA_High_Post_Offense",
     "video": "https://www.youtube.com/watch?v=aQXubrbqj20"

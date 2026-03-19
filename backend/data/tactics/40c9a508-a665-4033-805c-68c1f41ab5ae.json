@@ -6,7 +6,11 @@
   "category": "Offense",
   "sub_category": "Continuity",
   "description": "A continuity offense that involves all five players rotating through all positions. Known for the \"shuffle cut\" off a high post screen.",
-  "tags": [],
+  "tags": [
+    "Cut",
+    "Off_Screen",
+    "Hand_Off"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Shuffle_offense",
     "video": "https://www.youtube.com/watch?v=TBoPD_2ndn0"
@@ -169,7 +173,8 @@
                 "y": 75.36533925552956
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f6f85d5a-b7d0-4bd9-a5a3-c676e1b8d59e",
@@ -193,7 +198,8 @@
                 "y": 176.4152057593254
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -344,7 +350,8 @@
                 "y": 473.19477356542717
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "4da1d927-c8ad-4b9e-80bc-45792d01cbf6",
@@ -368,7 +375,8 @@
                 "y": 468.500938874612
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -519,7 +527,8 @@
                 "y": 354.46746772686316
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "c926d751-0e45-450f-9b39-ebabb428969a",
@@ -543,7 +552,8 @@
                 "y": 375.47363346460634
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "a20db3f5-328c-48a8-ae03-0f7096127327",
@@ -567,7 +577,8 @@
                 "y": 86.38878116899733
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -718,7 +729,8 @@
                 "y": 100.39289166082614
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -869,7 +881,8 @@
                 "y": 39.37498166071488
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "55bd8299-93e8-410f-a79d-88ef34d0e5d6",
@@ -893,7 +906,8 @@
                 "y": 80.38701952964212
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1044,7 +1058,8 @@
                 "y": 540.5220785468745
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "0838533b-cb34-48eb-a956-dc2a30725534",
@@ -1068,7 +1083,8 @@
                 "y": 508.51268313698006
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1219,7 +1235,8 @@
                 "y": 379.4748078908432
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "8b7738f4-b58e-492b-8164-8e4eeea2e7d6",
@@ -1243,7 +1260,8 @@
                 "y": 401.4812672351456
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1394,7 +1412,8 @@
                 "y": 310.45454903825834
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "e3431213-cbf5-4906-81e6-3979578a4838",
@@ -1418,7 +1437,8 @@
                 "y": 328.45983395632396
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "17f932d2-b2a3-4f40-91b4-3d8a7ee36c8e",
@@ -1442,7 +1462,8 @@
                 "y": 488.9256457166225
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "40b32702-348f-45ff-aacd-5facdc961776",
@@ -1466,7 +1487,8 @@
                 "y": 360.4692293662183
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "6915c176-bd67-49d2-a7ce-3ffbb7b5b127",
@@ -1490,7 +1512,8 @@
                 "y": 478.29445758479085
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1641,7 +1664,8 @@
                 "y": 364.47040379245516
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

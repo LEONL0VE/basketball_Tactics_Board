@@ -6,10 +6,9 @@
   "sub_category": "Continuity",
   "description": "A continuity offense is a pattern of movement, passing, and screening that flows continuously. If the primary scoring option is denied, the offense seamlessly transitions into the next phase without resetting, repeating the pattern on either side of the court until an open shot is created. It relies heavily on high basketball IQ, constant motion, and stamina.",
   "tags": [
+    "Hand_Off",
     "Cut",
-    "Off_Screen",
-    "Spot_Up",
-    "Hand_Off"
+    "Off_Screen"
   ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Continuity_offense",

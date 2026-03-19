@@ -6,7 +6,10 @@
   "category": "Offense",
   "sub_category": "Actions",
   "description": "A fundamental 2-man play. One offensive player sets a screen for the ball handler, then moves (rolls) toward the basket to receive a pass.",
-  "tags": [],
+  "tags": [
+    "PnR_BH",
+    "PnR_RM"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Pick_and_roll",
     "video": "https://www.youtube.com/watch?v=ffjo8ReDzhA"
@@ -92,7 +95,8 @@
                 "y": 358.8180732899869
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           }
         ]
       },
@@ -166,7 +170,8 @@
                 "y": 360.1093519755365
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

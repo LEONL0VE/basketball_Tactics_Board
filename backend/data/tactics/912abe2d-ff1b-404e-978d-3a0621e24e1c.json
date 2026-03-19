@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Press",
   "description": "A defensive strategy applied in the backcourt to force turnovers or 8-second violations.",
-  "tags": [],
+  "tags": ["Deny", "Trap"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Full-court_press",
     "video": "https://www.youtube.com/watch?v=hDVFz8V_yGA"
@@ -124,7 +124,8 @@
                 "y": 153.40845280846378
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "c9b4a633-d3c4-489f-9374-a94f5dbe75ae",
@@ -148,7 +149,8 @@
                 "y": 193.42019707083182
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "6cfebb4b-a5aa-488e-b24d-93ba2f0e67c2",
@@ -172,7 +174,8 @@
                 "y": 380.47510149740236
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -278,7 +281,8 @@
                 "y": 166.41226969373338
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "82640685-88f1-4c35-8d56-012f4fc5d2fa",
@@ -302,7 +306,8 @@
                 "y": 412.4844969072968
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "3a12398e-3226-44ac-9bc8-9ac014936d2c",
@@ -326,7 +331,8 @@
                 "y": 253.43781346438385
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -432,7 +438,8 @@
                 "y": 47.37733051318849
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "d7593187-0b41-4b4a-b8a7-0b768c37316a",
@@ -456,7 +463,8 @@
                 "y": 70.38408346405011
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "5bbaafea-fdac-46ac-9c54-8ac9651da5f1",
@@ -480,7 +488,8 @@
                 "y": 39.37498166071488
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "342ec549-e4eb-40ba-8111-5439d60df69b",
@@ -504,7 +513,8 @@
                 "y": 322.4580723169687
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "b71b05a5-3012-44ab-a105-2c80194e5123",
@@ -528,7 +538,8 @@
                 "y": 321.4577787104095
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "7237e97d-9dc5-43b5-815e-2ef31de9cd70",
@@ -552,7 +563,8 @@
                 "y": 70.38408346405011
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

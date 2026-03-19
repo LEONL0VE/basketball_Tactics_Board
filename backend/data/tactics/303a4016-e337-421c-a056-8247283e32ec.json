@@ -5,7 +5,11 @@
   "category": "Strategy & Concepts",
   "sub_category": "Lineup",
   "description": "A strategic style of play that sacrifices height, physical strength, and traditional post presence in favor of speed, agility, and elite perimeter shooting. A small-ball lineup typically replaces a traditional center or power forward with smaller, faster wings or guards. The goal is to maximize court spacing (often using a \"5-out\" alignment), push the pace in transition, create defensive mismatches, and generate high-value three-point opportunities.",
-  "tags": [],
+  "tags": [
+    "Spot_Up",
+    "Transition",
+    "PnR_BH"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Small_ball_(basketball)",
     "video": "https://www.youtube.com/watch?v=k2p6DAqzKbQ"

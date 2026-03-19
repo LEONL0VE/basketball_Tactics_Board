@@ -9,8 +9,8 @@
   "tags": [
     "Cut",
     "Post_Up",
-    "Off_Screen",
-    "Spot_Up"
+    "Hand_Off",
+    "Off_Screen"
   ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Princeton_offense",
@@ -196,7 +196,8 @@
                 "y": 434.131829881619
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "f4835315-0254-467c-8c8b-886e3a97d2dd",
@@ -220,7 +221,8 @@
                 "y": 289.0877853359168
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "2f7aa171-5e4b-451a-8320-8617f45ebffc",
@@ -244,7 +246,8 @@
                 "y": 406.1233247279662
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -395,7 +398,8 @@
                 "y": 453.13760123588344
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "e5b2beff-42ca-4a60-9cef-74b3a8490d4a",
@@ -419,7 +423,8 @@
                 "y": 107.03250183717336
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "6c95e07f-6b4c-4730-8ff8-259326ba5968",
@@ -443,7 +448,8 @@
                 "y": 431.1309186151562
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "d7a25934-7257-49b2-af95-ad27892ae116",
@@ -467,7 +473,8 @@
                 "y": 263.0798876932392
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           }
         ]
       },
@@ -618,7 +625,8 @@
                 "y": 295.08960786884245
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "6fa397d6-7367-4456-a707-94ffc8f64353",
@@ -642,7 +650,8 @@
                 "y": 271.08231773714
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -793,7 +802,8 @@
                 "y": 340.1032768657845
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

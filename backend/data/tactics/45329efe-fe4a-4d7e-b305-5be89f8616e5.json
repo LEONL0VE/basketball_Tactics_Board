@@ -5,7 +5,11 @@
   "category": "Strategy & Concepts",
   "sub_category": "Concept",
   "description": "A 'slasher' is a type of basketball player (typically a guard or wing) whose primary offensive mindset is to aggressively drive to the basket for layups, dunks, or to draw fouls, rather than shooting from the perimeter. Slashers utilize exceptional speed, athleticism, and ball-handling to beat defenders off the dribble and attack the paint. Their relentless rim pressure is vital for breaking down defensive shells, forcing help defense to collapse, and generating high-quality 'drive and kick' opportunities for open shooters.",
-  "tags": [],
+  "tags": [
+    "Isolation",
+    "Transition",
+    "Cut"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Slasher_(basketball)",
     "video": "https://www.coachesclipboard.net/MatchUpZone.html"

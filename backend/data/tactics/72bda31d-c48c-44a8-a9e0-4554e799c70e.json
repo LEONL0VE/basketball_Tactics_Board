@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Zone",
   "description": "A defensive strategy where each player is assigned to guard a specific area (zone) of the court rather than a specific offensive player. The entire defensive formation shifts seamlessly in response to ball movement. It is highly effective at protecting the paint, stopping penetration, and forcing opponents into low-percentage outside shots, though it can be vulnerable to quick ball reversals and elite three-point shooting.",
-  "tags": [],
+  "tags": ["Rim_Protect", "Closeout", "Rotate"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Zone_defense",
     "video": "https://www.youtube.com/watch?v=V5VENiSE3U0"

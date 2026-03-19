@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Zone",
   "description": "A combination defense where four players play a box zone while one player plays aggressive man-to-man on the opponent's best scorer.",
-  "tags": [],
+  "tags": ["Deny", "Rim_Protect", "Rotate"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Box-and-one_defense",
     "video": "https://www.youtube.com/watch?v=R8cwiXpxG1U"
@@ -168,7 +168,8 @@
                 "y": 348.46570608750795
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f05b9882-f4df-49ab-947e-6c5e7f97334a",
@@ -192,7 +193,8 @@
                 "y": 443.493598710632
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "3e1c72c3-9c9e-4e42-9278-6667257410ed",
@@ -216,7 +218,8 @@
                 "y": 330.4604211694423
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -366,7 +369,8 @@
                 "y": 224.42929887416705
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -516,7 +520,8 @@
                 "y": 155.40904002158217
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "1de5a18a-f8d3-431c-b526-7c2e2a94ec93",
@@ -540,7 +545,8 @@
                 "y": 466.50035166149365
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "340905fd-f438-4a10-bb26-046d32e23ad0",
@@ -564,7 +570,8 @@
                 "y": 456.49741559590166
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "c10f2617-ea7e-4a13-8e5b-285014e13c49",
@@ -588,7 +595,8 @@
                 "y": 439.4924242843952
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -738,7 +746,8 @@
                 "y": 294.4498513333111
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "828d6c52-ca02-4482-a499-22a12929b452",
@@ -762,7 +771,8 @@
                 "y": 398.480386415468
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "df9bfa31-31dd-41f1-a0a1-81825c736a4d",
@@ -786,7 +796,8 @@
                 "y": 304.4527873989031
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -936,7 +947,8 @@
                 "y": 394.4792119892312
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "bbcaf453-2cec-4b39-9306-082dc7180110",
@@ -960,7 +972,8 @@
                 "y": 375.4736334646064
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "3f344629-d05a-4509-8f6e-2a04ddf7a953",
@@ -984,7 +997,8 @@
                 "y": 339.46306362847514
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "6a28fb6b-1acf-4d2e-93b4-bcd9b30b19fa",
@@ -1008,7 +1022,8 @@
                 "y": 321.4577787104095
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "01a3c7be-1bec-40d0-bc1d-6011683f7b7d",
@@ -1032,7 +1047,8 @@
                 "y": 456.49741559590166
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "acd0a49d-3150-4d6f-90ae-858ad906f37e",
@@ -1056,7 +1072,8 @@
                 "y": 488.50681100579607
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1206,7 +1223,8 @@
                 "y": 381.47539510396155
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "c66c9c15-6b49-4a43-8efc-8c94b3e6863b",
@@ -1230,7 +1248,8 @@
                 "y": 640.5514392027945
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "844b8b3a-046e-4dbc-874d-cebbbfb51e93",
@@ -1254,7 +1273,8 @@
                 "y": 447.27475192971025
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "62edb538-10a2-41c4-8349-3c804affe534",
@@ -1278,7 +1298,8 @@
                 "y": 467.9406876823696
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "e005356e-07f8-4b3a-95d6-c2a3c67e7415",
@@ -1302,7 +1323,8 @@
                 "y": 627.547622317525
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -1452,7 +1474,8 @@
                 "y": 345.46482526783035
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

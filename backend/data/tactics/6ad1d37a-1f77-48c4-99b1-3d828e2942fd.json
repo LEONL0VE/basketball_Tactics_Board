@@ -5,7 +5,10 @@
   "category": "Offense",
   "sub_category": "Actions",
   "description": "A variation of the pick and roll. Instead of rolling to the rim, the screener moves to an open area (pops) to take a jump shot.",
-  "tags": [],
+  "tags": [
+    "PnR_BH",
+    "Spot_Up"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Pick_and_roll#Other_variations",
     "video": "https://www.youtube.com/watch?v=ZqBxDaTbOns"
@@ -92,7 +95,8 @@
                 "y": 377.1145158188257
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           }
         ]
       },
@@ -165,7 +169,8 @@
                 "y": 249.07563511641277
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "74baac51-7904-4c71-a457-371a3fe5ea28",
@@ -189,7 +194,8 @@
                 "y": 284.0862665584788
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -262,7 +268,8 @@
                 "y": 332.1008468218837
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -335,7 +342,8 @@
                 "y": 322.0978092670077
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -408,7 +416,8 @@
                 "y": 343.1041881322473
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

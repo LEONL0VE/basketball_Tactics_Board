@@ -5,7 +5,12 @@
   "category": "Strategy & Concepts",
   "sub_category": "General Strategy",
   "description": "An extreme, fast-paced basketball strategy developed at Grinnell College. It relies on a mathematical formula that prioritizes three-point shots, offensive rebounds, and forcing turnovers over defensive stops. The system's core tenets include: taking the first available shot (preferably a 3-pointer within 12 seconds), crashing the offensive glass with all non-shooters, applying relentless full-court press, and substituting players in 5-man \"hockey shifts\" every 1-2 minutes to maintain absolute maximum energy.",
-  "tags": [],
+  "tags": [
+    "Transition",
+    "Spot_Up",
+    "Putback",
+    "Trap"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Grinnell_System",
     "video": "https://www.youtube.com/watch?v=1ZNXH_OcaV4"

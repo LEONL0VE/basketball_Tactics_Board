@@ -7,8 +7,8 @@
   "sub_category": "Motion",
   "description": "A highly structured motion offense that divides the five players into two distinct roles: \"Blockers\" (typically forwards/centers) who constantly set screens, and \"Movers\" (typically guards/wings) who use these screens to cut, curl, or spot-up for open shots. It relies heavily on pin-downs, flare screens, and cross screens, demanding high stamina and screen-reading abilities.",
   "tags": [
-    "Cut",
     "Off_Screen",
+    "Cut",
     "Spot_Up"
   ],
   "external_links": {

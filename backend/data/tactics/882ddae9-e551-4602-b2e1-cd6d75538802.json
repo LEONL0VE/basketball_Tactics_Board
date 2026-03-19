@@ -4,7 +4,11 @@
   "name": "Wheel offense",
   "category": "Offense",
   "description": "A continuity offense similar to the Flex, characterized by a specific wheel-like rotation pattern of players to create screening angles.",
-  "tags": [],
+  "tags": [
+    "Cut",
+    "Off_Screen",
+    "Hand_Off"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Wheel_offense",
     "video": "https://www.youtube.com/watch?v=J4qxIfTyPlc"
@@ -168,7 +172,8 @@
                 "y": 233.43194133319986
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "e3931f0d-6a5f-4b86-b69a-77e341f0872f",
@@ -192,7 +197,8 @@
                 "y": 87.38907477555652
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -342,7 +348,8 @@
                 "y": 97.39201084114853
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "67adf19b-601f-4ec7-8132-b8643ccd58be",
@@ -366,7 +373,8 @@
                 "y": 107.39494690674054
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -516,7 +524,8 @@
                 "y": 396.47979920234957
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "822405a0-7651-4d8f-b3aa-feb0a9204f3d",
@@ -540,7 +549,8 @@
                 "y": 241.43429018567346
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "1b858322-6b4d-4f79-81cd-785c85a6384e",
@@ -564,7 +574,8 @@
                 "y": 292.73105776081945
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "2ceef676-1ce6-4af3-b360-0d595ade399f",
@@ -588,7 +599,8 @@
                 "y": 354.4674677268631
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "b86aa802-ba49-40c8-be22-7284abc43ba5",
@@ -612,7 +624,8 @@
                 "y": 327.4595403497647
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           }
         ]
       },
@@ -762,7 +775,8 @@
                 "y": 373.473046251488
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "c77ca467-0574-4a8a-87eb-1fa741bf50a0",
@@ -786,7 +800,8 @@
                 "y": 239.43370297255504
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "8ec333d0-79f2-4f5e-95df-ec1ecd33b6b9",
@@ -810,7 +825,8 @@
                 "y": 308.4539618251399
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "e50b5619-8e66-4fa3-96e5-05bdc04c28a0",
@@ -834,7 +850,8 @@
                 "y": 367.47128461213276
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -984,7 +1001,8 @@
                 "y": 230.43106051352225
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -1134,7 +1152,8 @@
                 "y": 336.46218280879754
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

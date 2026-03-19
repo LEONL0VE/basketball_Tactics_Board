@@ -5,7 +5,9 @@
   "category": "Offense",
   "sub_category": "Set",
   "description": "A delay tactic used to run out the clock. Four players stand in the corners of the half-court while the point guard handles the ball in the middle.",
-  "tags": [],
+  "tags": [
+    "Isolation"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Four_corners_offense",
     "video": "https://www.youtube.com/watch?v=nJLj1SgD0eQ"
@@ -168,7 +170,8 @@
                 "y": 178.4157929724438
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f2738b6a-2acd-47d0-aa8f-9d31c13abd08",
@@ -192,7 +195,8 @@
                 "y": 195.4207842839502
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "fd95699c-e46c-426a-9c48-b19f6c636860",
@@ -216,7 +220,8 @@
                 "y": 124.39993821824696
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -366,7 +371,8 @@
                 "y": 32.372926414800475
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -516,7 +522,8 @@
                 "y": 322.4580723169687
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "79cfa27c-3b54-4196-8320-e1405cca42f5",
@@ -540,7 +547,8 @@
                 "y": 314.4557234644951
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -690,7 +698,8 @@
                 "y": 45.37674330007009
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "76b13a98-a42b-4c03-8060-702d8bb4e2ef",
@@ -714,7 +723,8 @@
                 "y": 39.37498166071488
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           }
         ]
       },

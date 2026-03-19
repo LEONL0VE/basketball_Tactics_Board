@@ -5,7 +5,7 @@
   "category": "Strategy & Concepts",
   "sub_category": "General Strategy",
   "description": "A defensive strategy that involves intentionally committing personal fouls throughout the game against an opposing player who shoots free throws poorly (historically popularized against Shaquille O'Neal). The mathematical goal is to lower the opponent's points per possession (PPP) to around 1.0 or less, which is mathematically favorable compared to letting a high-powered offense run its normal plays. It also disrupts the opponent's offensive rhythm, stops the game clock, and prevents fast breaks, though it puts the fouling team in the penalty early.",
-  "tags": [],
+  "tags": ["Deny"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Hack-a-Shaq",
     "video": "https://www.youtube.com/watch?v=Zq_aDORR880"

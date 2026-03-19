@@ -5,7 +5,11 @@
   "category": "Strategy & Concepts",
   "sub_category": "Lineup",
   "description": "A highly specialized, hyper-efficient small-ball lineup popularized by the Golden State Warriors. It replaces a traditional center with a versatile, undersized forward (like Draymond Green) who can defend bigger players, rebound, and initiate the offense. The lineup features five players who can all shoot, pass, and dribble, creating unparalleled spacing (\"5-out\"). Defensively, their similar sizes and elite agility allow for an \"infinite switch\" scheme, neutralizing opponent pick-and-rolls and passing lanes.",
-  "tags": [],
+  "tags": [
+    "Spot_Up",
+    "Transition",
+    "PnR_BH"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Death_Lineup",
     "video": "https://www.youtube.com/watch?v=zBXh88F8POY"

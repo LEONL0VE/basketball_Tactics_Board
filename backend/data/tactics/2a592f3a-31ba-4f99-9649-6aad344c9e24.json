@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Zone",
   "description": "An aggressive zone intended to trap the ball handler and force turnovers. Features a chaser at the top and a warrior on the baseline.",
-  "tags": [],
+  "tags": ["Trap", "Rotate", "Rim_Protect"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/1%E2%80%933%E2%80%931_defense_and_offense",
     "video": "https://www.youtube.com/watch?v=zDjqNoPYfc8"
@@ -168,7 +168,8 @@
                 "y": 563.5288314977362
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "18073c74-d544-499d-9108-2c62eb11245c",
@@ -192,7 +193,8 @@
                 "y": 312.4551362513767
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "90c9cc6c-7f78-41cb-92db-666eb964daf5",
@@ -216,7 +218,8 @@
                 "y": 451.49594756310563
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "dca36598-32b1-4ddc-a056-81c01f04547e",
@@ -240,7 +243,8 @@
                 "y": 400.4809736285864
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -390,7 +394,8 @@
                 "y": 478.50387494020407
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "9522b744-643f-4204-907c-b01fb46c7acc",
@@ -414,7 +419,8 @@
                 "y": 353.4671741203039
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "14b7f373-50a6-4c3e-ac82-aa79474e6d37",
@@ -438,7 +444,8 @@
                 "y": 396.47979920234957
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -588,7 +595,8 @@
                 "y": 127.40081903792456
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "d952ed22-8c5d-49f4-aa01-a46f5164e695",
@@ -612,7 +620,8 @@
                 "y": 158.40992084125978
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "1bcfef18-1c76-4b56-b065-31cc24cfe0ef",
@@ -636,7 +645,8 @@
                 "y": 339.46306362847514
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "9f94471a-bb41-4efe-ae0a-6cf55d5bb81c",
@@ -660,7 +670,8 @@
                 "y": 349.46599969406714
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "e6c83fba-2e24-4b53-827d-06ad9c447c9a",
@@ -684,7 +695,8 @@
                 "y": 470.50152608773044
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "9e771c74-b57d-413d-bf87-72f630056b78",
@@ -708,7 +720,8 @@
                 "y": 379.4748078908432
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -858,7 +871,8 @@
                 "y": 325.4589531366463
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "e8244d47-8660-4694-9756-bceced9ca6f5",
@@ -882,7 +896,8 @@
                 "y": 439.4924242843952
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },

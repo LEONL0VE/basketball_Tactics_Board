@@ -5,7 +5,11 @@
   "category": "Strategy & Concepts",
   "sub_category": "General Strategy",
   "description": "An offensive philosophy that emphasizes a fast tempo (pace) and spreading the floor with elite shooters (space). The goal is to maximize the number of possessions and take high-value shots (three-pointers or layups) early in the shot clock, often within the first 7 seconds. By positioning shooters beyond the arc, it clears the paint, making it extremely difficult for the defense to help on drives or pick-and-rolls without leaving a shooter open.",
-  "tags": [],
+  "tags": [
+    "Spot_Up",
+    "Transition",
+    "PnR_BH"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Small_ball_(basketball)",
     "video": "https://www.youtube.com/watch?v=f54fxpeDpU8"

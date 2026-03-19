@@ -5,7 +5,10 @@
   "category": "Offense",
   "sub_category": "Actions",
   "description": "An off-ball screen set behind a defender's back. This allows a teammate to cut towards the basket for a layup or dunk.",
-  "tags": [],
+  "tags": [
+    "Off_Screen",
+    "Cut"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Back_screen",
     "video": "https://www.youtube.com/watch?v=In4zgEvcgeU"
@@ -124,7 +127,8 @@
                 "y": 246.07472384994995
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "92fa0f2a-accd-4b4c-98ba-59c58b0ad779",
@@ -148,7 +152,8 @@
                 "y": 130.77662542051502
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           }
         ]
       },
@@ -254,7 +259,8 @@
                 "y": 320.09720175603246
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "c777159f-d93a-493a-aa56-7c5400d6b8a1",
@@ -278,7 +284,8 @@
                 "y": 312.09477171213166
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

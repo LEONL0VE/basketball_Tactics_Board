@@ -6,7 +6,11 @@
   "category": "Offense",
   "sub_category": "Motion",
   "description": "An aggressive motion offense popularized by Vance Walberg and John Calipari. Relies on creating gaps for driving lanes and kicking out to shooters.",
-  "tags": [],
+  "tags": [
+    "Isolation",
+    "Spot_Up",
+    "Cut"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Dribble_drive_motion",
     "video": "https://www.youtube.com/watch?v=WGHii3dCkLg"
@@ -114,7 +118,8 @@
                 "y": 328.4598339563239
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "38f6a0a4-4497-42ca-9714-813d1035069c",
@@ -138,7 +143,8 @@
                 "y": 213.42606920201584
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -233,7 +239,8 @@
                 "y": 213.42606920201584
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -328,7 +335,8 @@
                 "y": 74.38525789028691
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "3e4b9bd4-40f1-4baa-b89e-c05bbcc015e1",
@@ -352,7 +360,8 @@
                 "y": 343.4642380547119
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "5ae6fb2a-c869-451f-b232-e8846432533f",
@@ -376,7 +385,8 @@
                 "y": 409.48361608761917
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -471,7 +481,8 @@
                 "y": 401.4812672351456
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -566,7 +577,8 @@
                 "y": 438.492130677836
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "d8a18069-e331-4c1f-a8db-98637b4c5df8",
@@ -590,7 +602,8 @@
                 "y": 341.46365084159356
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },

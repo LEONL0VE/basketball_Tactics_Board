@@ -6,7 +6,10 @@
   "category": "Strategy & Concepts",
   "sub_category": "General Strategy",
   "description": "A fast-paced style of play emphasizing fast breaks and early shot opportunities, often sacrificing defense for scoring speed.",
-  "tags": [],
+  "tags": [
+    "Transition",
+    "Spot_Up"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Run_and_gun_(basketball)",
     "video": "https://www.youtube.com/watch?v=RbH-Fwax3aY"
@@ -103,7 +106,8 @@
                 "y": 337.4624764153567
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "8d35d7d1-a917-407c-bfd8-c4b6a4def7fd",
@@ -127,7 +131,8 @@
                 "y": 370.47216543181037
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "a2081328-581c-468f-b2d2-031533c88825",
@@ -151,7 +156,8 @@
                 "y": 106.39465330018135
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -235,7 +241,8 @@
                 "y": 125.40023182480616
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           }
         ]
       },
@@ -319,7 +326,8 @@
                 "y": 345.46482526783035
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "0416d0c0-52e5-4dca-a3be-dadbdef15f79",
@@ -343,7 +351,8 @@
                 "y": 107.39494690674054
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Transition"
           }
         ]
       },
@@ -427,7 +436,8 @@
                 "y": 357.4683485465407
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "8e3513e3-2550-4718-83dc-f496bc52804e",
@@ -451,7 +461,8 @@
                 "y": 349.46599969406714
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -535,7 +546,8 @@
                 "y": 589.5364652682754
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -619,7 +631,8 @@
                 "y": 214.42636280857502
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

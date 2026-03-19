@@ -44,9 +44,46 @@ export const ATOMIC_ACTIONS: Record<string, AtomicActionMeta> = {
     name: 'Post-up',
     description: 'Possessions where the player performs post-play.',
   },
-  // NOTE: Misc (Miscellaneous) is intentionally omitted.
-  // It has no defined supply semantics in TAG_CAPABILITY and contributes 0
-  // to Fit Score, so exposing it as a selectable option would be misleading.
+  Drop: {
+    name: 'Drop',
+    description: 'Defender drops back to protect the paint against screens.',
+  },
+  Switch: {
+    name: 'Switch',
+    description: 'Defenders exchange defensive assignments.',
+  },
+  Hedge: {
+    name: 'Hedge',
+    description: 'Big defender briefly shows to delay ball-handler on screen.',
+  },
+  Over: {
+    name: 'Over',
+    description: 'Defender goes over the top of the screen.',
+  },
+  Under: {
+    name: 'Under',
+    description: 'Defender goes under the screen.',
+  },
+  Rim_Protect: {
+    name: 'Rim Protect',
+    description: 'Protecting the basket and contesting shots at the rim.',
+  },
+  Closeout: {
+    name: 'Closeout',
+    description: 'Closing out to shooters on the perimeter.',
+  },
+  Rotate: {
+    name: 'Rotate',
+    description: 'Defensive rotation to cover open offensive players.',
+  },
+  Trap: {
+    name: 'Trap',
+    description: 'Two defenders double-teaming a ball-handler.',
+  },
+  Deny: {
+    name: 'Deny',
+    description: 'Aggressive man-to-man defense to prevent receiving the ball.',
+  },
 };
 
 export const ATOMIC_ACTION_TAG_OPTIONS: Array<{ label: string; value: string }> = Object.entries(ATOMIC_ACTIONS).map(

@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Press",
   "description": "A specific formation of full-court press, often forming a diamond shape to trap the ball along the sidelines.",
-  "tags": [],
+  "tags": ["Trap", "Rotate"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/1%E2%80%932%E2%80%931%E2%80%931_zone_press",
     "video": "https://www.youtube.com/watch?v=A_QK0WTHkjI"
@@ -169,7 +169,8 @@
                 "y": 458.49800280902
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "0efe23fe-058f-42a1-9505-728ef2fb87e5",
@@ -193,7 +194,8 @@
                 "y": 304.4527873989031
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "b76ef0ad-fa6e-42b7-a5e6-8840c5c97a6a",
@@ -217,7 +219,8 @@
                 "y": 88.38936838211572
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "eb77af99-b169-4be1-a4fb-7d70a13dab80",
@@ -241,7 +244,8 @@
                 "y": 304.4527873989031
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "89f3f3dc-e836-479e-9337-b24e20acdd6a",
@@ -265,7 +269,8 @@
                 "y": 463.49947084181605
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "a1dcb289-d38e-40b9-86cf-4ef15ddda46b",
@@ -289,7 +294,8 @@
                 "y": 444.49389231719124
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -439,7 +445,8 @@
                 "y": 403.48185444826396
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "74dc77ce-2de7-42a7-86cd-361d7c810bef",
@@ -463,7 +470,8 @@
                 "y": 444.49389231719124
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           }
         ]
       },
@@ -613,7 +621,8 @@
                 "y": 300.4516129726663
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "15feb421-6523-44df-beaa-4863c70d8a84",
@@ -637,7 +646,8 @@
                 "y": 196.42107789050942
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "9dedd92f-0de9-4ae7-9a3a-815fa557e52e",
@@ -661,7 +671,8 @@
                 "y": 186.4181418249174
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "9cd29368-8b7e-4bfe-9281-a23019f59fa9",
@@ -685,7 +696,8 @@
                 "y": 239.43370297255504
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "d6702d1f-0dfb-4a96-bfa3-e8083e860946",
@@ -709,7 +721,8 @@
                 "y": 324.4586595300871
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "e4ef2fd0-ac18-481b-9d16-a6163907aae0",
@@ -733,7 +746,8 @@
                 "y": 349.4659996940671
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -883,7 +897,8 @@
                 "y": 309.4542554316991
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "b81bf272-546a-4dd2-9a29-ad9868836b55",
@@ -907,7 +922,8 @@
                 "y": 116.39758936577334
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "041feeca-4de0-4165-aeb3-f746967e2bee",
@@ -931,7 +947,8 @@
                 "y": 274.4439792021271
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "74c5bedb-b10b-44c8-8a0f-01bea4ce68de",
@@ -955,7 +972,8 @@
                 "y": 324.4586595300871
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "a7c18ba0-5d11-4229-bd9e-d5dcabcd8bb0",
@@ -979,7 +997,8 @@
                 "y": 333.46130198911993
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -1129,7 +1148,8 @@
                 "y": 229.43076690696304
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "7589b655-8318-4151-b422-76b7f72f4484",
@@ -1153,7 +1173,8 @@
                 "y": 253.43781346438385
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "6bde1dd4-f32d-4917-94b8-2ad57ff4209b",
@@ -1177,7 +1198,8 @@
                 "y": 182.4169673986806
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "20014e64-6054-4719-b52d-47b055e72477",
@@ -1201,7 +1223,8 @@
                 "y": 206.42401395610142
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "2551b91d-8155-4b00-9561-baec393348af",
@@ -1225,7 +1248,8 @@
                 "y": 159.410214447819
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "56778c6e-4200-40cf-8b32-cddc5ae16ea8",
@@ -1249,7 +1273,8 @@
                 "y": 285.4472088742783
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1399,7 +1424,8 @@
                 "y": 373.09066535984476
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "862b2074-7bcd-4c47-9a4d-adea46d194fa",
@@ -1423,7 +1449,8 @@
                 "y": 455.4971219893424
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "bdf01c0b-1dc8-413f-8adf-e7673ea61d7a",
@@ -1447,7 +1474,8 @@
                 "y": 390.24250573972205
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

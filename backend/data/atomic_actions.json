@@ -43,6 +43,46 @@
     "Misc": {
       "name": "Miscellaneous",
       "description": "Possessions of offense in a form that does not fit any of the above."
+    },
+    "Drop": {
+      "name": "Drop",
+      "description": "Defender drops back to protect the paint against screens."
+    },
+    "Switch": {
+      "name": "Switch",
+      "description": "Defenders exchange defensive assignments."
+    },
+    "Hedge": {
+      "name": "Hedge",
+      "description": "Big defender briefly shows to delay ball-handler on screen."
+    },
+    "Over": {
+      "name": "Over",
+      "description": "Defender goes over the top of the screen."
+    },
+    "Under": {
+      "name": "Under",
+      "description": "Defender goes under the screen."
+    },
+    "Rim_Protect": {
+      "name": "Rim Protect",
+      "description": "Protecting the basket and contesting shots at the rim."
+    },
+    "Closeout": {
+      "name": "Closeout",
+      "description": "Closing out to shooters on the perimeter."
+    },
+    "Rotate": {
+      "name": "Rotate",
+      "description": "Defensive rotation to cover open offensive players."
+    },
+    "Trap": {
+      "name": "Trap",
+      "description": "Two defenders double-teaming a ball-handler."
+    },
+    "Deny": {
+      "name": "Deny",
+      "description": "Aggressive man-to-man defense to prevent receiving the ball."
     }
   }
 }

@@ -6,7 +6,7 @@
   "category": "Defense",
   "sub_category": "Zone",
   "description": "A sophisticated hybrid defense that combines the principles of man-to-man and zone. It initially aligns as a traditional zone (e.g., 2-3 or 1-2-2), but once offensive players enter a defender's designated area, it transforms into man-to-man principles. Defenders aggressively match up with attackers in their zone, pass off cutters to teammates via elite communication, and seamlessly switch to maintain pressure without leaving the paint vulnerable.",
-  "tags": [],
+  "tags": ["Deny", "Rim_Protect"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Triangle-and-two_defense",
     "video": "https://www.youtube.com/watch?v=kyTz0l4uJfY"

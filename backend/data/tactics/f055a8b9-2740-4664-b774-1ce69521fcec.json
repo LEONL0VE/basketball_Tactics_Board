@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Man",
   "description": "The most common defense where each defender is assigned to guard a specific offensive player.",
-  "tags": [],
+  "tags": ["Drop", "Switch", "Hedge", "Over", "Under"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Man-to-man_defense",
     "video": "https://www.youtube.com/watch?v=sTFMpbDam0M"
@@ -168,7 +168,8 @@
                 "y": 569.5305931370913
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "c846e76c-49b8-4fdc-b3ff-7c70b74daf39",
@@ -192,7 +193,8 @@
                 "y": 238.43340936599586
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "10af816f-4cd4-4913-8d88-024eb99e6cae",
@@ -216,7 +218,8 @@
                 "y": 241.43429018567346
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "cce49527-1002-440b-b411-8c7ec971f651",
@@ -240,7 +243,8 @@
                 "y": 380.47510149740236
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "6df8dc3b-22fa-4c83-82e2-907ac5fdd54f",
@@ -264,7 +268,8 @@
                 "y": 585.5352908420385
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -414,7 +419,8 @@
                 "y": 337.4624764153567
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "03789381-4242-4cc9-9bd0-f9ddeb1d9856",
@@ -438,7 +444,8 @@
                 "y": 336.46218280879754
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "d81d3c75-c8d8-4795-8a91-27dd8895922a",
@@ -462,7 +469,8 @@
                 "y": 80.38701952964212
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "359695f7-8a98-40d7-88cd-c1e38ceae50a",
@@ -486,7 +494,8 @@
                 "y": 104.39406608706294
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -636,7 +645,8 @@
                 "y": 91.39024920179332
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "0fa0d37f-51c5-4562-ae4a-e6edf05fdb19",
@@ -660,7 +670,8 @@
                 "y": 294.4498513333111
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "4b00df72-5a2e-40a7-a9ef-6bfece1f535a",
@@ -684,7 +695,8 @@
                 "y": 390.47803756299436
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "5d5c4015-8fb4-4fb5-b993-4e0ed89fa045",
@@ -708,7 +720,8 @@
                 "y": 540.5220785468745
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

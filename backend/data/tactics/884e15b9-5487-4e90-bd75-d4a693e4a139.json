@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Zone",
   "description": "A zone defense with two players at the top and three at the base. Excellent for protecting the paint and rebounding but vulnerable to 3-point shooting.",
-  "tags": [],
+  "tags": ["Rim_Protect", "Closeout", "Rotate"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/2%E2%80%933_zone_defense",
     "video": "https://www.youtube.com/watch?v=X1oPIiy5AKk"
@@ -168,7 +168,8 @@
                 "y": 413.484790513856
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "a0794d11-3fc0-4fab-a218-61c93c976180",
@@ -192,7 +193,8 @@
                 "y": 416.4856713335336
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -342,7 +344,8 @@
                 "y": 109.39553411985894
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "61461095-f80a-4787-b152-f83f2a4b94f1",
@@ -366,7 +369,8 @@
                 "y": 114.39700215265495
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "fd21e96b-1906-461b-99c0-36f7faf11e00",
@@ -390,7 +394,8 @@
                 "y": 278.44515362836387
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "69ccdf46-e613-4a75-9176-cfeeec1e7bd5",
@@ -414,7 +419,8 @@
                 "y": 429.4894882188032
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "95b7ab23-3577-4340-a41c-79e0502a6383",
@@ -438,7 +444,8 @@
                 "y": 319.4571914972911
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -588,7 +595,8 @@
                 "y": 396.47979920234957
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "d7ca7553-3d7f-4ade-9e46-e755469c02e3",
@@ -612,7 +620,8 @@
                 "y": 248.43634543158785
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "0bf73df7-7101-499d-96b0-05dca2157d15",
@@ -636,7 +645,8 @@
                 "y": 388.477450349876
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "e28414b5-f464-478e-b826-a6c591610f98",
@@ -660,7 +670,8 @@
                 "y": 524.5173808419273
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "25b0723b-96a5-41a4-b5ef-1a2f66fecabb",
@@ -684,7 +695,8 @@
                 "y": 342.46394444815274
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -834,7 +846,8 @@
                 "y": 577.5329419895648
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "c4116640-d359-4990-9f0e-4e7605825922",
@@ -858,7 +871,8 @@
                 "y": 563.5288314977362
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "2ff383eb-a432-4eb8-911e-39172479d027",
@@ -882,7 +896,8 @@
                 "y": 290.4486769070743
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "2e994bd7-2b15-4a32-8089-7fb7fa608bd6",
@@ -906,7 +921,8 @@
                 "y": 410.4839096941784
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -1056,7 +1072,8 @@
                 "y": 237.43311575943665
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "6d215014-e325-4d78-bb9c-d078989f8675",
@@ -1080,7 +1097,8 @@
                 "y": 338.82432647903727
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "707d1716-8578-4e53-bb18-2f75fd5461a1",
@@ -1104,7 +1122,8 @@
                 "y": 421.4871393663296
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "7d329892-7179-489d-8a91-2317f545a00d",
@@ -1128,7 +1147,8 @@
                 "y": 255.43840067750227
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "73855e07-1306-478c-a149-892dd342d7f8",
@@ -1152,7 +1172,8 @@
                 "y": 349.46599969406714
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -1302,7 +1323,8 @@
                 "y": 409.48361608761917
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "60f77c0c-581a-4c90-8fad-abe85a17e17b",
@@ -1326,7 +1348,8 @@
                 "y": 431.49007543192164
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "7f8920b8-7065-4d1b-b22a-19613616d10e",
@@ -1350,7 +1373,8 @@
                 "y": 344.46453166127117
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           },
           {
             "id": "146f84d4-1760-4242-b1b3-3492268529b2",
@@ -1374,7 +1398,8 @@
                 "y": 496.50915985826964
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },

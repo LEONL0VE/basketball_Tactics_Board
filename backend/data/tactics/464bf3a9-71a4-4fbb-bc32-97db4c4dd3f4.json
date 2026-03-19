@@ -5,7 +5,10 @@
   "category": "Offense",
   "sub_category": "Actions",
   "description": "In basketball, 'gravity' refers to the magnetic pull an elite offensive player (especially a prolific three-point shooter) exerts on the opposing defense. A player with immense gravity forces defenders to stay closely attached to them far beyond the three-point line, even when they do not have the ball. This stretches the defense out of its normal help positions, expanding the court and creating massive driving lanes, open cuts, and high-percentage scoring opportunities for teammates.",
-  "tags": [],
+  "tags": [
+    "Spot_Up",
+    "Off_Screen"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Gravity_(basketball)",
     "video": "https://www.youtube.com/watch?v=1oCuQa0kB4I"

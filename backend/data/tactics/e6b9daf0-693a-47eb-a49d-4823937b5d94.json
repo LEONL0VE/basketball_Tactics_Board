@@ -5,7 +5,12 @@
   "category": "Offense",
   "sub_category": "Continuity",
   "description": "A famous system used by the Bulls and Lakers. It forms a sideline triangle (Center, Forward, Guard) to create optimal spacing and passing angles, allowing players to read and react to the defense.",
-  "tags": [],
+  "tags": [
+    "Post_Up",
+    "Cut",
+    "Isolation",
+    "Spot_Up"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Triangle_offense",
     "video": "https://www.youtube.com/watch?v=2AP_eFEKS_0"
@@ -169,7 +174,8 @@
                 "y": 209.0634848969087
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_RM"
           },
           {
             "id": "8beca465-89b1-4c42-af07-d9098c979482",
@@ -193,7 +199,8 @@
                 "y": 227.06895249568552
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },
@@ -343,7 +350,8 @@
                 "y": 122.03705816948738
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f08d95a1-95b6-4c71-8f43-0e1ba8dd45dc",
@@ -367,7 +375,8 @@
                 "y": 159.04829712252862
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -518,7 +527,8 @@
               }
             ],
             "color": "#ff4d4f",
-            "speed": "sprint"
+            "speed": "sprint",
+            "actionTag": "Cut"
           },
           {
             "id": "d1db0a72-af1d-4ff4-9de5-dcb84cb18dc9",
@@ -542,7 +552,8 @@
                 "y": 309.09386044566884
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "c1740b04-55cb-43ad-8942-f8fe7db1d6cb",
@@ -566,7 +577,8 @@
                 "y": 314.0953792231069
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Cut"
           }
         ]
       },

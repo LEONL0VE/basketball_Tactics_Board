@@ -19,6 +19,8 @@ interface LineupDiagnosticPanelProps {
   boardPlayers?: Player[];
   /** Actions grouped by frame — Demand vector is aggregated over all frames */
   boardActionFrames?: DiagnosticActionFrame[];
+  /** Name of the currently loaded tactic */
+  currentTacticName?: string;
 }
 
 interface DiagnosticDimension {
@@ -53,12 +55,7 @@ const getScoreColor = (score: number): string => {
   return '#fa8c16';
 };
 
-const COMMON_TACTICS = [
-  { value: 'Princeton Offense', label: 'Princeton Offense', actions: ['Cut', 'Post_Up', 'Off_Screen', 'Spot_Up'] },
-  { value: '5-Out Motion', label: '5-Out Motion', actions: ['Drive and Kick', 'Perimeter Shooting', 'Spacing'] },
-  { value: 'Pick and Roll Continuity', label: 'Pick and Roll Continuity', actions: ['PnR Ball-handler', 'Roll & Cut Big', 'Spot-up Shooting'] },
-  { value: 'Triangle Offense', label: 'Triangle Offense', actions: ['Post Scoring', 'Spacing', 'Cutting'] },
-];
+// `COMMON_TACTICS` has been historically used for manual tactic entry and is now removed.
 
 const ROLE_TO_POSITION: Record<string, string> = { PG: 'PG', SG: 'SG', SF: 'SF', PF: 'PF', C: 'C' };
 
@@ -204,6 +201,7 @@ const computeCosineFitScore = (
   return Math.round((dot / (magD * magS)) * 100);
 };
 
+/*
 const computeJsdFitScore = (
   demandMap: Record<string, number>,
   playerTags: (string | undefined)[],
@@ -227,16 +225,15 @@ const computeJsdFitScore = (
   const fit = (1 - (jsd / Math.log(2))) * 100;
   return Math.max(0, Math.min(100, Math.round(fit)));
 };
+*/
 
 const computeFitScore = (
   demandMap: Record<string, number>,
   playerTags: (string | undefined)[],
   metric: ScoreMetric,
-): number => metric === 'jsd'
-  ? computeJsdFitScore(demandMap, playerTags)
-  : computeCosineFitScore(demandMap, playerTags);
+): number => computeCosineFitScore(demandMap, playerTags);
 
-const getTopDemandItems = (demandMap: Record<string, number>, limit = 3) =>
+const getTopDemandItems = (demandMap: Record<string, number>, limit?: number) =>
   Object.entries(demandMap)
     .filter(([, value]) => value > 0)
     .sort((a, b) => b[1] - a[1])
@@ -286,10 +283,8 @@ const RadarChart: React.FC<{
   const radius = 132;
   const n = dimensions.length;
 
-  const maxDemand = dimensions.reduce((max, d) => Math.max(max, demandMap[toRadarLabel(d.name)] ?? 0), 0);
-  const maxSupply = dimensions.reduce((max, d) => Math.max(max, supplyMap[toDimKey(d.name)] ?? 0), 0);
-  const dynamicMax = Math.max(0.2, Math.min(1, Math.max(maxDemand, maxSupply) * 1.15));
-  const scaleValue = (value: number) => Math.min(value / dynamicMax, 1);
+  const maxDemand = Math.max(0.01, dimensions.reduce((max, d) => Math.max(max, demandMap[toRadarLabel(d.name)] ?? 0), 0));
+  const maxSupply = Math.max(0.01, dimensions.reduce((max, d) => Math.max(max, supplyMap[toDimKey(d.name)] ?? 0), 0));
 
   const getPoint = (index: number, value: number) => {
     const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
@@ -301,10 +296,10 @@ const RadarChart: React.FC<{
 
   const outerPolygon = Array.from({ length: n }, (_, i) => getPoint(i, 1)).map(p => `${p.x},${p.y}`).join(' ');
   const gridPolygons = [0.25, 0.5, 0.75, 1].map(level => Array.from({ length: n }, (_, i) => getPoint(i, level)).map(p => `${p.x},${p.y}`).join(' '));
-  // Demand polygon: frequency-normalised from boardActions draw paths (d_k = C_k / Σ C_i)
-  const demandPolygon = dimensions.map((d, i) => getPoint(i, scaleValue(demandMap[toRadarLabel(d.name)] ?? 0))).map(p => `${p.x},${p.y}`).join(' ');
-  // Supply polygon: rank-weighted diminishing returns + vector normalization
-  const currentPolygon = dimensions.map((d, i) => getPoint(i, scaleValue(supplyMap[toDimKey(d.name)] ?? 0))).map(p => `${p.x},${p.y}`).join(' ');
+  // Demand polygon: shape-normalised to match Cosine Similarity logic (independent scaling)
+  const demandPolygon = dimensions.map((d, i) => getPoint(i, (demandMap[toRadarLabel(d.name)] ?? 0) / maxDemand)).map(p => `${p.x},${p.y}`).join(' ');
+  // Supply polygon: shape-normalised to match Cosine Similarity logic
+  const currentPolygon = dimensions.map((d, i) => getPoint(i, (supplyMap[toDimKey(d.name)] ?? 0) / maxSupply)).map(p => `${p.x},${p.y}`).join(' ');
 
   return (
     <div style={{ position: 'relative', width: size, height: size, margin: '0 auto' }}>
@@ -332,7 +327,7 @@ const RadarChart: React.FC<{
 
         {dimensions.map((d, i) => {
           const supply = (supplyMap[toDimKey(d.name)] ?? 0) * 100;
-          const p = getPoint(i, scaleValue(supply / 100));
+          const p = getPoint(i, (supplyMap[toDimKey(d.name)] ?? 0) / maxSupply);
           const isHovered = hoveredIndex === i;
           return (
             <g key={`point-${i}`} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} style={{ cursor: 'pointer' }}>
@@ -350,7 +345,7 @@ const RadarChart: React.FC<{
         })}
 
         {dimensions.map((d, i) => {
-          const lp = getPoint(i, 1.3);
+          const lp = getPoint(i, 1.35); // Move labels slightly further out to accommodate larger text
           const shortLabel = toRadarLabel(d.name);
           const words = shortLabel.split(' ');
           const isHovered = hoveredIndex === i;
@@ -360,32 +355,21 @@ const RadarChart: React.FC<{
               x={lp.x}
               y={lp.y}
               textAnchor="middle"
-              fill={isHovered ? '#fff' : '#8f9bb3'}
-              fontSize={isHovered ? "16" : "14"}
-              fontWeight={isHovered ? 700 : 600}
+              fill={isHovered ? '#fff' : '#a8b4cc'} // slightly brighter base color
+              fontSize={isHovered ? "17" : "15"} // Increased from 16/14 to 17/15
+              fontWeight={isHovered ? 700 : 700} // Increased base weight to 700
               fontFamily="Inter, Segoe UI, Roboto, sans-serif"
               style={{ transition: 'all 0.2s ease', cursor: 'pointer' }}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
               {words.map((word, idx) => (
-                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 18}>{word}</tspan>
+                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 20}>{word}</tspan> // Increased line height slightly
               ))}
             </text>
           );
         })}
 
-        <text
-          x={center}
-          y={center + radius + 28}
-          textAnchor="middle"
-          fill="rgba(143,155,179,0.75)"
-          fontSize="11"
-          fontWeight={600}
-          letterSpacing="0.6"
-        >
-          Auto-scaled max: {(dynamicMax * 100).toFixed(0)}%
-        </text>
       </svg>
 
       {hoveredIndex !== null && (
@@ -463,14 +447,20 @@ const renderIssue = (text: string) => {
   });
 };
 
-const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, onClose, boardPlayers = [], boardActionFrames = [] }) => {
+const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, onClose, boardPlayers = [], boardActionFrames = [], currentTacticName }) => {
   const [loading, setLoading] = useState(false);
-  const [configOpen, setConfigOpen] = useState(false);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [diagError, setDiagError] = useState<string | null>(null);
   const [debugOpen, setDebugOpen] = useState(false);
   const [scoreMetric, setScoreMetric] = useState<ScoreMetric>('cosine');
+  const [panelMode, setPanelMode] = useState<'optimize_lineup' | 'recommend_tactics'>('optimize_lineup');
+  const [tacticMatches, setTacticMatches] = useState<any[]>([]);
+  const [isRecommending, setIsRecommending] = useState(false);
   const [form] = Form.useForm();
+  
+  // Decouple UI rendering from live-board updates by using snapshotted data
+  const [diagSnapshot, setDiagSnapshot] = useState<{ playerTags: (string | undefined)[], actions: Action[], scoreMetric: ScoreMetric } | null>(null);
+
   const boardActions = boardActionFrames.flatMap(frame => frame.actions);
 
   useEffect(() => {
@@ -483,12 +473,20 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
     if (Object.keys(updates).length) form.setFieldsValue(updates);
   }, [boardPlayers, form]);
 
-  const handleTacticChange = (value: string) => {
-    const tactic = COMMON_TACTICS.find(t => t.value === value);
-    if (tactic) {
-      form.setFieldsValue({ tactic_name: tactic.value, tactic_actions: tactic.actions });
+  // Clear stale diagnostic data when the board is empty (no players AND no draw-path actions).
+  // This prevents the panel from showing cached results from a previous tactic session.
+  useEffect(() => {
+    const hasPlayers = boardPlayers.some(p => p.type === 'player');
+    const hasActions = boardActions.some(a => a.actionTag);
+    if (!hasPlayers && !hasActions) {
+      setResult(null);
+      setDiagSnapshot(null);
+      setTacticMatches([]);
+      setDiagError(null);
     }
-  };
+  }, [boardPlayers, boardActions]);
+
+  // Legacy tactic config change handler removed
 
   const handleDiagnose = async (_values: Record<string, string | string[]>) => {
     const values = form.getFieldsValue(true) as Record<string, string | string[]>;
@@ -503,13 +501,65 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
         player_tag: formatOffensiveRoleForAi(p.playerTag),
       }));
 
-    const current_lineup =
-      boardEntries.length > 0
-        ? boardEntries
-        : POSITIONS.map(pos => ({
-            position: pos,
-            player_tag: formatOffensiveRoleForAi(values[`player_${pos}`] as string | undefined),
-          }));
+    // Guard: require at least one player with a role tag on the board
+    if (boardEntries.length === 0) {
+      setDiagError('Please drag players onto the court and assign role tags before running diagnostics.');
+      setLoading(false);
+      return;
+    }
+
+    const current_lineup = boardEntries;
+
+    if (panelMode === 'recommend_tactics') {
+      setIsRecommending(true);
+      try {
+        const listRes = await fetch(API_ENDPOINTS.TACTICS);
+        if (!listRes.ok) throw new Error(`HTTP ${listRes.status} ${listRes.statusText}`);
+        const listData = await listRes.json();
+        
+        const detailsRes = await Promise.all(
+          listData.map((t: any) => 
+            fetch(`${API_ENDPOINTS.TACTICS}/${t.id}`).then(res => res.json())
+          )
+        );
+
+        // Use only actual board players — no form fallback
+        const playerTags = boardPlayers
+          .filter(p => p.role && p.playerTag)
+          .map(p => p.playerTag);
+
+        const matches = detailsRes.map(tactic => {
+          const actions: Action[] = [];
+          if (tactic.animation_data?.frames) {
+             tactic.animation_data.frames.forEach((f: any) => {
+                if (f.actions) actions.push(...f.actions);
+             });
+          }
+          const demandMap = computeDemand(actions);
+          const hasDemand = Object.keys(demandMap).length > 0;
+          const fitScore = hasDemand ? computeFitScore(demandMap, playerTags, scoreMetric) : 0;
+          
+          return {
+            ...tactic,
+            fitScore
+          };
+        });
+        
+        const sortedMatches = matches
+          .filter(m => m.category === 'Offense' && m.fitScore > 0)
+          .sort((a, b) => b.fitScore - a.fitScore);
+        setTacticMatches(sortedMatches);
+        
+        // Snapshot the current state to freeze UI updates
+        setDiagSnapshot({ playerTags, actions: boardActions, scoreMetric });
+      } catch (error: any) {
+        setDiagError(error.message || String(error));
+      } finally {
+        setIsRecommending(false);
+        setLoading(false);
+      }
+      return;
+    }
 
     const boardActionTags = boardActions
       .map(a => a.actionTag)
@@ -517,7 +567,7 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
 
     const payload = {
       target_tactic: {
-        name: values.tactic_name,
+        name: currentTacticName || 'Custom Tactic',
         action_requirements: boardActionTags.length ? boardActionTags : (values.tactic_actions || []),
         action_requirements_detailed: boardActionFrames.map(frame => ({
           frameIndex: frame.frameIndex,
@@ -548,6 +598,11 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
 
       const data = (await response.json()) as DiagnosticResult;
       setResult(data);
+      setDiagSnapshot({
+        playerTags: boardPlayers.filter(p => p.type === 'player').map(p => p.playerTag),
+        actions: boardActions,
+        scoreMetric
+      });
       if (data.score_metric === 'cosine' || data.score_metric === 'jsd') {
         setScoreMetric(data.score_metric);
       }
@@ -566,8 +621,7 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
     }
   };
 
-  const currentTactic = Form.useWatch('tactic_name', form) || COMMON_TACTICS[0].value;
-  const currentActions = (Form.useWatch('tactic_actions', form) as string[] | undefined) || [];
+  // Legacy tactic form watches removed
 
   if (!isOpen) return null;
 
@@ -577,8 +631,6 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
       layout="vertical"
       onFinish={handleDiagnose}
       initialValues={{
-        tactic_name: COMMON_TACTICS[0].value,
-        tactic_actions: COMMON_TACTICS[0].actions,
         player_PG: 'PBH',
         player_SG: 'SUS',
         player_SF: 'WWH',
@@ -621,56 +673,176 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
 
         <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-              <Text style={{ color: '#6f7b95', fontSize: 11, letterSpacing: 1, fontWeight: 500 }}>CURRENT SCENARIO</Text>
-            <div><Text style={{ color: '#fff', fontWeight: 600 }}>{currentTactic}</Text></div>
+              <Text style={{ color: '#6f7b95', fontSize: 11, letterSpacing: 1, fontWeight: 500 }}>
+                {panelMode === 'recommend_tactics' ? 'CURRENT LINEUP' : 'CURRENT SCENARIO'}
+              </Text>
+            <div><Text style={{ color: '#fff', fontWeight: 600 }}>{panelMode === 'recommend_tactics' ? (isRecommending ? 'Looking for Tactics...' : 'Live Board Roster') : (currentTacticName || 'Custom Board Roster')}</Text></div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Segmented
-              size="middle"
-              value={scoreMetric}
-              options={[
-                { label: 'Cosine', value: 'cosine' },
-                { label: 'JSD', value: 'jsd' },
-              ]}
-              onChange={(value) => {
-                const nextMetric = value as ScoreMetric;
-                setScoreMetric(nextMetric);
-                if (result) {
-                  setTimeout(() => form.submit(), 0);
-                }
-              }}
-            />
-            <Button icon={<SettingOutlined />} onClick={() => setConfigOpen(true)}>Configure</Button>
+            {/* Custom AI-Themed Segmented Control */}
+            <div style={{
+              display: 'inline-flex',
+              background: 'rgba(15,23,42,0.6)',
+              borderRadius: 12,
+              padding: 4,
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              {[
+                { id: 'optimize_lineup', label: 'Optimize Lineup' },
+                { id: 'recommend_tactics', label: 'Recommend Tactics' }
+              ].map(opt => {
+                const isActive = panelMode === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => setPanelMode(opt.id as any)}
+                    style={{
+                      border: 'none',
+                      background: isActive ? 'linear-gradient(135deg, rgba(250,173,20,0.2) 0%, rgba(250,173,20,0.05) 100%)' : 'transparent',
+                      color: isActive ? '#faad14' : '#8f9bb3',
+                      fontWeight: isActive ? 700 : 500,
+                      padding: '8px 20px',
+                      borderRadius: 8,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isActive ? 'inset 0 0 0 1px rgba(250,173,20,0.3), 0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '14px 20px 18px' }}>
-          <Button type="primary" block loading={loading} icon={<RadarChartOutlined />} onClick={() => form.submit()} style={{ height: 46, borderRadius: 10, fontWeight: 700, marginBottom: 14, background: '#faad14', borderColor: '#faad14', color: '#000' }}>
-            {loading ? 'Analyzing...' : 'Run Lineup Diagnostics'}
+          <Button 
+            type={result ? "default" : "primary"} 
+            block 
+            loading={loading} 
+            icon={<RadarChartOutlined />} 
+            onClick={() => form.submit()} 
+            style={result ? { height: 46, borderRadius: 10, fontWeight: 600, marginBottom: 14, background: 'transparent', borderColor: '#4e5a70', color: '#8f9bb3' } : { height: 46, borderRadius: 10, fontWeight: 700, marginBottom: 14, background: '#faad14', borderColor: '#faad14', color: '#000' }}
+          >
+            {loading ? 'Analyzing...' : result ? 'Recalculate Diagnostics' : 'Run Lineup Diagnostics'}
           </Button>
 
           {diagError && (
-            <Alert
-              type="error"
-              showIcon
-              message="Diagnostics Failed"
-              description={diagError}
-              style={{ marginBottom: 14, background: 'rgba(245,34,45,0.08)', border: '1px solid rgba(245,34,45,0.35)', color: '#fff' }}
-              closable
-              onClose={() => setDiagError(null)}
-            />
+            <div style={{
+              marginBottom: 14,
+              padding: '16px 20px',
+              background: 'linear-gradient(135deg, rgba(250, 173, 20, 0.08) 0%, rgba(250, 173, 20, 0.02) 100%)',
+              border: '1px solid rgba(250, 173, 20, 0.2)',
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 16,
+              boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 12px rgba(0, 0, 0, 0.2)'
+            }}>
+              <div style={{
+                background: 'rgba(250, 173, 20, 0.15)',
+                borderRadius: '50%',
+                width: 36,
+                height: 36,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                border: '1px solid rgba(250, 173, 20, 0.3)'
+              }}>
+                <BulbOutlined style={{ color: '#faad14', fontSize: 18 }} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <Text style={{ color: '#fff', fontSize: 15, fontWeight: 600, display: 'block', marginBottom: 6 }}>
+                  Board Data Required
+                </Text>
+                <Text style={{ color: '#adb5c9', fontSize: 13, lineHeight: 1.5, display: 'block' }}>
+                  {diagError}
+                </Text>
+              </div>
+              <Button 
+                type="text" 
+                icon={<CloseOutlined style={{ fontSize: 12, color: '#7a86a0' }} />} 
+                onClick={() => setDiagError(null)} 
+                style={{ marginLeft: -8, marginTop: -4 }}
+              />
+            </div>
           )}
 
-          {result ? (
+          {panelMode === 'recommend_tactics' ? (
+            <div style={{ marginTop: 16 }}>
+              {isRecommending ? (
+                <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                  <div className="custom-spin" style={{ width: 36, height: 36, border: '3px solid rgba(250,173,20,0.2)', borderTopColor: '#faad14', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+                  <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                  <Text style={{ color: '#adb5c9', fontSize: 13 }}>Analyzing 38+ tactical systems against your lineup...</Text>
+                </div>
+              ) : tacticMatches.length > 0 ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                    <BulbOutlined style={{ color: '#faad14', fontSize: 18 }} />
+                    <Title level={5} style={{ margin: 0, color: '#fff', fontSize: 15 }}>Top Tactic Matches</Title>
+                  </div>
+                  <Text style={{ color: '#8f9bb3', fontSize: 12, display: 'block', marginBottom: 16 }}>
+                    Based on your current lineup's strengths, these set plays offer the highest technical synergy.
+                  </Text>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {tacticMatches.map((tactic, idx) => {
+                      const fitColor = tactic.fitScore >= 75 ? '#52c41a' : tactic.fitScore >= 50 ? '#1677ff' : tactic.fitScore >= 30 ? '#faad14' : '#fa4d4d';
+                      return (
+                        <div key={tactic.id} style={{
+                          display: 'flex', gap: 16, background: 'linear-gradient(135deg, rgba(30,36,50,0.8) 0%, rgba(20,24,35,0.9) 100%)',
+                          border: '1px solid rgba(250, 173, 20, 0.25)', borderRadius: 12, padding: 16,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                        }}>
+                          {tactic.preview_image ? (
+                            <img src={tactic.preview_image} alt={tactic.name} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }} />
+                          ) : (
+                            <div style={{ width: 80, height: 80, background: 'rgba(255,255,255,0.05)', borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              <RadarChartOutlined style={{ fontSize: 24, color: '#4e5a70' }} />
+                            </div>
+                          )}
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                            <div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                <Text style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>{tactic.name}</Text>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(0,0,0,0.3)', padding: '2px 8px', borderRadius: 10, border: `1px solid ${fitColor}33` }}>
+                                  <Text style={{ color: fitColor, fontSize: 16, fontWeight: 800 }}>{tactic.fitScore}%</Text>
+                                </div>
+                              </div>
+                              <Text style={{ color: '#adb5c9', fontSize: 11, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                {tactic.description || 'No description available'}
+                              </Text>
+                            </div>
+                            <div style={{ marginTop: 8 }}>
+                              <Tag style={{ margin: 0, background: '#252b3b', border: '1px solid rgba(255,255,255,0.08)', color: '#a8b4cc', fontSize: 10 }}>{tactic.category || 'General'}</Tag>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          ) : result ? (
             <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, padding: '20px 24px', position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 20px rgba(250,173,20,0.05)' }}>
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 4, background: 'linear-gradient(90deg, #1677ff, #faad14, #52c41a)' }} />
               
               {/* DUAL-LAYER RADAR LEGEND + FIT SCORE HUD */}
               {(() => {
-                const playerTags = boardPlayers.filter(p => p.type === 'player').map(p => p.playerTag ?? undefined);
-                const demandMap = computeDemand(boardActions);
+                const playerTags = diagSnapshot?.playerTags ?? boardPlayers.filter(p => p.type === 'player').map(p => p.playerTag ?? undefined);
+                const activeActions = diagSnapshot?.actions ?? boardActions;
+                const activeScoreMetric = diagSnapshot?.scoreMetric ?? scoreMetric;
+                const demandMap = computeDemand(activeActions);
                 const hasDemand = Object.keys(demandMap).length > 0;
-                const fitScore = hasDemand ? computeFitScore(demandMap, playerTags, scoreMetric) : null;
+                const fitScore = hasDemand ? computeFitScore(demandMap, playerTags, activeScoreMetric) : null;
                 const topDemandItems = getTopDemandItems(demandMap);
                 const fitColor = fitScore === null ? '#6f7b95'
                   : fitScore >= 75 ? '#52c41a'
@@ -702,20 +874,18 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                         justifyContent: 'center',
                         minHeight: 116,
                       }}>
-                        <Text style={{ color: '#7a86a0', fontSize: 12, fontWeight: 700, letterSpacing: 1.1 }}>
-                          TACTIC FIT SCORE · {scoreMetric === 'jsd' ? 'JSD' : 'COSINE'}
+                        <Text style={{ color: '#7a86a0', fontSize: 13, fontWeight: 700, letterSpacing: 1.1 }}>
+                          TACTIC FIT SCORE
                         </Text>
                         {fitScore !== null ? (
-                          <span style={{ fontSize: 38, lineHeight: 1.1, fontWeight: 900, color: fitColor, textShadow: `0 0 14px ${fitColor}55`, fontFamily: 'monospace', marginTop: 6 }}>
+                          <span style={{ fontSize: 44, lineHeight: 1.1, fontWeight: 900, color: fitColor, textShadow: `0 0 14px ${fitColor}55`, fontFamily: 'monospace', marginTop: 8 }}>
                             {fitScore}%
                           </span>
                         ) : (
-                          <span style={{ fontSize: 13, color: '#4e5a70', fontStyle: 'italic', marginTop: 8 }}>Load a tactic first</span>
+                          <span style={{ fontSize: 14, color: '#4e5a70', fontStyle: 'italic', marginTop: 10 }}>Load a tactic first</span>
                         )}
-                        <Text style={{ color: '#6f7b95', fontSize: 11, marginTop: 8 }}>
-                          {scoreMetric === 'jsd'
-                            ? 'Score derived from Jensen-Shannon divergence; shortfalls on critical demand dimensions are penalized more sharply.'
-                            : 'Score derived from cosine similarity between tactic demand and lineup supply.'}
+                        <Text style={{ color: '#8f9bb3', fontSize: 13, marginTop: 10, lineHeight: 1.5 }}>
+                          Score derived from cosine similarity between tactic demand and lineup supply.
                         </Text>
                       </div>
 
@@ -726,27 +896,27 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                         padding: '14px 16px',
                         minHeight: 116,
                       }}>
-                        <Text style={{ color: '#cfd7e6', fontSize: 13, fontWeight: 700, display: 'block', marginBottom: 10 }}>Top Tactic Demands</Text>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+                        <Text style={{ color: '#cfd7e6', fontSize: 14, fontWeight: 700, display: 'block', marginBottom: 12 }}>Top Tactic Demands</Text>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
                           {topDemandItems.length > 0 ? topDemandItems.map(({ key, value }) => (
                             <div key={key} style={{
                               display: 'flex',
                               alignItems: 'center',
                               gap: 8,
-                              padding: '8px 10px',
+                              padding: '8px 12px',
                               borderRadius: 999,
                               background: 'rgba(22,119,255,0.12)',
                               border: '1px solid rgba(106,169,255,0.25)',
                             }}>
                               <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6aa9ff', boxShadow: '0 0 10px rgba(106,169,255,0.6)' }} />
-                              <Text style={{ color: '#dbe7ff', fontSize: 12, fontWeight: 700 }}>{key}</Text>
-                              <Text style={{ color: '#6aa9ff', fontSize: 12, fontWeight: 700 }}>{(value * 100).toFixed(0)}%</Text>
+                              <Text style={{ color: '#dbe7ff', fontSize: 13, fontWeight: 700 }}>{key}</Text>
+                              <Text style={{ color: '#6aa9ff', fontSize: 13, fontWeight: 700 }}>{(value * 100).toFixed(0)}%</Text>
                             </div>
                           )) : (
-                            <Text style={{ color: '#6f7b95', fontSize: 12 }}>No recognized demand from current draw-path actions.</Text>
+                            <Text style={{ color: '#8f9bb3', fontSize: 13 }}>No recognized demand from current draw-path actions.</Text>
                           )}
                         </div>
-                        <Text style={{ color: '#7f8aa2', fontSize: 11, lineHeight: 1.6 }}>
+                        <Text style={{ color: '#8f9bb3', fontSize: 13, lineHeight: 1.6 }}>
                           Suggestions below are ranked by real score lift under the same fit formula.
                         </Text>
                       </div>
@@ -880,7 +1050,7 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                             const D = SYNERGY_DIMS.map(k => demandMap[k] ?? 0);
                             const S = supplyVec;
 
-                            if (scoreMetric === 'jsd') {
+                            if (activeScoreMetric === 'jsd') {
                               const M = D.map((d, i) => 0.5 * (d + S[i]));
                               const kl = (p: number[], q: number[]) => p.reduce((sum, pVal, i) => {
                                 if (pVal <= 0 || q[i] <= 0) return sum;
@@ -938,16 +1108,39 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
               })()}
 
               {/* SUBSTITUTION CARDS */}
-              {result.weak_links?.length > 0 ? (
+              {result.weak_links?.length > 0 ? (() => {
+                const demandMap = computeDemand(boardActions);
+                const topDemandItems = getTopDemandItems(demandMap);
+
+                return (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                     <BulbOutlined style={{ color: '#faad14' }} />
                     <Text style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Substitution Suggestions</Text>
                   </div>
                   <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'thin' }}>
-                    {result.weak_links.map((wl, idx) => (
+                    {result.weak_links.map((wl, idx) => {
+                      // Attempt to parse structured text if it exists (Demands vs Current vs Replace)
+                      const fullText = typeof wl.issue === 'string' ? wl.issue : '';
+                      
+                      let demandsText = '';
+                      let currentText = '';
+                      let replaceText = '';
+                      
+                      if (fullText) {
+                        // Extract keywords based on the structure we expect. If the AI doesn't return this structure, it will fall back to the old string styling.
+                        const sentences = fullText.split(/(?:\. |! |\? )/).filter(Boolean);
+                        if (sentences.length >= 2) {
+                          currentText = sentences[0] + '.';
+                          replaceText = sentences.slice(1).join('. ') + (fullText.endsWith('.') ? '' : '.');
+                        } else {
+                          currentText = fullText;
+                        }
+                      }
+
+                      return (
                       <div key={idx} style={{ 
-                        flex: '0 0 250px', 
+                        flex: '0 0 280px', 
                         background: 'linear-gradient(135deg, rgba(30,36,50,0.8) 0%, rgba(20,24,35,0.9) 100%)', 
                         border: '1px solid rgba(250, 173, 20, 0.25)', 
                         borderRadius: 12, 
@@ -956,24 +1149,46 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                           <Tag style={{ margin: 0, background: '#252b3b', border: 'none', color: '#fff', fontWeight: 600 }}>{wl.position}</Tag>
-                          <Text style={{ color: '#52c41a', fontSize: 11, fontWeight: 700 }}>
+                          <Text style={{ color: '#52c41a', fontSize: 12, fontWeight: 700 }}>
                             {typeof wl.delta_score === 'number' ? `+${wl.delta_score}% Fit` : 'Needs Revision'}
                           </Text>
                         </div>
-                        <Text style={{ color: '#d1d8e6', fontSize: 12, display: 'block', marginBottom: 14, minHeight: 40, lineHeight: 1.4 }}>
-                          {renderIssue(wl.issue)}
-                        </Text>
+                        
+                        <div style={{ marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                           {/* STRUCTURED TEXT DISPLAY */}
+                           {topDemandItems.length > 0 && (
+                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
+                               <span style={{ color: '#adb5c9', fontWeight: 600, marginRight: 6 }}>Demands:</span>
+                               <span style={{ color: '#d1d8e6' }}>{topDemandItems.map((d: {key: string, value: number}) => `${d.key} (${(d.value * 100).toFixed(0)}%)`).join(', ')}</span>
+                             </div>
+                           )}
+                           
+                           {currentText && (
+                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
+                               <span style={{ color: '#ff4d4f', opacity: 0.9, fontWeight: 600, marginRight: 6 }}>Current:</span>
+                               <span style={{ color: '#d1d8e6' }}>{renderIssue(currentText)}</span>
+                             </div>
+                           )}
+                           
+                           {replaceText && (
+                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
+                               <span style={{ color: '#52c41a', opacity: 0.9, fontWeight: 600, marginRight: 6 }}>Replace:</span>
+                               <span style={{ color: '#d1d8e6' }}>{renderIssue(replaceText)}</span>
+                             </div>
+                           )}
+                        </div>
+
                         {typeof wl.expected_score === 'number' && (
                           <div style={{ marginBottom: 12, padding: '8px 10px', borderRadius: 10, background: 'rgba(82,196,26,0.08)', border: '1px solid rgba(82,196,26,0.18)' }}>
-                            <Text style={{ color: '#8bdc8f', fontSize: 11 }}>
-                              Expected score after swap: <b>{wl.expected_score}%</b>
+                            <Text style={{ color: '#8bdc8f', fontSize: 12 }}>
+                              Expected score after swap: <b style={{ color: '#52c41a' }}>{wl.expected_score}%</b>
                             </Text>
                           </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
                               <Text style={{ color: '#7a86a0', fontSize: 10, display: 'block', marginBottom: 4 }}>Current</Text>
-                              <Tag style={{ margin: 0, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#a8b4cc', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={wl.current_tag}>{wl.current_tag.split(' - ')[0]}</Tag>
+                              <Tag style={{ margin: 0, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 500, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={wl.current_tag}>{wl.current_tag.split(' - ')[0]}</Tag>
                             </div>
                             <ArrowRightOutlined style={{ color: '#faad14', opacity: 0.6, flexShrink: 0, margin: '0 8px' }} />
                             <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
@@ -982,10 +1197,10 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 </div>
-              ) : (
+              ); })() : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px', background: 'rgba(82,196,26,0.08)', borderRadius: 12, border: '1px solid rgba(82,196,26,0.2)' }}>
                   <CheckCircleFilled style={{ color: '#52c41a', fontSize: 18 }} />
                   <Text strong style={{ color: '#fff' }}>Perfect Lineup Fit</Text>
@@ -995,33 +1210,7 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
           ) : null}
         </div>
 
-        <Modal
-          title="Configure Tactic"
-          open={configOpen}
-          onCancel={() => setConfigOpen(false)}
-          onOk={() => setConfigOpen(false)}
-          okText="Apply"
-          styles={{
-            content: { background: 'rgba(15,20,30,0.98)', border: '1px solid rgba(255,255,255,0.12)' },
-            header: { background: 'transparent' },
-            body: { paddingTop: 8 },
-          }}
-        >
-          <Form.Item name="tactic_name" label={<span style={{ color: '#a8b4cc' }}>Tactic System</span>} rules={[{ required: true }]}>
-            <Select showSearch allowClear onChange={handleTacticChange} options={COMMON_TACTICS} />
-          </Form.Item>
 
-          <Form.Item name="tactic_actions" label={<span style={{ color: '#a8b4cc' }}>Required Actions</span>} rules={[{ required: true }]}>
-            <Select mode="tags" placeholder="e.g. Spot-up, Screen..." options={[
-              { value: 'Spot_Up' },
-              { value: 'Cut' },
-              { value: 'Off_Screen' },
-              { value: 'Spacing' },
-              { value: 'Post_Up' },
-              { value: 'PnR_BH' },
-            ]} />
-          </Form.Item>
-        </Modal>
       </div>
     </Form>
   );

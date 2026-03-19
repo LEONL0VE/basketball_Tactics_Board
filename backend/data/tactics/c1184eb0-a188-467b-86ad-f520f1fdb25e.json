@@ -5,7 +5,7 @@
   "category": "Defense",
   "sub_category": "Man",
   "description": "A man-to-man defensive strategy where defenders position themselves on an imaginary line between the ball handler and their assigned offensive player. It is highly aggressive and heavily focused on denying passes (deny defense), disrupting the offensive flow, and forcing the opponents to operate further away from the basket or commit turnovers.",
-  "tags": [],
+  "tags": ["Deny", "Switch"],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/Line_defense",
     "video": "https://www.youtube.com/watch?v=TxDO1e9gqAM"

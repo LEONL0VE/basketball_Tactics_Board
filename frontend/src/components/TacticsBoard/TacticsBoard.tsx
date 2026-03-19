@@ -39,7 +39,8 @@ import {
   UserOutlined,
   SearchOutlined,
   ReloadOutlined,
-  RobotOutlined
+  RobotOutlined,
+  FolderAddOutlined
 } from '@ant-design/icons';
 
 import GhostDefenseLayer from './GhostDefenseLayer';
@@ -94,6 +95,7 @@ const TacticsBoard: React.FC = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedActionId, setSelectedActionId] = useState<string | null>(null);
   const [activeTool, setActiveTool] = useState<ActionType | null>(null);
+  const [isActionMenuCollapsed, setIsActionMenuCollapsed] = useState(false);
   const [currentAction, setCurrentAction] = useState<Action | null>(null);
   
   const stageRef = useRef<any>(null);
@@ -112,6 +114,9 @@ const TacticsBoard: React.FC = () => {
   // Tactics Library State
   const [isTacticsLibraryVisible, setIsTacticsLibraryVisible] = useState(false);
   const [currentTacticDescription, setCurrentTacticDescription] = useState<string>('');
+  
+  // Drawer state for Team Roster
+  const [isRosterCollapsed, setIsRosterCollapsed] = useState(false);
   
   // Save Tactic State
   const [isSaveModalVisible, setIsSaveModalVisible] = useState(false);
@@ -684,6 +689,7 @@ const TacticsBoard: React.FC = () => {
     setSelectedActionId(id);
     setSelectedId(null); // Deselect player
     setActiveTool(null);
+    setIsActionMenuCollapsed(false); // Always expand when newly selected
   };
 
   // Delete Entity
@@ -994,6 +1000,8 @@ const TacticsBoard: React.FC = () => {
   const renderPlayerMenu = () => {
     if (!selectedEntity) return null;
     if (selectedEntity.type !== 'player' && selectedEntity.type !== 'ball') return null;
+    // Hide panel while drawing a path so it doesn't cover bezier control points
+    if (activeTool) return null;
 
     // Calculate position relative to the entity
     let x = selectedEntity.position.x;
@@ -1092,27 +1100,52 @@ const TacticsBoard: React.FC = () => {
   const renderActionMenu = () => {
     if (!selectedAction) return null;
 
-    // Helper to transform logical point to screen point
-    const toScreen = (p: Position) => {
-        let sx = p.x;
-        let sy = p.y;
-        if (isVertical) {
-            const tempX = sx;
-            sx = stageWidth - sy;
-            sy = tempX;
-        }
+    // ── Collapsed "pill" state ──────────────────────────────────────────────
+    // Helper to transform logical point to screen point (shared)
+    const toScreenPt = (p: Position) => {
+        let sx = p.x, sy = p.y;
+        if (isVertical) { const tmp = sx; sx = stageWidth - sy; sy = tmp; }
         return { x: sx, y: sy };
     };
 
-    // Position at Top-Right of the end point (arrow head)
-    // This simulates "top right of mouse" if the user is working on the arrow head
     const endPoint = selectedAction.path[selectedAction.path.length - 1];
-    const endScreen = toScreen(endPoint);
-
-    // Boundary detection
+    const endScreen = toScreenPt(endPoint);
     const isTooCloseToTop = endScreen.y < 200;
     const isTooCloseToRight = endScreen.x > stageWidth - 150;
 
+    if (isActionMenuCollapsed) {
+      // Render a tiny toggle pill so user can re-expand
+      const pillStyle: React.CSSProperties = {
+        position: 'absolute',
+        top: endScreen.y,
+        left: endScreen.x,
+        zIndex: 100,
+        transform: `translate(${isTooCloseToRight ? '-90%' : '-50%'}, ${isTooCloseToTop ? '0' : '-100%'})`,
+        marginTop: isTooCloseToTop ? '45px' : '-45px',
+        background: 'rgba(35,35,35,0.85)',
+        border: '1px solid rgba(255,255,255,0.15)',
+        borderRadius: '20px',
+        padding: '3px 10px',
+        color: 'rgba(255,255,255,0.7)',
+        fontSize: '11px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
+        whiteSpace: 'nowrap',
+        userSelect: 'none',
+        pointerEvents: 'auto',
+        backdropFilter: 'blur(6px)',
+      };
+      return (
+        <div style={pillStyle} onClick={() => setIsActionMenuCollapsed(false)}>
+          <span style={{ fontSize: '9px' }}>▶</span>
+          <span>Edit Action</span>
+        </div>
+      );
+    }
+
+    // Position at Top-Right of the end point (arrow head)
     // Center on the end point
     let menuX = endScreen.x; 
     let menuY = endScreen.y;
@@ -1159,6 +1192,21 @@ const TacticsBoard: React.FC = () => {
 
     return (
       <div style={menuStyle}>
+        {/* Collapse button row */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-2px' }}>
+          <span
+            title="Collapse panel to drag curve points"
+            onClick={() => setIsActionMenuCollapsed(true)}
+            style={{
+              cursor: 'pointer',
+              fontSize: '10px',
+              color: 'rgba(255,255,255,0.45)',
+              padding: '0 2px',
+              lineHeight: 1,
+              userSelect: 'none',
+            }}
+          >✕ collapse</span>
+        </div>
         <div style={rowStyle}>
           {hasBall ? (
             <>
@@ -2225,7 +2273,7 @@ const TacticsBoard: React.FC = () => {
         />
 
 <SidebarButton
-            icon={<SaveOutlined />}
+            icon={<FolderAddOutlined />}
             onClick={handleOpenSaveModal}
             tooltip="Save to Gallery"
           />
@@ -2271,7 +2319,7 @@ const TacticsBoard: React.FC = () => {
         
         <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', alignItems: 'flex-start' }}>
           
-          {/* Left Column: Board + PlayerInfoPanel */}
+          {/* Left Column: Board + Player Panel */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Main Board Area */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -2324,7 +2372,7 @@ const TacticsBoard: React.FC = () => {
                     {/* --- Z-Index Fix: Render Layers in Order --- */}
 
                     {/* 1. Render Players First (Bottom Layer) */}
-{/* 1. 先渲染所有球�?(底层) */}
+{/* 1. 先渲染所有球?(底层) */}
                   {entities.filter(e => e.type === 'player').map(entity => {
                       const hasBall = entities.some(e => e.type === 'ball' && (e as BallType).ownerId === entity.id);
                       return (
@@ -2352,7 +2400,7 @@ const TacticsBoard: React.FC = () => {
                       );
                   })}
 
-                  {/* 2. 后渲染所有球 (顶层 - 确保球永远浮在球员上�? */}
+                  {/* 2. 后渲染所有球 (顶层 - 确保球永远浮在球员上? */}
                   {entities.filter(e => e.type === 'ball').map(entity => (
                       <Ball 
                         key={entity.id} 
@@ -2403,16 +2451,54 @@ const TacticsBoard: React.FC = () => {
               {renderTopBar()}
             </div>
 
-            {/* Bottom Panel: PlayerInfoPanel */}
-            <div style={{ width: stageWidth, height: '220px', overflow: 'hidden' }}>
-                <PlayerInfoPanel 
-                  players={entities.filter(e => e.type === 'player') as PlayerType[]} 
-                  mode="bottom"
-                  onTagClick={(id) => {
-                    setTargetPlayerId(id);
-                    setIsTagModalVisible(true);
-                  }}
-                />
+            {/* Expandable Team Roster Panel (Below Board) */}
+            <div style={{ 
+              width: stageWidth,
+              background: 'rgba(20, 25, 35, 0.75)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+              height: isRosterCollapsed ? '32px' : '130px',
+              overflow: 'hidden'
+            }}>
+              {/* Drawer Handle / Header */}
+              <div 
+                onClick={() => setIsRosterCollapsed(!isRosterCollapsed)}
+                style={{
+                  height: '32px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  borderBottom: isRosterCollapsed ? 'none' : '1px solid rgba(255,255,255,0.06)',
+                  color: '#A5A6AA',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  background: 'rgba(255,255,255,0.02)'
+                }}
+              >
+                Team Roster <span style={{ marginLeft: 6, fontSize: '10px' }}>{isRosterCollapsed ? '▲ FULL ROSTER' : '▼ HIDE'}</span>
+              </div>
+              
+              {/* Content */}
+              {!isRosterCollapsed && (
+                <div style={{ flex: 1, padding: '10px 16px', overflow: 'hidden' }}>
+                    <PlayerInfoPanel 
+                      players={entities.filter(e => e.type === 'player') as PlayerType[]} 
+                      mode="bottom"
+                      onTagClick={(id) => {
+                        setTargetPlayerId(id);
+                        setIsTagModalVisible(true);
+                      }}
+                    />
+                </div>
+              )}
             </div>
           </div>
 
@@ -2423,7 +2509,9 @@ const TacticsBoard: React.FC = () => {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center'
-          }}>             {!isAnimationMode && <AssetsBar onDragStart={() => {}} vertical={true} />} `n          </div>
+          }}>
+            {!isAnimationMode && <AssetsBar onDragStart={() => {}} vertical={true} />}
+          </div>
         </div>
 
         {/* Animation Controls (Absolute positioned at bottom) */}
@@ -2725,6 +2813,7 @@ const TacticsBoard: React.FC = () => {
           frameIndex: index,
           actions: index === currentFrameIndex ? actionsMap[viewMode] : frame.actionsMap[viewMode],
         }))}
+        currentTacticName={currentTacticMetadata?.name}
       />
     </div>
   );

@@ -6,7 +6,10 @@
   "category": "Strategy & Concepts",
   "sub_category": "General Strategy",
   "description": "A classic drill involving five players passing and weaving down the court in a figure-8 pattern, often used to teach transition offense.",
-  "tags": [],
+  "tags": [
+    "Transition",
+    "Hand_Off"
+  ],
   "external_links": {
     "article": "https://en.wikipedia.org/wiki/5_man_weave",
     "video": "https://www.youtube.com/watch?v=zI2f5_g1JjA"
@@ -114,7 +117,8 @@
                 "y": 188.41872903803582
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "66de74e2-c143-4d42-ae86-83857d22e5bf",
@@ -138,7 +142,8 @@
                 "y": 193.42019707083182
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "3009e0fe-2d14-4541-92b3-0a7a37417140",
@@ -162,7 +167,8 @@
                 "y": 494.5085726451513
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "0bada636-1ac6-468d-aa82-e08a3ec523e3",
@@ -186,7 +192,8 @@
                 "y": 599.5394013338673
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "7184d680-beec-4cab-a16d-174d070db328",
@@ -210,7 +217,8 @@
                 "y": 106.39465330018135
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "c8e21003-afd4-4631-a3e0-6c8fa465b04b",
@@ -234,7 +242,8 @@
                 "y": 276.4445664152455
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -330,7 +339,8 @@
                 "y": 425.48831379256643
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "5e5d9c47-f9fd-4336-bbb6-89b19909ff2e",
@@ -354,7 +364,8 @@
                 "y": 417.4859649400928
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "40979040-c76f-4940-826a-d73ef02f2aac",
@@ -378,7 +389,8 @@
                 "y": 216.42695002169344
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f7115106-7444-48a5-bb0e-1b7c1a01dd94",
@@ -402,7 +414,8 @@
                 "y": 107.39494690674054
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "a473afc6-cff6-4eb6-a1ec-96e365688849",
@@ -426,7 +439,8 @@
                 "y": 600.5396949404266
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "427fbf51-e1c9-4db4-8949-398dd71d5992",
@@ -450,7 +464,8 @@
                 "y": 549.5247210059073
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -546,7 +561,8 @@
                 "y": 156.40933362814138
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "4941f5ed-9be3-4c00-b137-5cef88405806",
@@ -570,7 +586,8 @@
                 "y": 163.41138887405577
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "43ab78a0-88d7-4e8c-bfda-41d48b296c48",
@@ -594,7 +611,8 @@
                 "y": 88.38936838211572
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "d20b6b2f-1e31-48d7-9550-ba1df922650c",
@@ -618,7 +636,8 @@
                 "y": 579.5335292026833
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "221d1a87-9465-49ed-b4a0-3bcee2b46b61",
@@ -642,7 +661,8 @@
                 "y": 653.5552560880642
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "77069d71-deb0-46a4-abb1-b333fcdacdc8",
@@ -666,7 +686,8 @@
                 "y": 415.4853777269744
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           }
         ]
       },
@@ -762,7 +783,8 @@
                 "y": 411.4842033007376
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "d6ecfc9a-65a3-4bac-9c41-388b8af1aa51",
@@ -786,7 +808,8 @@
                 "y": 394.4792119892312
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Post_Up"
           },
           {
             "id": "9170a5cc-a8ca-4587-ad08-7984f19e8ac9",
@@ -810,7 +833,8 @@
                 "y": 539.5217849403153
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "9c5c2234-dc62-40a4-a099-829eceee69e3",
@@ -834,7 +858,8 @@
                 "y": 228.43047330040383
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           },
           {
             "id": "fb70f950-3146-46e2-9f18-1bf68448d3f7",
@@ -858,7 +883,8 @@
                 "y": 89.38966198867493
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           }
         ]
       },
@@ -954,7 +980,8 @@
                 "y": 151.40786559534538
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "fa094012-6c2a-44cc-9f72-b0a79e9dbc05",
@@ -978,7 +1005,8 @@
                 "y": 161.41080166093738
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "89519d57-9166-47bc-98e3-22145aee15d3",
@@ -1002,7 +1030,8 @@
                 "y": 480.50446215332244
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "feeb1ca0-290f-4bd8-9346-2891cfb43f3b",
@@ -1026,7 +1055,8 @@
                 "y": 230.43106051352225
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "98632b5a-e045-4b05-a833-34ad53692632",
@@ -1050,7 +1080,8 @@
                 "y": 49.37791772630689
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Off_Screen"
           }
         ]
       },
@@ -1145,7 +1176,8 @@
                 "y": 284.4469152677191
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "904de7c3-4ee8-4eb7-9b27-38c5ca9f94c6",
@@ -1169,7 +1201,8 @@
                 "y": 608.5420437929001
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "e66422e4-63d5-4ee4-8ebc-d4ce9e6a67e8",
@@ -1193,7 +1226,8 @@
                 "y": 410.4839096941784
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "670674fa-e054-4056-9eb5-1490c45e7f1f",
@@ -1217,7 +1251,8 @@
                 "y": 397.4800928089088
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "6010c146-ab58-46fb-8a0c-a02e1cf5cef7",
@@ -1241,7 +1276,8 @@
                 "y": 46.37703690662929
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           }
         ]
       },
@@ -1336,7 +1372,8 @@
                 "y": 332.46100838256075
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           },
           {
             "id": "9e3c0f9e-89e1-4630-97c4-ab5457915523",
@@ -1360,7 +1397,8 @@
                 "y": 319.4571914972911
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "32d6f116-a95d-4ed5-93d2-b99675cf95b0",
@@ -1384,7 +1422,8 @@
                 "y": 143.40551674287178
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "6e28629a-14ec-4d46-9452-daa286dee784",
@@ -1408,7 +1447,8 @@
                 "y": 619.5452734650514
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "Spot_Up"
           },
           {
             "id": "f497ec83-56bb-4883-b9cf-bf9eb5cb66fd",
@@ -1432,7 +1472,8 @@
                 "y": 405.4824416613824
               }
             ],
-            "color": "#ff4d4f"
+            "color": "#ff4d4f",
+            "actionTag": "PnR_BH"
           }
         ]
       },
