@@ -48,7 +48,6 @@ import TacticsLibrary from './TacticsLibrary';
 import LineupDiagnosticPanel from './LineupDiagnosticPanel';
 import { resolveCollisions, calculateGhostDefender } from '../../utils/playerUtils';
 import { API_ENDPOINTS } from '../../config/api';
-import TacticFinder from './TacticFinder';
 
 import { ATOMIC_ACTIONS, ATOMIC_ACTION_TAG_OPTIONS } from '../../config/atomicActions';
 import { OFFENSIVE_ROLE_TAG_OPTIONS } from '../../config/playerRoles';

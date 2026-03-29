@@ -109,7 +109,7 @@ TACTIC DATABASE ({len(catalog)} tactics):
 {catalog_json}
 
 RULES:
-- Return the top 3 most relevant tactics as a JSON array, sorted by relevance.
+- Return the top 6 most relevant tactics as a JSON array, sorted by relevance.
 - If the query is unrelated to basketball, return [].
 - Each "reason" MUST directly reference the user's query wording and map it to concrete tactic properties (tags, play style, structure). This is critical — do NOT write generic definitions.
 
