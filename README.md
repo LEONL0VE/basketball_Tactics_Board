@@ -2,6 +2,9 @@
 
 An interactive, AI-powered 2D basketball tactics board. It automatically translates hand-drawn actions on a digital canvas into quantifiable Synergy Sports playtypes, evaluating court spacing and calculating lineup-tactic congruence via mathematical algorithms.
 
+## Author
+**Leon** (Initial Draft Version)
+
 ## Repo Link
 https://github.com/LEONL0VE/basketball_Tactics_Board
 
