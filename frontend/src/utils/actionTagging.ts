@@ -1,38 +1,30 @@
 /**
  * actionTagging.ts
- * Translation State Machine (Phase 1.2 of Roster-Fit roadmap).
+ * Translation State Machine — maps canvas draw gestures to Synergy playtypes.
  *
- * Converts a completed draw gesture into an atomic action code (actionTag)
- * based on FIVE inputs: action type, ball possession, start zone, and end zone.
+ * Reference: Table 1 — Playtype definitions (Synergy Sports Technology)
+ *
+ * Playtype            Definition
+ * ──────────────────── ─────────────────────────────────────────────────
+ * PnR_BH              Uses an on-ball screen (including reject action)
+ * PnR_RM              Makes a pick then rolls, pops, slips, etc.
+ * Transition          Attacks when defense is not set
+ * Off_Screen          Uses an off-ball screen
+ * Spot_Up             Stands still or moves without an off-ball screen
+ * Isolation           Performs 1-on-1
+ * Hand_Off            Receives the ball in a hand-off
+ * Cut                 Cuts without a screen (UCLA, flex, etc.)
+ * Putback             Shoots immediately after an offensive rebound
+ * Post_Up             Performs post play (back-to-basket, low block)
+ * Misc                Offense that doesn't fit any above (excluded from auto-tag)
  *
  * Court zone reference (full-court canvas at SCALE=45):
  *   COURT_WIDTH  ≈ 1289 px  (left = attacking baseline / frontcourt)
  *   COURT_HEIGHT ≈  686 px
- *   Paint (left):   x < 22%W, |y - center| < 18%H
- *   Perimeter:      x > 35%W  OR  |y - center| > 42%H
- *   Mid-range:      between paint and perimeter
- *   Backcourt:      x > 50%W  (defensive half)
- *
- * Mapping table (source: research paper Table 1 Playtype descriptions):
- *  pass  + hasBall + start=Perimeter       → PnR_BH   (perimeter initiator)
- *  pass  + hasBall + start=Paint/Mid       → Post_Up  (low-post kick-out)
- *  pass  + hasBall + very short (< 8%W)    → Hand_Off (hand-off to cutter nearby)
- *  dribble/move + hasBall + backcourt→front → Transition (fast break push)
- *  dribble/move + hasBall + Perimeter→Paint → Isolation (drive into paint)
- *  dribble/move + hasBall + Paint/Mid       → Post_Up  (post footwork)
- *  dribble/move + hasBall + Perimeter→Perim → PnR_BH  (perimeter ball-handler)
- *  shoot + hasBall + end=Paint + very short → Putback  (offensive rebound tip)
- *  shoot + hasBall + end=Perimeter          → Spot_Up
- *  shoot + hasBall + end=Paint              → Post_Up
- *  shoot + hasBall + end=Mid                → Isolation
- *  screen (any)                             → PnR_RM
- *  move  + !hasBall + end=Paint             → Cut
- *  move  + !hasBall + start=Paint/Mid→Perim → Off_Screen
- *  move  + !hasBall + Perimeter→Perimeter   → Spot_Up
- *
- * NOTE: Misc is intentionally NOT produced here — it is available only as a
- * manual label in the save-tactic dialog (atomicActions.ts) and is excluded
- * from TAG_CAPABILITY because it carries no defined supply semantics.
+ *   Paint:       x < 22%W, |y - center| < 18%H
+ *   Mid-range:   between paint and perimeter
+ *   Perimeter:   x > 35%W  OR  |y - center| > 42%H
+ *   Backcourt:   x > 50%W  (defensive half)
  */
 
 import { ActionType } from '../types';
@@ -62,16 +54,16 @@ export function isBackcourt(x: number, y: number): boolean {
   return x > COURT_WIDTH * 0.50;
 }
 
-// ─── State Machine ────────────────────────────────────────────────────────────
+// ─── Per-Action State Machine ─────────────────────────────────────────────────
 
 /**
  * Derive an atomic action code from a completed draw gesture.
  *
- * @param actionType  - The canvas action type the user selected/drew
- * @param hasBall     - Whether the acting player currently holds the ball
- * @param startX/Y    - Canvas coords of the action start point
- * @param endX/Y      - Canvas coords of the action end point
- * @returns An atomic action code string, or undefined if not classifiable
+ * NOTE on PnR_BH: This function cannot detect PnR_BH because it requires
+ * cross-action context (a screen must exist on the same frame). Per-action,
+ * a perimeter ball-handler defaults to Isolation. Use `refineFrameActionTags()`
+ * after all per-action tags are derived to upgrade Isolation → PnR_BH when
+ * a screen is present on the same frame.
  */
 export function deriveActionTag(
   actionType: ActionType,
@@ -81,54 +73,131 @@ export function deriveActionTag(
   endX: number,
   endY: number,
 ): string | undefined {
+  const dist = Math.hypot(endX - startX, endY - startY);
+
   switch (actionType) {
+    // ── Screen ──────────────────────────────────────────────────────────
+    // "Player makes a pick and then rolls, pops, slips, etc."
+    case 'screen':
+      return 'PnR_RM';
+
+    // ── Pass ────────────────────────────────────────────────────────────
     case 'pass': {
       if (!hasBall) return undefined;
-      // Very short pass in paint area = hand-off (passer and receiver standing close together)
-      const dist = Math.hypot(endX - startX, endY - startY);
-      if (dist < COURT_WIDTH * 0.08 && isPaintArea(startX, startY)) return 'Hand_Off';
-      // From Paint/Mid → low-post kick-out → Post_Up
-      // From Perimeter → perimeter initiator → PnR_BH
-      return (isPaintArea(startX, startY) || isMidRange(startX, startY))
-        ? 'Post_Up'
-        : 'PnR_BH';
+
+      // Very short pass = hand-off: "player receives the ball in a hand-off"
+      // Hand-offs are short-range exchanges regardless of court area
+      if (dist < COURT_WIDTH * 0.10) return 'Hand_Off';
+
+      // Outlet/advance pass crossing half-court = transition play
+      if (isBackcourt(startX, startY) && !isBackcourt(endX, endY)) return 'Transition';
+
+      // Pass from low post = part of post-up play (post kick-out)
+      if (isPaintArea(startX, startY)) return 'Post_Up';
+
+      // General perimeter/mid-range pass doesn't map to a specific playtype
+      // The playtype is determined by the ball-handler's action, not the pass itself
+      return undefined;
     }
 
+    // ── Dribble / Move ──────────────────────────────────────────────────
     case 'dribble':
     case 'move': {
       if (hasBall) {
-        // Cross-court push: backcourt start → frontcourt end → Transition
+        // Cross half-court push = transition / fast break
+        // "Attacks when defense is not set"
         if (isBackcourt(startX, startY) && !isBackcourt(endX, endY)) return 'Transition';
-        // Drive from perimeter into paint → Isolation (1-on-1 drive)
-        if (isPerimeter(startX, startY) && isPaintArea(endX, endY)) return 'Isolation';
-        // Short move within Paint / Mid-range → Post_Up (post footwork)
-        if (!isPerimeter(startX, startY) && !isBackcourt(startX, startY)) return 'Post_Up';
-        // Default: perimeter ball-handler → PnR_BH
-        return 'PnR_BH';
+
+        // Movement within paint or ending in paint from mid-range = post play
+        // "Performs post play (back-to-basket, low block)"
+        if (isPaintArea(startX, startY) && (isPaintArea(endX, endY) || isMidRange(endX, endY)))
+          return 'Post_Up';
+        
+        // Drive from mid-range or perimeter into paint = isolation drive
+        // "Performs 1-on-1"
+        if (isMidRange(startX, startY) && isPaintArea(endX, endY))
+          return 'Isolation';
+
+        // Perimeter to perimeter ball handling = could be PnR_BH or Isolation
+        // Without screen context, default to Isolation (upgraded by refineFrameActionTags)
+        return 'Isolation';
       }
-      // Without ball:
-      if (isPaintArea(endX, endY)) return 'Cut'; // Cut to the basket
-      // From interior toward perimeter → off-ball screen usage
+
+      // ── Without ball ──────────────────────────────────────────────────
+      // Move ending at paint = cut to the basket
+      // "Player cuts without a screen (including UCLA, flex, etc.)"
+      if (isPaintArea(endX, endY)) return 'Cut';
+
+      // Interior → perimeter = using an off-ball screen to get open
+      // "Player uses an off-ball screen"
       if ((isPaintArea(startX, startY) || isMidRange(startX, startY)) && isPerimeter(endX, endY))
         return 'Off_Screen';
-      return 'Spot_Up'; // Perimeter drift / spot-up positioning
+
+      // Staying/drifting on perimeter without ball = spot-up positioning
+      // "Stands still or moves without using an off-ball screen"
+      return 'Spot_Up';
     }
 
+    // ── Shoot ───────────────────────────────────────────────────────────
     case 'shoot': {
       if (!hasBall) return undefined;
-      // Very short shoot gesture entirely inside paint = putback (offensive rebound tip)
-      const shotDist = Math.hypot(endX - startX, endY - startY);
-      if (isPaintArea(startX, startY) && isPaintArea(endX, endY) && shotDist < COURT_WIDTH * 0.06)
-        return 'Putback';
-      if (isPerimeter(endX, endY)) return 'Spot_Up';
-      if (isPaintArea(endX, endY))  return 'Post_Up';
-      return 'Isolation'; // mid-range pull-up
-    }
 
-    case 'screen':
-      return 'PnR_RM'; // Screener / roll-man
+      // Very short shot in paint = putback (offensive rebound tip-in)
+      // "Shoots immediately after an offensive rebound"
+      if (isPaintArea(startX, startY) && isPaintArea(endX, endY) && dist < COURT_WIDTH * 0.06)
+        return 'Putback';
+
+      // Shot from/at perimeter = catch-and-shoot / spot-up
+      // "Stands still or moves without using an off-ball screen"
+      if (isPerimeter(endX, endY)) return 'Spot_Up';
+
+      // Shot at paint = post-up finish
+      // "Performs post play"
+      if (isPaintArea(endX, endY)) return 'Post_Up';
+
+      // Mid-range pull-up = isolation scoring
+      // "Performs 1-on-1"
+      return 'Isolation';
+    }
 
     default:
       return undefined;
   }
+}
+
+// ─── Frame-Level Refinement ──────────────────────────────────────────────────
+
+/**
+ * PnR_BH requires cross-action context: a ball-handler using a screen.
+ *
+ * After deriving per-action tags for a frame, call this function to upgrade
+ * ball-handler Isolation actions to PnR_BH when a screen (PnR_RM) is also
+ * present on the same frame.
+ *
+ * "PnR ball-handler: uses an on-ball screen (including reject action)"
+ *
+ * @param actions  All actions on the current frame (must have actionTag set)
+ * @param hasBallMap  Map of playerId → boolean indicating if the player has the ball
+ * @returns Updated actions array with PnR_BH upgrades applied
+ */
+export function refineFrameActionTags<T extends { actionTag?: string; playerId: string }>(
+  actions: T[],
+  hasBallMap: Map<string, boolean>,
+): T[] {
+  // Check if any screen (PnR_RM) exists on this frame
+  const hasScreen = actions.some(a => a.actionTag === 'PnR_RM');
+
+  return actions.map(a => {
+    // If a screen exists and this action is a ball-handler tagged as Isolation,
+    // upgrade to PnR_BH — the ball-handler is using the screen
+    if (hasScreen && hasBallMap.get(a.playerId) && a.actionTag === 'Isolation') {
+      return { ...a, actionTag: 'PnR_BH' };
+    }
+    // If no screen exists on the frame but a player has PnR_BH, downgrade to Isolation
+    // to keep the live diagnostic panel actively in sync when screens are deleted
+    if (!hasScreen && hasBallMap.get(a.playerId) && a.actionTag === 'PnR_BH') {
+      return { ...a, actionTag: 'Isolation' };
+    }
+    return a;
+  });
 }

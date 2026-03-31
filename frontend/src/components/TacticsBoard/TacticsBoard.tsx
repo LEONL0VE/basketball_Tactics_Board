@@ -51,7 +51,7 @@ import { API_ENDPOINTS } from '../../config/api';
 
 import { ATOMIC_ACTIONS, ATOMIC_ACTION_TAG_OPTIONS } from '../../config/atomicActions';
 import { OFFENSIVE_ROLE_TAG_OPTIONS } from '../../config/playerRoles';
-import { deriveActionTag } from '../../utils/actionTagging';
+import { deriveActionTag, refineFrameActionTags } from '../../utils/actionTagging';
 import { computeRosterFit } from '../../utils/rosterFit';
 import { FitError } from '../../types';
 import RosterFitPanel from './RosterFitPanel';
@@ -140,6 +140,49 @@ const TacticsBoard: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loadingPlayers, setLoadingPlayers] = useState(false);
   --- end NBA --- */
+
+  // 实时自动升降级动作标签 (例如: Isolation <-> PnR_BH)
+  React.useEffect(() => {
+    if (isPlaying || Object.keys(actionsMap).length === 0) return;
+    
+    // We only process the active viewMode
+    const currentActions = actionsMap[viewMode];
+    if (!currentActions || currentActions.length === 0) return;
+
+    // construct hasBallMap dynamically for current actions
+    const hasBallMap = new Map<string, boolean>();
+    currentActions.forEach(a => {
+      const isBallAction = (a.type === 'shoot' || a.type === 'dribble' || a.type === 'pass');
+      if (isBallAction) {
+         hasBallMap.set(a.playerId, true);
+      } else {
+         const player = entitiesMap[viewMode]?.find(e => e.id === a.playerId);
+         const hb = player ? entitiesMap[viewMode].some(e => e.type === 'ball' && (e as BallType).ownerId === player.id) : false;
+         if (hb) hasBallMap.set(a.playerId, true);
+      }
+    });
+
+    const refined = refineFrameActionTags(currentActions, hasBallMap);
+    
+    // Check if any tags actually changed to avoid infinite state update loop
+    let changed = false;
+    if (refined.length !== currentActions.length) changed = true;
+    else {
+      for(let i = 0; i < refined.length; i++) {
+         if (refined[i].actionTag !== currentActions[i].actionTag) {
+           changed = true;
+           break;
+         }
+      }
+    }
+
+    if (changed) {
+      setActionsMap(prev => ({
+        ...prev,
+        [viewMode]: refined
+      }));
+    }
+  }, [actionsMap, entitiesMap, viewMode, isPlaying]);
 
   // Sync current state to current frame when it changes
   React.useEffect(() => {
@@ -400,10 +443,11 @@ const TacticsBoard: React.FC = () => {
       };
     });
 
+    const players = renderedEntities.filter(e => e.type === 'player') as PlayerType[];
+    const ball = renderedEntities.find(e => e.type === 'ball') as BallType | undefined;
+
     // --- Collision Resolution for Animation ---
-    if (isPlaying) {
-      const players = renderedEntities.filter(e => e.type === 'player') as PlayerType[];
-      const ball = renderedEntities.find(e => e.type === 'ball') as BallType;
+    if (isPlaying && ball) {
 
       // Generate Ghost Defenders as Obstacles
       const ghostObstacles = players.map(p => {
@@ -420,54 +464,61 @@ const TacticsBoard: React.FC = () => {
         });
       }
 
-      // --- Ball Offset from Owner (Prevent overlapping with player number) ---
-      if (ball && ball.ownerId) {
-              // Pass/Shoot logic: Ball moves independently of player
-              const ballAction = actions.find(a => a.playerId === ball.ownerId && (a.type === 'pass' || a.type === 'shoot'));
-              if (ballAction && ballAction.path.length >= 2 && isPlaying) {
-                // Interpolate ball movement
-                let t = animationProgress;
-                let speedMultiplier = 1.5;
-                if (ballAction.speed === 'walk') speedMultiplier = 1.0;
-                if (ballAction.speed === 'sprint') speedMultiplier = 2.5;
-                let localProgress = Math.min(1, animationProgress * speedMultiplier);
-                t = localProgress;
-                if (t >= 1) {
-                  ball.position = ballAction.path[ballAction.path.length - 1];
-                } else {
-                  ball.position = getPointOnSpline(ballAction.path, t);
-                }
-              } else {
-                // Ball following owner logic
-                const owner = renderedEntities.find(e => e.id === ball.ownerId) as PlayerType | undefined;
-                if (owner) {
-                  // --- FIX START: Improved ball positioning logic ---
-                  
-                  // 1. Set ball distance from player center (pixels)
-                  // Increased slightly to prevent overlap with body
-                  const offsetDistance = 22; 
+    }
 
-                  // 2. Get current player rotation (default 0)
-                  const rotation = owner.rotation || 0;
+    // Keep ball offset from owner's center in both play and pause states while animating
+    // so the ball doesn't cover the holder's position label (PG/SG/SF/PF/C).
+    if (ball && ball.ownerId) {
+      // Pass/Shoot logic: Ball moves independently of player while playing.
+      const ballAction = actions.find(a => a.playerId === ball.ownerId && (a.type === 'pass' || a.type === 'shoot'));
+      if (ballAction && ballAction.path.length >= 2 && isPlaying) {
+        // Interpolate ball movement
+        let t = animationProgress;
+        let speedMultiplier = 1.5;
+        if (ballAction.speed === 'walk') speedMultiplier = 1.0;
+        if (ballAction.speed === 'sprint') speedMultiplier = 2.5;
+        let localProgress = Math.min(1, animationProgress * speedMultiplier);
+        t = localProgress;
+        if (t >= 1) {
+          ball.position = ballAction.path[ballAction.path.length - 1];
+        } else {
+          ball.position = getPointOnSpline(ballAction.path, t);
+        }
+      } else {
+        // Ball following owner logic
+        const owner = renderedEntities.find(e => e.id === ball.ownerId) as PlayerType | undefined;
+        if (owner) {
+          // Preserve authored left/right dribble hand from the current frame.
+          const sourceOwner = currentEntities.find(e => e.id === owner.id) as PlayerType | undefined;
+          const sourceBall = currentEntities.find(e => e.type === 'ball' && e.id === ball.id) as BallType | undefined;
 
-                  // 3. Set dribble offset angle relative to player facing direction
-                  // +50 degrees puts the ball to the front-right side
-                  // This ensures the ball is always on the side, never behind
-                  const dribbleAngleOffset = -50; 
+          const baseRotation = (sourceOwner?.rotation ?? owner.rotation ?? 0);
+          const baseRad = (baseRotation * Math.PI) / 180;
+          let handSign: 1 | -1 = 1; // +1 = right hand, -1 = left hand
 
-                  // 4. Convert total angle to radians for calculation
-                  // Simple addition handles all quadrants correctly
-                  const totalAngleRad = ((rotation + dribbleAngleOffset) * Math.PI) / 180;
+          if (sourceOwner && sourceBall) {
+            const baseDx = sourceBall.position.x - sourceOwner.position.x;
+            const baseDy = sourceBall.position.y - sourceOwner.position.y;
+            const localX = baseDx * Math.cos(baseRad) + baseDy * Math.sin(baseRad);
+            if (Math.abs(localX) > 0.001) {
+              handSign = localX >= 0 ? 1 : -1;
+            }
+          }
 
-                  // 5. Calculate new ball coordinates
-                  ball.position = {
-                    x: owner.position.x + Math.cos(totalAngleRad) * offsetDistance,
-                    y: owner.position.y + Math.sin(totalAngleRad) * offsetDistance
-                  };
-                  
-                  // --- FIX END ---
-                }
-              }
+          // Place the ball in local player space, then rotate to world space.
+          // localY < 0 keeps the ball slightly in front to avoid covering the jersey label.
+          const localOffsetX = handSign * 13;
+          const localOffsetY = -17;
+          const rotation = owner.rotation || 0;
+          const rotationRad = (rotation * Math.PI) / 180;
+          const worldOffsetX = localOffsetX * Math.cos(rotationRad) - localOffsetY * Math.sin(rotationRad);
+          const worldOffsetY = localOffsetX * Math.sin(rotationRad) + localOffsetY * Math.cos(rotationRad);
+
+          ball.position = {
+            x: owner.position.x + worldOffsetX,
+            y: owner.position.y + worldOffsetY
+          };
+        }
       }
     }
 
@@ -1808,12 +1859,13 @@ const TacticsBoard: React.FC = () => {
   };
 
   /**
-   * Retroactively assign actionTag to any action that was saved without one.
+   * Retroactively assign actionTag to any action that was saved without one,
+   * then apply frame-level refinement (PnR_BH upgrade when screen present).
    * hasBall heuristic: shoot/dribble/pass = true, move/screen/steal/block = false.
-   * Uses path[0] as start and path[last] as end coord.
    */
-  const retagActions = (actions: Action[]): Action[] =>
-    actions.map(a => {
+  const retagActions = (actions: Action[]): Action[] => {
+    // Step 1: per-action tagging
+    const tagged = actions.map(a => {
       if (a.actionTag) return a; // already tagged — keep as-is
       const start = a.path[0];
       const end   = a.path[a.path.length - 1];
@@ -1822,6 +1874,15 @@ const TacticsBoard: React.FC = () => {
       const tag = deriveActionTag(a.type, hasBall, start.x, start.y, end.x, end.y);
       return tag ? { ...a, actionTag: tag } : a;
     });
+
+    // Step 2: frame-level refinement — upgrade Isolation → PnR_BH when screen present
+    const hasBallMap = new Map<string, boolean>();
+    tagged.forEach(a => {
+      const isBallAction = (a.type === 'shoot' || a.type === 'dribble' || a.type === 'pass');
+      if (isBallAction) hasBallMap.set(a.playerId, true);
+    });
+    return refineFrameActionTags(tagged, hasBallMap);
+  };
 
   const handleLoadTactic = async (tacticId: string, loadMode: 'play' | 'edit' = 'play') => {
     try {
@@ -2852,6 +2913,7 @@ const TacticsBoard: React.FC = () => {
           actions: index === currentFrameIndex ? actionsMap[viewMode] : frame.actionsMap[viewMode],
         }))}
         currentTacticName={currentTacticMetadata?.name}
+        onLoadTactic={handleLoadTactic}
       />
     </div>
   );

@@ -1,0 +1,31 @@
+                          )}
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                                <div>
+                                  <Text style={{ color: '#ffffff', fontSize: 26, fontWeight: 700, letterSpacing: 0.5, display: 'block', marginBottom: 12 }}>{tactic.name}</Text>
+                                  <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                                    <Tag style={{ margin: 0, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#e2e8f0', fontSize: 15, padding: '6px 12px', borderRadius: 6, fontWeight: 500 }}>{tactic.category || 'General'}</Tag>
+                                    {(tactic.tags || []).slice(0, 3).map((t: string) => (
+                                      <Tag key={t} style={{ margin: 0, background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#cbd5e1', fontSize: 15, padding: '6px 12px', borderRadius: 6 }}>{t}</Tag>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: `${fitColor}15`, padding: '8px 18px', borderRadius: 12, border: `1px solid ${fitColor}40`, boxShadow: `0 0 10px ${fitColor}10` }}>
+                                  <Text style={{ color: fitColor, fontSize: 24, fontWeight: 800 }}>{tactic.fitScore}%</Text>
+                                </div>
+                              </div>
+                              <Text style={{ color: '#e2e8f0', fontSize: 18, lineHeight: 1.7, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                                {tactic.description || 'No description available'}
+                              </Text>
+                            </div>
+                            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
+                              <Button 
+                                type="primary" 
+                                size="large"
+                                onClick={() => onLoadTactic && onLoadTactic(tactic.id, 'play')}
+                                style={{ background: '#faad14', borderColor: '#faad14', color: '#141414', borderRadius: 8, fontWeight: 700, padding: '0 24px', height: 40, boxShadow: '0 4px 12px rgba(250,173,20,0.3)' }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = '#ffc53d'; e.currentTarget.style.borderColor = '#ffc53d'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = '#faad14'; e.currentTarget.style.borderColor = '#faad14'; }}
+                              >
+

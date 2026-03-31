@@ -11,7 +11,7 @@ import json
 
 router = APIRouter(prefix="/api/diagnose_lineup", tags=["AI Diagnostics"])
 
-GEMINI_MODEL = "gemini-3-flash-preview"
+GEMINI_MODEL = "gemini-2.5-flash-lite"
 GEMINI_URL_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent?key={key}"
@@ -154,17 +154,19 @@ def compute_rank_weighted_supply(role_tags: List[str]) -> Dict[str, float]:
     return normalized
 
 
-def compute_cosine_fit_score(demand_map: Dict[str, float], role_tags: List[str]) -> int:
+def compute_histogram_intersection_score(demand_map: Dict[str, float], role_tags: List[str]) -> int:
     supply_map = compute_rank_weighted_supply(role_tags)
-    d_vec = [demand_map.get(dim, 0.0) for dim in SYNERGY_DIMS]
-    s_vec = [supply_map.get(dim, 0.0) for dim in SYNERGY_DIMS]
-
-    dot = sum(d * s for d, s in zip(d_vec, s_vec))
-    mag_d = sum(d * d for d in d_vec) ** 0.5
-    mag_s = sum(s * s for s in s_vec) ** 0.5
-    if mag_d == 0 or mag_s == 0:
+    
+    sum_d = sum(demand_map.get(dim, 0.0) for dim in SYNERGY_DIMS)
+    if sum_d == 0:
         return 0
-    return int(round((dot / (mag_d * mag_s)) * 100))
+        
+    intersection = sum(
+        min(demand_map.get(dim, 0.0), supply_map.get(dim, 0.0))
+        for dim in SYNERGY_DIMS
+    )
+    
+    return int(round((intersection / sum_d) * 100))
 
 
 def compute_jsd_fit_score(demand_map: Dict[str, float], role_tags: List[str]) -> int:
@@ -189,11 +191,11 @@ def compute_jsd_fit_score(demand_map: Dict[str, float], role_tags: List[str]) ->
     return max(0, min(100, int(round(fit))))
 
 
-def compute_fit_score(demand_map: Dict[str, float], role_tags: List[str], score_metric: str = "cosine") -> int:
-    metric = (score_metric or "cosine").lower()
+def compute_fit_score(demand_map: Dict[str, float], role_tags: List[str], score_metric: str = "intersection") -> int:
+    metric = (score_metric or "intersection").lower()
     if metric == "jsd":
         return compute_jsd_fit_score(demand_map, role_tags)
-    return compute_cosine_fit_score(demand_map, role_tags)
+    return compute_histogram_intersection_score(demand_map, role_tags)
 
 
 def build_dimensions(action_requirements: List[str], demand_map: Dict[str, float], supply_map: Dict[str, float]) -> List[dict]:
@@ -293,20 +295,15 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
                 f"Switching to **{suggest_name}** is projected to raise fit to {wl.get('expected_score', 0)}% (+{wl.get('delta_score', 0)}%)."
             )
 
-        dim_phrases: List[str] = []
-        for dim, demand in top_demands:
-            cur_cap = TAG_CAPABILITY.get(current_tag, {}).get(dim, 0.07)
-            sug_cap = TAG_CAPABILITY.get(suggest_tag, {}).get(dim, 0.07)
-            dim_phrases.append(
-                f"{dim} demand is {demand * 100:.1f}% while {current_tag} supplies {cur_cap * 100:.1f}% vs {suggest_tag} {sug_cap * 100:.1f}%"
+        dim_names = [dim for dim, demand in top_demands]
+        if not dim_names:
+            return (
+                f"In this lineup, **{current_name}** does not align well with the current action focus. "
+                f"Switching to **{suggest_name}** provides a much stronger tactical fit."
             )
 
-        return (
-            f"For this tactic, **{current_name}** under-covers key demands: {dim_phrases[0]}"
-            + (f"; {dim_phrases[1]}" if len(dim_phrases) > 1 else "")
-            + f". Replacing with **{suggest_name}** better matches the demand profile and lifts expected fit to "
-              f"{wl.get('expected_score', 0)}% (+{wl.get('delta_score', 0)}%)."
-        )
+        dim_string = " and ".join(dim.replace("_", " ") for dim in dim_names)
+        return f"Swapping **{current_name}** for **{suggest_name}** upgrades our {dim_string} capabilities, perfectly matching the tactic's core engine and lifting fit to {wl.get('expected_score', 0)}% (+{wl.get('delta_score', 0)}%)."
 
     if not gemini_api_key:
         print("[AI Issues] GEMINI_API_KEY missing, fallback to deterministic text.", flush=True)
@@ -328,13 +325,12 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
     prompt = (
         f"You are a basketball tactics analyst.\n"
         f"The tactic's top demands are: {demand_desc}.\n"
-        f"For each substitution below, write exactly TWO detailed sentences (35-70 words total). "
-        f"Sentence 1 explains why the current role underperforms for top demands. "
-        f"Sentence 2 explains why the suggested role helps and references expected fit lift. "
-        f"Use **bold** markdown for role names.\n\n"
+        f"For each substitution below, write a punchy, direct tactical insight (maximum 2 sentences, 20-35 words). "
+        f"State exactly WHICH tactical demand (e.g., Cut, Spot_Up) is upgraded and why. "
+        f"Be high-level and concise. Use **bold** markdown for role names.\n\n"
         + "\n".join(lines)
         + "\n\nReturn ONLY a JSON array of strings, one per substitution, same order. "
-        + 'Example: ["Sentence 1.", "Sentence 2."]'
+        + 'Example: ["Sentence 1."]'
     )
 
     def _parse_issues(content: str, expected_len: int) -> List[str]:
@@ -382,26 +378,23 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
     def _is_valid_issue(text: str) -> bool:
         t = _clean_issue_text(text)
         lower = t.lower()
-        if not t or t == "..." or len(t) < 70:
+        if not t or t == "..." or len(t) < 25:
             return False
         bad_markers = [
             "here is the json",
             "json requested",
             "json array",
             "```",
-            "[",
-            "{",
         ]
         if any(m in lower for m in bad_markers):
             return False
+        # Reject obvious raw JSON payloads, but allow normal prose that may contain brackets.
+        if (t.startswith("[") and t.endswith("]")) or (t.startswith("{") and t.endswith("}")):
+            return False
         # Must look like a complete analysis sentence block
-        if not any(p in t for p in [".", "!", "?"]):
+        if not any(p in t for p in [".", "!", "?", "。", "！", "？"]):
             return False
         if t.endswith((":", "-", "→", "to", "for", "with", "and", "or")):
-            return False
-        # Encourage tactical detail instead of generic short text
-        detail_keywords = ["demand", "fit", "expected", "supply", "role", "action"]
-        if not any(k in lower for k in detail_keywords):
             return False
         return True
 
@@ -419,6 +412,28 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
                 f"Gemini returned empty parts (finishReason={finish_reason}, promptFeedback={prompt_feedback})"
             )
         return "\n".join(text_chunks).strip()
+
+    def _parse_plain_items(content: str, expected_len: int) -> List[str]:
+        """Parse attempt#3 plain-text response using explicit ITEM headers first."""
+        text = (content or "").strip()
+        if not text:
+            return []
+
+        # Preferred format: ITEM 1: ... ITEM 2: ...
+        header_regex = re.compile(r"(?:^|\n)\s*ITEM\s*(\d+)\s*:\s*", re.IGNORECASE)
+        matches = list(header_regex.finditer(text))
+        if matches:
+            items: List[str] = []
+            for i, m in enumerate(matches):
+                start = m.end()
+                end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+                segment = text[start:end].strip()
+                if segment:
+                    items.append(segment)
+            return items[:expected_len]
+
+        # Fallback: non-empty lines
+        return [ln.strip(" -\t") for ln in text.splitlines() if ln.strip()][:expected_len]
 
     try:
         gemini_url = GEMINI_URL_TEMPLATE.format(model=GEMINI_MODEL, key=gemini_api_key)
@@ -479,6 +494,11 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
                     wl["issue"] = _clean_issue_text(candidate)
                     valid_count += 1
                 else:
+                    if candidate:
+                        print(
+                            f"[AI Issues] Invalid candidate#{i+1} (attempt#1/2): {candidate[:180]}",
+                            flush=True,
+                        )
                     wl["issue"] = ""
 
             # Attempt 3: regenerate missing items in plain-line mode
@@ -496,9 +516,14 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
                 prompt_plain = (
                     f"You are a basketball tactics analyst.\n"
                     f"The tactic's top demands are: {demand_desc}.\n"
-                    f"Write exactly TWO detailed sentences per item, 35-70 words total.\n"
-                    f"Use **bold** for role names and mention expected fit lift. No JSON, no preface, no bullets.\n\n"
+                    f"Write a punchy, direct tactical insight per item (max 2 sentences, 20-35 words).\n"
+                    f"Focus only on the key capability upgraded. Use **bold** for role names. No JSON, no bullets.\n\n"
                     + "\n".join(plain_lines)
+                    + "\n\n"
+                    + "Return each item with an explicit header in this exact format:\n"
+                    + "ITEM 1: <two sentences>\n"
+                    + "ITEM 2: <two sentences>\n"
+                    + "ITEM 3: <two sentences>"
                 )
 
                 resp3 = await client.post(
@@ -521,12 +546,17 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
                 resp3.raise_for_status()
                 data3 = resp3.json()
                 content3 = _extract_text_from_gemini(data3)
-                lines3 = [ln.strip() for ln in content3.splitlines() if ln.strip()]
+                lines3 = _parse_plain_items(content3, len(missing_idx))
 
                 for offset, idx in enumerate(missing_idx):
                     candidate = lines3[offset] if offset < len(lines3) else ""
                     if _is_valid_issue(candidate):
                         weak_links[idx]["issue"] = _clean_issue_text(candidate)
+                    elif candidate:
+                        print(
+                            f"[AI Issues] Invalid candidate#{idx+1} (attempt#3): {candidate[:180]}",
+                            flush=True,
+                        )
 
             fallback_count = 0
             for wl in weak_links:

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Typography, Space, Alert, Tag, Modal, Select, Segmented } from 'antd';
-import { RadarChartOutlined, CloseOutlined, SettingOutlined, ArrowRightOutlined, BulbOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { RadarChartOutlined, CloseOutlined, SettingOutlined, ArrowRightOutlined, BulbOutlined, CheckCircleFilled, RobotOutlined } from '@ant-design/icons';
 import { API_ENDPOINTS } from '../../config/api';
 import { Player, Action } from '../../types';
 import { POSITIONS } from '../../utils/constants';
@@ -21,6 +21,8 @@ interface LineupDiagnosticPanelProps {
   boardActionFrames?: DiagnosticActionFrame[];
   /** Name of the currently loaded tactic */
   currentTacticName?: string;
+  /** Callback to load a tactic by ID */
+  onLoadTactic?: (tacticId: string, mode?: 'play' | 'edit') => void;
 }
 
 interface DiagnosticDimension {
@@ -187,19 +189,53 @@ const computeRankWeightedSupply = (playerTags: (string | undefined)[]) => {
   return { rawMap, normalizedMap, totalRaw };
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Histogram Intersection Fit Score
+// FitScore = Σ min(D_k, S_k) / Σ D_k   (over all 10 Synergy playtypes)
+//
+// Answers: "Of the demand distribution, what fraction is adequately supplied?"
+// - D_k = 0 → min(0, S_k) = 0, so irrelevant Supply dimensions are ignored
+// - If Supply exceeds Demand on a dimension, it's capped at Demand (no bonus)
+// - Range: 0% (total mismatch) to 100% (Supply ≥ Demand on every dimension)
+// ─────────────────────────────────────────────────────────────────────────────
+const computeHistogramIntersectionScore = (
+  demandMap: Record<string, number>,
+  playerTags: (string | undefined)[],
+): number => {
+  const { normalizedMap } = computeRankWeightedSupply(playerTags);
+
+  const sumD = SYNERGY_DIMS.reduce((s, k) => s + (demandMap[k] ?? 0), 0);
+  if (sumD === 0) return 0;
+
+  const intersection = SYNERGY_DIMS.reduce((s, k) => {
+    const d = demandMap[k] ?? 0;
+    const supply = normalizedMap[k] ?? 0;
+    return s + Math.min(d, supply);
+  }, 0);
+
+  return Math.round((intersection / sumD) * 100);
+};
+
+/*
+// Previous metric: Cosine Similarity (Focused variant)
+// Deprecated: cosine similarity between all-positive vectors has a high floor (~55-75%)
+// regardless of actual shape alignment, making scores visually misleading.
 const computeCosineFitScore = (
   demandMap: Record<string, number>,
   playerTags: (string | undefined)[],
 ): number => {
   const { normalizedMap } = computeRankWeightedSupply(playerTags);
-  const D = SYNERGY_DIMS.map(k => demandMap[k] ?? 0);
-  const S = SYNERGY_DIMS.map(k => normalizedMap[k] ?? 0);
+  const activeDims = SYNERGY_DIMS.filter(k => (demandMap[k] ?? 0) > 0);
+  if (activeDims.length === 0) return 0;
+  const D = activeDims.map(k => demandMap[k] ?? 0);
+  const S = activeDims.map(k => normalizedMap[k] ?? 0);
   const dot  = D.reduce((s, d, i) => s + d * S[i], 0);
   const magD = Math.sqrt(D.reduce((s, d) => s + d * d, 0));
   const magS = Math.sqrt(S.reduce((s, v) => s + v * v, 0));
   if (!magD || !magS) return 0;
   return Math.round((dot / (magD * magS)) * 100);
 };
+*/
 
 /*
 const computeJsdFitScore = (
@@ -231,7 +267,7 @@ const computeFitScore = (
   demandMap: Record<string, number>,
   playerTags: (string | undefined)[],
   metric: ScoreMetric,
-): number => computeCosineFitScore(demandMap, playerTags);
+): number => computeHistogramIntersectionScore(demandMap, playerTags);
 
 const getTopDemandItems = (demandMap: Record<string, number>, limit?: number) =>
   Object.entries(demandMap)
@@ -277,14 +313,22 @@ const RadarChart: React.FC<{
 
   if (!dimensions?.length) return null;
 
-  const size = 390;
-  const padding = 72;
+  const size = 500;
+  const padding = 100;
   const center = size / 2;
-  const radius = 132;
+  const radius = 180;
   const n = dimensions.length;
 
-  const maxDemand = Math.max(0.01, dimensions.reduce((max, d) => Math.max(max, demandMap[toRadarLabel(d.name)] ?? 0), 0));
-  const maxSupply = Math.max(0.01, dimensions.reduce((max, d) => Math.max(max, supplyMap[toDimKey(d.name)] ?? 0), 0));
+  // Find the absolute maximum between both Demand and Supply to create a shared, dynamic scale
+  const rawMaxDemand = dimensions.reduce((max, d) => Math.max(max, demandMap[toRadarLabel(d.name)] ?? 0), 0);
+  const rawMaxSupply = dimensions.reduce((max, d) => Math.max(max, supplyMap[toDimKey(d.name)] ?? 0), 0);
+  const globalMax = Math.max(0.1, rawMaxDemand, rawMaxSupply);
+
+  // Ceil to the nearest 0.1 (e.g. 0.23 -> 0.30)
+  let axisMax = Math.ceil(globalMax * 10) / 10;
+  if (axisMax - globalMax < 0.02) {
+      axisMax += 0.1; // Add breathing room if it's too close to the edge
+  }
 
   const getPoint = (index: number, value: number) => {
     const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
@@ -295,11 +339,14 @@ const RadarChart: React.FC<{
   };
 
   const outerPolygon = Array.from({ length: n }, (_, i) => getPoint(i, 1)).map(p => `${p.x},${p.y}`).join(' ');
-  const gridPolygons = [0.25, 0.5, 0.75, 1].map(level => Array.from({ length: n }, (_, i) => getPoint(i, level)).map(p => `${p.x},${p.y}`).join(' '));
-  // Demand polygon: shape-normalised to match Cosine Similarity logic (independent scaling)
-  const demandPolygon = dimensions.map((d, i) => getPoint(i, (demandMap[toRadarLabel(d.name)] ?? 0) / maxDemand)).map(p => `${p.x},${p.y}`).join(' ');
-  // Supply polygon: shape-normalised to match Cosine Similarity logic
-  const currentPolygon = dimensions.map((d, i) => getPoint(i, (supplyMap[toDimKey(d.name)] ?? 0) / maxSupply)).map(p => `${p.x},${p.y}`).join(' ');
+  const gridLevels = [0.25, 0.5, 0.75, 1];
+  const gridPolygons = gridLevels.map(level => Array.from({ length: n }, (_, i) => getPoint(i, level)).map(p => `${p.x},${p.y}`).join(' '));
+  
+  // Map points based on the shared dynamic scaling axisMax
+  const demandPolygon = dimensions.map((d, i) => getPoint(i, (demandMap[toRadarLabel(d.name)] ?? 0) / axisMax)).map(p => `${p.x},${p.y}`).join(' ');
+  const currentPolygon = dimensions.map((d, i) => getPoint(i, (supplyMap[toDimKey(d.name)] ?? 0) / axisMax)).map(p => `${p.x},${p.y}`).join(' ');
+
+  const modernMonoFont = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
 
   return (
     <div style={{ position: 'relative', width: size, height: size, margin: '0 auto' }}>
@@ -309,40 +356,40 @@ const RadarChart: React.FC<{
         viewBox={`${-padding} ${-padding} ${size + padding * 2} ${size + padding * 2}`}
         style={{ overflow: 'visible', display: 'block' }}
       >
-        <polygon points={outerPolygon} fill="rgba(255,255,255,0.01)" stroke="rgba(255,255,255,0.12)" strokeWidth={1.1} />
+        <polygon points={outerPolygon} fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.25)" strokeWidth={1.5} />
         {gridPolygons.map((points, idx) => (
-          <polygon key={`grid-${idx}`} points={points} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={idx === gridPolygons.length - 1 ? 0 : 1} />
+          <polygon key={`grid-${idx}`} points={points} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={idx === gridPolygons.length - 1 ? 0 : 1.2} />
         ))}
         {dimensions.map((_, i) => {
           const outer = getPoint(i, 1);
           return (
-            <line key={`line-${i}`} x1={center} y1={center} x2={outer.x} y2={outer.y} stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+            <line key={`line-${i}`} x1={center} y1={center} x2={outer.x} y2={outer.y} stroke="rgba(255,255,255,0.15)" strokeWidth={1.2} />
           );
         })}
 
-        {/* Demand layer — tactic requirement (blue dashed) */}
-        <polygon points={demandPolygon} fill="rgba(22,119,255,0.16)" stroke="rgba(106,169,255,0.95)" strokeWidth={2.4} strokeDasharray="7 4" />
-        {/* Supply layer — actual lineup performance (amber solid) */}
-        <polygon points={currentPolygon} fill="rgba(250, 173, 20, 0.14)" stroke="#faad14" strokeWidth={2.2} />
-
-        {dimensions.map((d, i) => {
-          const supply = (supplyMap[toDimKey(d.name)] ?? 0) * 100;
-          const p = getPoint(i, (supplyMap[toDimKey(d.name)] ?? 0) / maxSupply);
-          const isHovered = hoveredIndex === i;
+        {/* Quantitative Anchors (Dynamic Axis Scale) */}
+        {gridLevels.map((level, idx) => {
+          const p = getPoint(0, level); // Top vertical axis
+          const labelValue = (level * axisMax * 100).toFixed(0);
           return (
-            <g key={`point-${i}`} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} style={{ cursor: 'pointer' }}>
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r={isHovered ? 5.5 : 3.2}
-                fill={getScoreColor(supply)}
-                stroke="rgba(0,0,0,0.8)"
-                strokeWidth={isHovered ? 2 : 1}
-                style={{ transition: 'all 0.2s ease' }}
-              />
-            </g>
+            <text 
+              key={`scale-${idx}`} 
+              x={p.x + 8} 
+              y={p.y + 6} 
+              fill="#cfd7e6" 
+              fontSize="16" 
+              fontFamily={modernMonoFont}
+              fontWeight="700"
+            >
+              {labelValue}%
+            </text>
           );
         })}
+
+        {/* Demand layer — tactic requirement (soft orange dashed) */}
+        <polygon points={demandPolygon} fill="rgba(255,169,64,0.15)" stroke="#ffaa40" strokeWidth={3} strokeDasharray="8 5" />
+        {/* Supply layer — actual lineup performance (cyan solid) */}
+        <polygon points={currentPolygon} fill="rgba(0, 229, 255, 0.15)" stroke="#00e5ff" strokeWidth={3.5} />
 
         {dimensions.map((d, i) => {
           const lp = getPoint(i, 1.35); // Move labels slightly further out to accommodate larger text
@@ -355,16 +402,16 @@ const RadarChart: React.FC<{
               x={lp.x}
               y={lp.y}
               textAnchor="middle"
-              fill={isHovered ? '#fff' : '#a8b4cc'} // slightly brighter base color
-              fontSize={isHovered ? "17" : "15"} // Increased from 16/14 to 17/15
-              fontWeight={isHovered ? 700 : 700} // Increased base weight to 700
-              fontFamily="Inter, Segoe UI, Roboto, sans-serif"
-              style={{ transition: 'all 0.2s ease', cursor: 'pointer' }}
+              fill={isHovered ? '#ffffff' : '#ffffff'} 
+              fontSize={isHovered ? "22" : "20"}
+              fontWeight={isHovered ? 900 : 800}
+              fontFamily={modernMonoFont}
+              style={{ transition: 'all 0.2s ease', cursor: 'pointer', letterSpacing: 0.5 }}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
               {words.map((word, idx) => (
-                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 20}>{word}</tspan> // Increased line height slightly
+                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 24}>{word}</tspan> 
               ))}
             </text>
           );
@@ -438,7 +485,7 @@ const renderIssue = (text: string) => {
       return <strong key={i} style={{ color: '#fff' }}>{part.slice(2, -2)}</strong>;
     }
     if (ROLE_CODES.includes(part)) {
-      return <strong key={i} style={{ color: '#faad14', background: 'rgba(250,173,20,0.12)', borderRadius: 3, padding: '0 3px' }}>{part}</strong>;
+      return <strong key={i} style={{ color: '#00e5ff', background: 'rgba(0,229,255,0.12)', borderRadius: 3, padding: '0 3px' }}>{part}</strong>;
     }
     if (TACTIC_KEYWORDS.includes(part)) {
       return <strong key={i} style={{ color: '#36d9b3', fontWeight: 700 }}>{part}</strong>;
@@ -447,7 +494,7 @@ const renderIssue = (text: string) => {
   });
 };
 
-const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, onClose, boardPlayers = [], boardActionFrames = [], currentTacticName }) => {
+const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, onClose, boardPlayers = [], boardActionFrames = [], currentTacticName, onLoadTactic }) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
   const [diagError, setDiagError] = useState<string | null>(null);
@@ -501,9 +548,9 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
         player_tag: formatOffensiveRoleForAi(p.playerTag),
       }));
 
-    // Guard: require at least one player with a role tag on the board
-    if (boardEntries.length === 0) {
-      setDiagError('Please drag players onto the court and assign role tags before running diagnostics.');
+    // Guard: require a full 5-player lineup with role tags on the board
+    if (boardEntries.length < 5) {
+      setDiagError(`A complete 5-player lineup is required to run diagnostics. Currently ${boardEntries.length} player${boardEntries.length === 1 ? '' : 's'} with role tags on the board.`);
       setLoading(false);
       return;
     }
@@ -660,7 +707,7 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <Space>
-            <RadarChartOutlined style={{ color: '#faad14', fontSize: 22 }} />
+            <RadarChartOutlined style={{ color: '#00e5ff', fontSize: 22 }} />
             <div>
               <Title level={4} style={{ color: '#fff', margin: 0 }}>AI Lineup Diagnostics</Title>
               <Text style={{ color: '#7a86a0', fontSize: 11, letterSpacing: 1 }}>SPORTS VISUAL ANALYTICS HUD</Text>
@@ -788,44 +835,89 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                 </div>
               ) : tacticMatches.length > 0 ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                    <BulbOutlined style={{ color: '#faad14', fontSize: 18 }} />
-                    <Title level={5} style={{ margin: 0, color: '#fff', fontSize: 15 }}>Top Tactic Matches</Title>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: 14, paddingBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <BulbOutlined style={{ color: '#9fb3c8', fontSize: 16 }} />
+                      <Title level={5} style={{ margin: 0, color: '#eaf0f8', fontSize: 22, fontWeight: 700, letterSpacing: 1.1 }}>
+                        TACTIC MATCH RANKING
+                      </Title>
+                    </div>
                   </div>
-                  <Text style={{ color: '#8f9bb3', fontSize: 12, display: 'block', marginBottom: 16 }}>
-                    Based on your current lineup's strengths, these set plays offer the highest technical synergy.
-                  </Text>
                   
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                     {tacticMatches.map((tactic, idx) => {
                       const fitColor = tactic.fitScore >= 75 ? '#52c41a' : tactic.fitScore >= 50 ? '#1677ff' : tactic.fitScore >= 30 ? '#faad14' : '#fa4d4d';
                       return (
                         <div key={tactic.id} style={{
-                          display: 'flex', gap: 16, background: 'linear-gradient(135deg, rgba(30,36,50,0.8) 0%, rgba(20,24,35,0.9) 100%)',
-                          border: '1px solid rgba(250, 173, 20, 0.25)', borderRadius: 12, padding: 16,
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                          display: 'grid',
+                          gridTemplateColumns: '124px minmax(0, 1fr)',
+                          gap: 16,
+                          background: 'rgba(16,22,31,0.72)',
+                          border: '1px solid rgba(165,181,204,0.2)',
+                          borderRadius: 10,
+                          padding: '16px 18px'
                         }}>
                           {tactic.preview_image ? (
-                            <img src={tactic.preview_image} alt={tactic.name} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }} />
+                            <img src={tactic.preview_image} alt={tactic.name} style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid rgba(181,196,218,0.28)' }} />
                           ) : (
-                            <div style={{ width: 80, height: 80, background: 'rgba(255,255,255,0.05)', borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.1)' }}>
-                              <RadarChartOutlined style={{ fontSize: 24, color: '#4e5a70' }} />
+                            <div style={{ width: 120, height: 120, background: 'rgba(255,255,255,0.03)', borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(181,196,218,0.25)' }}>
+                              <RadarChartOutlined style={{ fontSize: 34, color: '#708099' }} />
                             </div>
                           )}
-                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                            <div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                                <Text style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>{tactic.name}</Text>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(0,0,0,0.3)', padding: '2px 8px', borderRadius: 10, border: `1px solid ${fitColor}33` }}>
-                                  <Text style={{ color: fitColor, fontSize: 16, fontWeight: 800 }}>{tactic.fitScore}%</Text>
+                          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', alignItems: 'flex-start', marginBottom: 10, columnGap: 10 }}>
+                                <div style={{ minWidth: 0 }}>
+                                  <Text style={{ color: '#f3f7fc', fontSize: 21, fontWeight: 700, letterSpacing: 0.2, display: 'block', marginBottom: 8 }}>{tactic.name}</Text>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                      <Text style={{ color: '#8f9bb3', fontSize: 13, letterSpacing: 1.0, fontWeight: 700, minWidth: 78, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                        CATEGORY
+                                      </Text>
+                                      <Tag style={{ margin: 0, background: 'rgba(104,139,178,0.16)', border: '1px solid rgba(177,194,216,0.44)', color: '#e6edf7', fontSize: 14, padding: '3px 10px', borderRadius: 4, fontWeight: 700 }}>
+                                        {tactic.category || 'General'}
+                                      </Tag>
+                                    </div>
+                                    {(tactic.tags || []).length > 0 && (
+                                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                                        <Text style={{ color: '#8f9bb3', fontSize: 13, letterSpacing: 1.0, fontWeight: 700, minWidth: 64, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                          ACTIONS
+                                        </Text>
+                                        <div style={{ display: 'flex', flex: 1, minWidth: 0, gap: 6, flexWrap: 'nowrap', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', paddingBottom: 2 }}>
+                                          {(tactic.tags || []).slice(0, 3).map((t: string) => (
+                                            <Tag key={t} style={{ margin: 0, background: 'transparent', border: '1px dashed rgba(177,194,216,0.34)', color: '#cbd5e1', fontSize: 13, padding: '2px 8px', borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                                              {t.replace(/_/g, ' ')}
+                                            </Tag>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, minWidth: 110, marginLeft: 4, paddingLeft: 4 }}>
+                                  <Text style={{ color: '#8f9bb3', fontSize: 13, fontWeight: 700, letterSpacing: 1.1, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace", lineHeight: 1.1 }}>
+                                    FIT SCORE
+                                  </Text>
+                                  <Text style={{ color: fitColor, fontSize: 32, fontWeight: 800, whiteSpace: 'nowrap', lineHeight: 1.05, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                    {tactic.fitScore}%
+                                  </Text>
                                 </div>
                               </div>
-                              <Text style={{ color: '#adb5c9', fontSize: 11, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              <Text style={{ color: '#d8e1ee', fontSize: 16, lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                 {tactic.description || 'No description available'}
                               </Text>
                             </div>
-                            <div style={{ marginTop: 8 }}>
-                              <Tag style={{ margin: 0, background: '#252b3b', border: '1px solid rgba(255,255,255,0.08)', color: '#a8b4cc', fontSize: 10 }}>{tactic.category || 'General'}</Tag>
+                            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
+                              <Button 
+                                type="primary" 
+                                size="large"
+                                onClick={() => onLoadTactic && onLoadTactic(tactic.id, 'play')}
+                                style={{ background: 'transparent', borderColor: 'rgba(177,194,216,0.52)', color: '#dce6f5', borderRadius: 6, fontWeight: 700, fontSize: 15, padding: '0 18px', height: 38, boxShadow: 'none' }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(177,194,216,0.12)'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.72)'; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.52)'; }}
+                              >
+                                Load Tactic
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -854,95 +946,114 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                   : fitScore >= 30 ? '#faad14'
                   : '#fa4d4d';
 
-                // Radar display: always show all 10 Synergy axes (original layout)
-                const synergizedDimensions: DiagnosticDimension[] = [...SYNERGY_DIMS].map(k => {
-                  const aiDim = result.dimensions?.find(d => toRadarLabel(d.name) === k || toDimKey(d.name) === k);
-                  return { name: k, score: 0, reason: aiDim?.reason ?? '' };
-                });
 
                 // Debug & score share the exact same supply model
                 const validTags = playerTags.filter(Boolean) as string[];
                 const supplyStats = computeRankWeightedSupply(validTags);
                 const supplyVec = SYNERGY_DIMS.map(k => supplyStats.normalizedMap[k] ?? 0);
 
+                const synergizedDimensions: DiagnosticDimension[] = SYNERGY_DIMS.map(k => {
+                  const aiDim = result.dimensions?.find(d => toRadarLabel(d.name) === k || toDimKey(d.name) === k);
+                  return { name: k, score: 0, reason: aiDim?.reason ?? '' };
+                });
+
                 return (
                   <>
-                    <div style={{ display: 'grid', gridTemplateColumns: '170px 1fr', gap: 16, alignItems: 'stretch', marginBottom: 14 }}>
-                      <div style={{
-                        background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: 14,
-                        padding: '16px 14px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        minHeight: 116,
-                      }}>
-                        <Text style={{ color: '#7a86a0', fontSize: 13, fontWeight: 700, letterSpacing: 1.1 }}>
-                          TACTIC FIT SCORE
-                        </Text>
-                        {fitScore !== null ? (
-                          <span style={{ fontSize: 44, lineHeight: 1.1, fontWeight: 900, color: fitColor, textShadow: `0 0 14px ${fitColor}55`, fontFamily: 'monospace', marginTop: 8 }}>
-                            {fitScore}%
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: 14, color: '#4e5a70', fontStyle: 'italic', marginTop: 10 }}>Load a tactic first</span>
-                        )}
-                        <Text style={{ color: '#8f9bb3', fontSize: 13, marginTop: 10, lineHeight: 1.5 }}>
-                          Score derived from cosine similarity between tactic demand and lineup supply.
-                        </Text>
-                      </div>
-
-                      <div style={{
-                        background: 'linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02))',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: 14,
-                        padding: '14px 16px',
-                        minHeight: 116,
-                      }}>
-                        <Text style={{ color: '#cfd7e6', fontSize: 14, fontWeight: 700, display: 'block', marginBottom: 12 }}>Top Tactic Demands</Text>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
-                          {topDemandItems.length > 0 ? topDemandItems.map(({ key, value }) => (
-                            <div key={key} style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 8,
-                              padding: '8px 12px',
-                              borderRadius: 999,
-                              background: 'rgba(22,119,255,0.12)',
-                              border: '1px solid rgba(106,169,255,0.25)',
-                            }}>
-                              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#6aa9ff', boxShadow: '0 0 10px rgba(106,169,255,0.6)' }} />
-                              <Text style={{ color: '#dbe7ff', fontSize: 13, fontWeight: 700 }}>{key}</Text>
-                              <Text style={{ color: '#6aa9ff', fontSize: 13, fontWeight: 700 }}>{(value * 100).toFixed(0)}%</Text>
+                    {/* --- INTEGRATED HERO PANEL (SCORE + RADAR + LIST) --- */}
+                    <div style={{ 
+                      display: 'flex',
+                      flexDirection: 'column',
+                      marginBottom: 16,
+                      gap: 0
+                    }}>
+                      
+                      {/* TOP SECTION: Score */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 8, marginTop: 0 }}>
+                        
+                        {/* SCORE BLOCK: Left-aligned, Large, Stacked */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                          <Text style={{ color: '#8f9bb3', fontSize: 24, fontWeight: 800, letterSpacing: 1.0, fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>
+                            TACTIC FIT SCORE
+                          </Text>
+                          {fitScore !== null ? (
+                            <div style={{ fontSize: 64, fontWeight: 900, color: '#ffffff', fontFamily: "var(--font-mono, 'Courier New', monospace)", lineHeight: 1 }}>
+                              {fitScore}%
                             </div>
-                          )) : (
-                            <Text style={{ color: '#8f9bb3', fontSize: 13 }}>No recognized demand from current draw-path actions.</Text>
+                          ) : (
+                            <div style={{ fontSize: 18, color: '#8f9bb3', fontStyle: 'italic', marginTop: 8 }}>Load a tactic</div>
                           )}
                         </div>
-                        <Text style={{ color: '#8f9bb3', fontSize: 13, lineHeight: 1.6 }}>
-                          Suggestions below are ranked by real score lift under the same fit formula.
-                        </Text>
                       </div>
-                    </div>
 
-                    <div style={{ display: 'flex', gap: 20, justifyContent: 'center', marginBottom: 10 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 2, background: 'rgba(22,119,255,0.55)', borderTop: '1.5px dashed rgba(22,119,255,0.55)' }} />
-                        <Text style={{ color: '#6aa9ff', fontSize: 11 }}>Tactic Demand</Text>
+                      {/* MIDDLE SECTION: Radar Chart */}
+                      <div style={{ height: 460, width: '100%', overflow: 'visible', display: 'flex', justifyContent: 'center', marginBottom: 0, marginTop: '-20px' }}>
+                        <RadarChart
+                          dimensions={synergizedDimensions}
+                          demandMap={demandMap}
+                          supplyMap={supplyStats.normalizedMap}
+                        />
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 20, height: 2, background: '#faad14' }} />
-                        <Text style={{ color: '#faad14', fontSize: 11 }}>Lineup Supply</Text>
-                      </div>
-                    </div>
 
-                    <div style={{ marginBottom: 16, padding: 18, background: '#0f1726', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16 }}>
-                      <RadarChart
-                        dimensions={synergizedDimensions}
-                        demandMap={demandMap}
-                        supplyMap={supplyStats.normalizedMap}
-                      />
+                      {/* BOTTOM SECTION: Full-Width Demands Table */}
+                      <div style={{ marginTop: 10 }}>
+                        {topDemandItems.length > 0 ? (
+                          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                              <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.2)' }}>
+                                <th style={{ textAlign: 'left', padding: '12px 4px', width: '25%' }}>
+                                   <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>ACTIONS</Text>
+                                </th>
+                                <th style={{ textAlign: 'center', padding: '12px 4px', width: '25%' }}>
+                                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                     <div style={{ width: 14, height: 0, borderTop: '2px dashed #ffaa40' }} />
+                                     <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>DEMAND</Text>
+                                   </div>
+                                </th>
+                                <th style={{ textAlign: 'center', padding: '12px 4px', width: '25%' }}>
+                                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                     <div style={{ width: 14, height: 2, background: '#00e5ff' }} />
+                                     <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>SUPPLY</Text>
+                                   </div>
+                                </th>
+                                <th style={{ textAlign: 'right', padding: '12px 4px', width: '25%' }}>
+                                   <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>GAP</Text>
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {topDemandItems.slice(0, 5).map(({ key, value }) => {
+                                const dem = value * 100;
+                                const sup = (supplyStats.normalizedMap[key] ?? 0) * 100;
+                                const gap = sup - dem;
+                                const gapColor = gap < 0 ? '#ff6b6b' : '#a0aec0'; // Coral Red if negative gap, else dim gray
+                                return (
+                                  <tr key={key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <td style={{ padding: '8px 4px' }}>
+                                      <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{key}</Text>
+                                    </td>
+                                    <td style={{ padding: '8px 4px', textAlign: 'center' }}>
+                                        <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{dem.toFixed(1)}%</Text>
+                                    </td>
+                                    <td style={{ padding: '8px 4px', textAlign: 'center' }}>
+                                        <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: 600, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>{sup.toFixed(1)}%</Text>
+                                    </td>
+                                    <td style={{ padding: '8px 4px', textAlign: 'right' }}>
+                                        <Text style={{ color: gapColor, fontSize: 15, fontWeight: gap < 0 ? 800 : 500, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                          {gap > 0 ? '+' : ''}{gap.toFixed(1)}%
+                                        </Text>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        ) : (
+                          <div style={{ padding: 16 }}>
+                            <Text style={{ color: '#8f9bb3', fontSize: 13, fontStyle: 'italic', fontFamily: "var(--font-mono, 'Courier New', monospace)" }}>No recognized actions.</Text>
+                          </div>
+                        )}
+                      </div>
+
                     </div>
 
                     {/* ── DEBUG PANEL ────────────────────────────────────── */}
@@ -1119,87 +1230,108 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                 return (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                    <BulbOutlined style={{ color: '#faad14' }} />
-                    <Text style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Substitution Suggestions</Text>
+                    <BulbOutlined style={{ color: '#00e5ff' }} />
+                    <Text style={{ color: '#fff', fontSize: 20, fontWeight: 700 }}>Substitution Suggestions</Text>
                   </div>
-                  <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8, scrollbarWidth: 'thin' }}>
+                  <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 12, paddingTop: 4, scrollbarWidth: 'thin' }}>
                     {result.weak_links.map((wl, idx) => {
-                      // Attempt to parse structured text if it exists (Demands vs Current vs Replace)
-                      const fullText = typeof wl.issue === 'string' ? wl.issue : '';
+                      const currentTag = wl.current_tag.split(' - ')[0];
+                      const suggestTag = wl.suggestion;
                       
-                      let demandsText = '';
-                      let currentText = '';
-                      let replaceText = '';
-                      
-                      if (fullText) {
-                        // Extract keywords based on the structure we expect. If the AI doesn't return this structure, it will fall back to the old string styling.
-                        const sentences = fullText.split(/(?:\. |! |\? )/).filter(Boolean);
-                        if (sentences.length >= 2) {
-                          currentText = sentences[0] + '.';
-                          replaceText = sentences.slice(1).join('. ') + (fullText.endsWith('.') ? '' : '.');
-                        } else {
-                          currentText = fullText;
-                        }
-                      }
-
                       return (
                       <div key={idx} style={{ 
-                        flex: '0 0 280px', 
+                        flex: '0 0 460px', 
                         background: 'linear-gradient(135deg, rgba(30,36,50,0.8) 0%, rgba(20,24,35,0.9) 100%)', 
-                        border: '1px solid rgba(250, 173, 20, 0.25)', 
-                        borderRadius: 12, 
-                        padding: 16,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                        border: '1px solid #00e5ff33', 
+                        borderRadius: 16, 
+                        padding: 24,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
                       }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <Tag style={{ margin: 0, background: '#252b3b', border: 'none', color: '#fff', fontWeight: 600 }}>{wl.position}</Tag>
-                          <Text style={{ color: '#52c41a', fontSize: 12, fontWeight: 700 }}>
-                            {typeof wl.delta_score === 'number' ? `+${wl.delta_score}% Fit` : 'Needs Revision'}
-                          </Text>
+                        {/* Header: Swap & Score */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 16 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                             <Tag style={{ margin: 0, background: '#252b3b', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 700, fontSize: 16, padding: '6px 12px', borderRadius: 6 }}>{wl.position}</Tag>
+                             <Text style={{ color: '#fff', fontSize: 22, fontWeight: 800, letterSpacing: 0.5 }}>{currentTag} <ArrowRightOutlined style={{ color: '#00e5ff', margin: '0 6px', fontSize: 18 }}/> <span style={{ color: '#00e5ff' }}>{suggestTag}</span></Text>
+                          </div>
+                          {typeof wl.expected_score === 'number' && typeof result.base_score === 'number' && (
+                             <Text style={{ color: '#52c41a', fontSize: 21, fontWeight: 800 }}>
+                               {result.base_score}% <ArrowRightOutlined style={{ fontSize: 16, color: '#8c8c8c', margin: '0 6px' }} /> {wl.expected_score}%
+                             </Text>
+                          )}
                         </div>
                         
-                        <div style={{ marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                           {/* STRUCTURED TEXT DISPLAY */}
-                           {topDemandItems.length > 0 && (
-                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
-                               <span style={{ color: '#adb5c9', fontWeight: 600, marginRight: 6 }}>Demands:</span>
-                               <span style={{ color: '#d1d8e6' }}>{topDemandItems.map((d: {key: string, value: number}) => `${d.key} (${(d.value * 100).toFixed(0)}%)`).join(', ')}</span>
+                        {/* Visual Diffs */}
+                        <div style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                           {/* Diffs Header */}
+                           <div style={{ display: 'flex', alignItems: 'center', fontSize: 15, color: '#8f9bb3', textTransform: 'uppercase', letterSpacing: 1, borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: 8, marginBottom: 4 }}>
+                             <div style={{ width: 95, fontWeight: 700 }}>Actions</div>
+                             <div style={{ flex: 1, paddingLeft: 12, fontWeight: 700 }}>Compare</div>
+                             <div style={{ width: 170, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                               <span style={{ width: 42, textAlign: 'right' }} title={`${currentTag} Supply`}>{currentTag}</span>
+                               <span style={{ width: 14 }}></span>
+                               <span style={{ width: 42, textAlign: 'right', color: '#00e5ff' }} title={`${suggestTag} Supply`}>{suggestTag}</span>
+                               <span style={{ width: 48, textAlign: 'right' }}>Δ</span>
                              </div>
-                           )}
+                           </div>
                            
-                           {currentText && (
-                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
-                               <span style={{ color: '#ff4d4f', opacity: 0.9, fontWeight: 600, marginRight: 6 }}>Current:</span>
-                               <span style={{ color: '#d1d8e6' }}>{renderIssue(currentText)}</span>
-                             </div>
-                           )}
-                           
-                           {replaceText && (
-                             <div style={{ fontSize: 12, lineHeight: 1.4 }}>
-                               <span style={{ color: '#52c41a', opacity: 0.9, fontWeight: 600, marginRight: 6 }}>Replace:</span>
-                               <span style={{ color: '#d1d8e6' }}>{renderIssue(replaceText)}</span>
-                             </div>
-                           )}
+                           {/* Diff Rows */}
+                           {topDemandItems.slice(0, 4).map(d => {
+                             const curSupply = TAG_CAPABILITY[currentTag]?.[d.key] ?? 0.07;
+                             const sugSupply = TAG_CAPABILITY[suggestTag]?.[d.key] ?? 0.07;
+                             const delta = sugSupply - curSupply;
+                             
+                             // 0% Denoising
+                             const isZero = Math.abs(delta) < 0.005;
+                             const rowOpacity = isZero ? 0.35 : 1;
+                             
+                             const deltaColor = delta > 0 ? '#52c41a' : (delta < -0.01 ? '#ff4d4f' : '#8c8c8c');
+                             const deltaPrefix = delta > 0 ? '+' : '';
+                             
+                             return (
+                               <div key={d.key} style={{ display: 'flex', alignItems: 'center', fontSize: 16, gap: 12, opacity: rowOpacity, transition: 'opacity 0.2s' }}>
+                                 <div style={{ width: 95, color: '#adb5c9', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 700, letterSpacing: 0.5 }} title={d.key}>{d.key}</div>
+                                  
+                                  {/* Progress bar container */}
+                                  <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,0.1)', borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
+                                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${curSupply * 100}%`, background: 'rgba(255,255,255,0.35)', borderRadius: 4, zIndex: 1 }} />
+                                    {delta > 0 && (
+                                       <div style={{ position: 'absolute', left: `${curSupply * 100}%`, top: 0, bottom: 0, width: `${delta * 100}%`, background: '#52c41a', borderRadius: '0 4px 4px 0', zIndex: 2 }} />
+                                    )}
+                                    {delta < 0 && (
+                                       <div style={{ position: 'absolute', left: `${sugSupply * 100}%`, top: 0, bottom: 0, width: `${-delta * 100}%`, background: '#ff4d4f', borderRadius: '0 4px 4px 0', zIndex: 3 }} />
+                                    )}
+                                  </div>
+                                  
+                                  <div style={{ width: 170, textAlign: 'right', display: 'flex', justifyContent: 'flex-end', gap: 10, alignItems: 'center' }}>
+                                     <Text style={{ color: '#8c8c8c', width: 42, textAlign: 'right', fontSize: 16, fontFamily: 'monospace' }}>{(curSupply * 100).toFixed(0)}%</Text>
+                                     <ArrowRightOutlined style={{ color: '#555', fontSize: 14, width: 14 }} />
+                                     <Text style={{ color: '#e6f4ff', width: 42, textAlign: 'right', fontSize: 16, fontFamily: 'monospace' }}>{(sugSupply * 100).toFixed(0)}%</Text>
+                                     <Text style={{ color: deltaColor, fontWeight: 800, width: 48, textAlign: 'right', fontSize: 16, fontFamily: 'monospace' }}>{deltaPrefix}{(delta * 100).toFixed(0)}%</Text>
+                                  </div>
+                               </div>
+                             );
+                           })}
                         </div>
 
-                        {typeof wl.expected_score === 'number' && (
-                          <div style={{ marginBottom: 12, padding: '8px 10px', borderRadius: 10, background: 'rgba(82,196,26,0.08)', border: '1px solid rgba(82,196,26,0.18)' }}>
-                            <Text style={{ color: '#8bdc8f', fontSize: 12 }}>
-                              Expected score after swap: <b style={{ color: '#52c41a' }}>{wl.expected_score}%</b>
-                            </Text>
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
-                              <Text style={{ color: '#7a86a0', fontSize: 10, display: 'block', marginBottom: 4 }}>Current</Text>
-                              <Tag style={{ margin: 0, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: 500, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={wl.current_tag}>{wl.current_tag.split(' - ')[0]}</Tag>
+                        {/* AI Insight Footer */}
+                        {wl.issue && (
+                            <div style={{ 
+                              padding: '12px 16px', 
+                              borderRadius: '4px 8px 8px 4px', 
+                              background: 'linear-gradient(90deg, rgba(0, 229, 255, 0.15) 0%, rgba(0, 229, 255, 0.02) 100%)', 
+                              borderLeft: '4px solid #00e5ff',
+                              display: 'flex', 
+                              gap: 14, 
+                              alignItems: 'center' 
+                            }}>
+                              <div style={{ background: 'rgba(0, 229, 255, 0.2)', padding: 6, borderRadius: '50%', display: 'flex' }}>
+                                <RobotOutlined style={{ color: '#00e5ff', fontSize: 18 }} />
+                              </div>
+                              <Text style={{ color: '#e2e8f0', fontSize: 17, lineHeight: 1.6, fontWeight: 500, flex: 1, letterSpacing: 0.2 }}>
+                                {renderIssue(wl.issue)}
+                              </Text>
                             </div>
-                            <ArrowRightOutlined style={{ color: '#faad14', opacity: 0.6, flexShrink: 0, margin: '0 8px' }} />
-                            <div style={{ textAlign: 'center', flex: 1, minWidth: 0 }}>
-                            <Text style={{ color: '#faad14', fontSize: 10, display: 'block', marginBottom: 4 }}>Suggest</Text>
-                            <Tag style={{ margin: 0, background: 'rgba(250, 173, 20, 0.15)', border: '1px solid rgba(250, 173, 20, 0.3)', color: '#faad14', fontWeight: 600 }}>{wl.suggestion}</Tag>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     )})}
                   </div>
