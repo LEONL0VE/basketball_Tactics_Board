@@ -133,6 +133,11 @@ export function deriveActionTag(
       if ((isPaintArea(startX, startY) || isMidRange(startX, startY)) && isPerimeter(endX, endY))
         return 'Off_Screen';
 
+      // Perimeter → perimeter long relocation (curl/fade/flare style) can also
+      // represent off-screen movement in the board workflow.
+      if (isPerimeter(startX, startY) && isPerimeter(endX, endY) && dist >= COURT_WIDTH * 0.12)
+        return 'Off_Screen';
+
       // Staying/drifting on perimeter without ball = spot-up positioning
       // "Stands still or moves without using an off-ball screen"
       return 'Spot_Up';
@@ -168,36 +173,70 @@ export function deriveActionTag(
 // ─── Frame-Level Refinement ──────────────────────────────────────────────────
 
 /**
- * PnR_BH requires cross-action context: a ball-handler using a screen.
+ * Multi-pass contextual action refinement.
  *
- * After deriving per-action tags for a frame, call this function to upgrade
- * ball-handler Isolation actions to PnR_BH when a screen (PnR_RM) is also
- * present on the same frame.
+ * 1) PnR_BH: upgrades ball-handler Isolation → PnR_BH if a screen exists on the frame.
+ * 2) Off_Screen: upgrades non-ball Spot_Up → Off_Screen only if a screen (PnR_RM)
+ *    is spatially nearby (within ~150px of the player's movement path).
  *
- * "PnR ball-handler: uses an on-ball screen (including reject action)"
- *
- * @param actions  All actions on the current frame (must have actionTag set)
+ * @param actions  All actions on the current frame (must have actionTag and path set)
  * @param hasBallMap  Map of playerId → boolean indicating if the player has the ball
- * @returns Updated actions array with PnR_BH upgrades applied
+ * @returns Updated actions array with contextual upgrades applied
  */
-export function refineFrameActionTags<T extends { actionTag?: string; playerId: string }>(
+export function refineFrameActionTags<T extends { actionTag?: string; playerId: string; path?: Array<{x: number; y: number}> }>(
   actions: T[],
   hasBallMap: Map<string, boolean>,
 ): T[] {
-  // Check if any screen (PnR_RM) exists on this frame
-  const hasScreen = actions.some(a => a.actionTag === 'PnR_RM');
+  // Find all screens (PnR_RM) on this frame
+  const screens = actions.filter(a => a.actionTag === 'PnR_RM');
 
   return actions.map(a => {
-    // If a screen exists and this action is a ball-handler tagged as Isolation,
-    // upgrade to PnR_BH — the ball-handler is using the screen
-    if (hasScreen && hasBallMap.get(a.playerId) && a.actionTag === 'Isolation') {
+    // Upgrade 1: Ball-handler Isolation → PnR_BH if any screen exists
+    if (screens.length > 0 && hasBallMap.get(a.playerId) && a.actionTag === 'Isolation') {
       return { ...a, actionTag: 'PnR_BH' };
     }
-    // If no screen exists on the frame but a player has PnR_BH, downgrade to Isolation
-    // to keep the live diagnostic panel actively in sync when screens are deleted
-    if (!hasScreen && hasBallMap.get(a.playerId) && a.actionTag === 'PnR_BH') {
+
+    // Downgrade: If no screens, ball-handler PnR_BH → Isolation
+    if (screens.length === 0 && hasBallMap.get(a.playerId) && a.actionTag === 'PnR_BH') {
       return { ...a, actionTag: 'Isolation' };
     }
+
+    // Upgrade 2: Non-ball Spot_Up → Off_Screen only if a nearby screen exists
+    if (screens.length > 0 && !hasBallMap.get(a.playerId) && a.actionTag === 'Spot_Up' && a.path && a.path.length > 0) {
+      // Check if this player's movement path is spatially close to any screen
+      const playerPath = a.path;
+      const playerStart = playerPath[0];
+      const playerEnd = playerPath[playerPath.length - 1];
+
+      // Compute bounding box of this player's movement
+      const playerMinX = Math.min(playerStart.x, playerEnd.x);
+      const playerMaxX = Math.max(playerStart.x, playerEnd.x);
+      const playerMinY = Math.min(playerStart.y, playerEnd.y);
+      const playerMaxY = Math.max(playerStart.y, playerEnd.y);
+
+      const PROXIMITY_THRESHOLD = 150; // pixels
+
+      // Check if any screen is within proximity to this player's path
+      const hasNearbyScreen = screens.some(screen => {
+        if (!screen.path || screen.path.length === 0) return false;
+        const screenStart = screen.path[0];
+        const screenEnd = screen.path[screen.path.length - 1];
+        const screenMidX = (screenStart.x + screenEnd.x) / 2;
+        const screenMidY = (screenStart.y + screenEnd.y) / 2;
+
+        // Distance from screen center to player's bounding box
+        const dx = Math.max(playerMinX - screenMidX, 0, screenMidX - playerMaxX);
+        const dy = Math.max(playerMinY - screenMidY, 0, screenMidY - playerMaxY);
+        const distance = Math.hypot(dx, dy);
+
+        return distance <= PROXIMITY_THRESHOLD;
+      });
+
+      if (hasNearbyScreen) {
+        return { ...a, actionTag: 'Off_Screen' };
+      }
+    }
+
     return a;
   });
 }

@@ -46,6 +46,7 @@ interface DiagnosticResult {
   weak_links: WeakLink[];
   score_metric?: 'cosine' | 'jsd';
   base_score?: number;
+  tactical_diagnosis?: string;
 }
 
 type ScoreMetric = 'cosine' | 'jsd';
@@ -377,9 +378,9 @@ const RadarChart: React.FC<{
               x={p.x + 8} 
               y={p.y + 6} 
               fill="#cfd7e6" 
-              fontSize="16" 
+              fontSize="20" 
               fontFamily={modernMonoFont}
-              fontWeight="700"
+              fontWeight="800"
             >
               {labelValue}%
             </text>
@@ -403,7 +404,7 @@ const RadarChart: React.FC<{
               y={lp.y}
               textAnchor="middle"
               fill={isHovered ? '#ffffff' : '#ffffff'} 
-              fontSize={isHovered ? "22" : "20"}
+              fontSize={isHovered ? "30" : "24"}
               fontWeight={isHovered ? 900 : 800}
               fontFamily={modernMonoFont}
               style={{ transition: 'all 0.2s ease', cursor: 'pointer', letterSpacing: 0.5 }}
@@ -411,7 +412,7 @@ const RadarChart: React.FC<{
               onMouseLeave={() => setHoveredIndex(null)}
             >
               {words.map((word, idx) => (
-                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 24}>{word}</tspan> 
+                <tspan key={idx} x={lp.x} dy={idx === 0 ? 0 : 30}>{word}</tspan> 
               ))}
             </text>
           );
@@ -849,76 +850,77 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
                       const fitColor = tactic.fitScore >= 75 ? '#52c41a' : tactic.fitScore >= 50 ? '#1677ff' : tactic.fitScore >= 30 ? '#faad14' : '#fa4d4d';
                       return (
                         <div key={tactic.id} style={{
-                          display: 'grid',
-                          gridTemplateColumns: '124px minmax(0, 1fr)',
+                          display: 'flex',
+                          flexDirection: 'column',
                           gap: 16,
                           background: 'rgba(16,22,31,0.72)',
                           border: '1px solid rgba(165,181,204,0.2)',
                           borderRadius: 10,
-                          padding: '16px 18px'
+                          padding: '20px 22px'
                         }}>
-                          {tactic.preview_image ? (
-                            <img src={tactic.preview_image} alt={tactic.name} style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid rgba(181,196,218,0.28)' }} />
-                          ) : (
-                            <div style={{ width: 120, height: 120, background: 'rgba(255,255,255,0.03)', borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(181,196,218,0.25)' }}>
-                              <RadarChartOutlined style={{ fontSize: 34, color: '#708099' }} />
-                            </div>
-                          )}
-                          <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', alignItems: 'flex-start', marginBottom: 10, columnGap: 10 }}>
-                                <div style={{ minWidth: 0 }}>
-                                  <Text style={{ color: '#f3f7fc', fontSize: 21, fontWeight: 700, letterSpacing: 0.2, display: 'block', marginBottom: 8 }}>{tactic.name}</Text>
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                      <Text style={{ color: '#8f9bb3', fontSize: 13, letterSpacing: 1.0, fontWeight: 700, minWidth: 78, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
-                                        CATEGORY
-                                      </Text>
-                                      <Tag style={{ margin: 0, background: 'rgba(104,139,178,0.16)', border: '1px solid rgba(177,194,216,0.44)', color: '#e6edf7', fontSize: 14, padding: '3px 10px', borderRadius: 4, fontWeight: 700 }}>
-                                        {tactic.category || 'General'}
+                          {/* Row 1: Image + Meta + FIT SCORE */}
+                          <div style={{ display: 'flex', gap: 16, alignItems: 'stretch' }}>
+                            {tactic.preview_image ? (
+                              <img src={tactic.preview_image} alt={tactic.name} style={{ width: 110, height: 110, objectFit: 'cover', borderRadius: 8, flexShrink: 0, border: '1px solid rgba(181,196,218,0.28)', alignSelf: 'flex-start' }} />
+                            ) : (
+                              <div style={{ width: 110, height: 110, background: 'rgba(255,255,255,0.03)', borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(181,196,218,0.25)', alignSelf: 'flex-start' }}>
+                                <RadarChartOutlined style={{ fontSize: 30, color: '#708099' }} />
+                              </div>
+                            )}
+
+                            {/* Center: Title + Category + Actions */}
+                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6 }}>
+                              <Text style={{ color: '#f3f7fc', fontSize: 22, fontWeight: 900, letterSpacing: 0.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tactic.name}</Text>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                <Text style={{ color: '#8f9bb3', fontSize: 17, letterSpacing: 1.2, fontWeight: 800, flexShrink: 0, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                  CATEGORY
+                                </Text>
+                                <Tag style={{ margin: 0, background: 'rgba(104,139,178,0.16)', border: '1px solid rgba(177,194,216,0.44)', color: '#e6edf7', fontSize: 17, padding: '3px 10px', borderRadius: 4, fontWeight: 700 }}>
+                                  {tactic.category || 'General'}
+                                </Tag>
+                              </div>
+                              {(tactic.tags || []).length > 0 && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                  <Text style={{ color: '#8f9bb3', fontSize: 17, letterSpacing: 1.2, fontWeight: 800, flexShrink: 0, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                    ACTIONS
+                                  </Text>
+                                  <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap' }}>
+                                    {(tactic.tags || []).slice(0, 3).map((t: string) => (
+                                      <Tag key={t} style={{ margin: 0, background: 'transparent', border: '1px dashed rgba(177,194,216,0.34)', color: '#cbd5e1', fontSize: 17, padding: '3px 10px', borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                        {t.replace(/_/g, ' ')}
                                       </Tag>
-                                    </div>
-                                    {(tactic.tags || []).length > 0 && (
-                                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                                        <Text style={{ color: '#8f9bb3', fontSize: 13, letterSpacing: 1.0, fontWeight: 700, minWidth: 64, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
-                                          ACTIONS
-                                        </Text>
-                                        <div style={{ display: 'flex', flex: 1, minWidth: 0, gap: 6, flexWrap: 'nowrap', overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', paddingBottom: 2 }}>
-                                          {(tactic.tags || []).slice(0, 3).map((t: string) => (
-                                            <Tag key={t} style={{ margin: 0, background: 'transparent', border: '1px dashed rgba(177,194,216,0.34)', color: '#cbd5e1', fontSize: 13, padding: '2px 8px', borderRadius: 4, fontWeight: 600, whiteSpace: 'nowrap', flex: '0 0 auto' }}>
-                                              {t.replace(/_/g, ' ')}
-                                            </Tag>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
+                                    ))}
                                   </div>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0, minWidth: 110, marginLeft: 4, paddingLeft: 4 }}>
-                                  <Text style={{ color: '#8f9bb3', fontSize: 13, fontWeight: 700, letterSpacing: 1.1, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace", lineHeight: 1.1 }}>
-                                    FIT SCORE
-                                  </Text>
-                                  <Text style={{ color: fitColor, fontSize: 32, fontWeight: 800, whiteSpace: 'nowrap', lineHeight: 1.05, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
-                                    {tactic.fitScore}%
-                                  </Text>
-                                </div>
-                              </div>
-                              <Text style={{ color: '#d8e1ee', fontSize: 16, lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                {tactic.description || 'No description available'}
+                              )}
+                            </div>
+
+                            {/* Right: FIT SCORE */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 }}>
+                              <Text style={{ color: '#8f9bb3', fontSize: 20, fontWeight: 900, letterSpacing: 1.5, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace", lineHeight: 1.1, marginBottom: 4 }}>
+                                FIT SCORE
+                              </Text>
+                              <Text style={{ color: fitColor, fontSize: 36, fontWeight: 900, whiteSpace: 'nowrap', lineHeight: 1.05, fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" }}>
+                                {tactic.fitScore}%
                               </Text>
                             </div>
-                            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                              <Button 
-                                type="primary" 
-                                size="large"
-                                onClick={() => onLoadTactic && onLoadTactic(tactic.id, 'play')}
-                                style={{ background: 'transparent', borderColor: 'rgba(177,194,216,0.52)', color: '#dce6f5', borderRadius: 6, fontWeight: 700, fontSize: 15, padding: '0 18px', height: 38, boxShadow: 'none' }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(177,194,216,0.12)'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.72)'; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.52)'; }}
-                              >
-                                Load Tactic
-                              </Button>
-                            </div>
+                          </div>
+
+                          {/* Row 2: Description + Button */}
+                          <Text style={{ color: '#d8e1ee', fontSize: 21, lineHeight: 1.65, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {tactic.description || 'No description available'}
+                          </Text>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button 
+                              type="primary" 
+                              size="middle"
+                              onClick={() => onLoadTactic && onLoadTactic(tactic.id, 'play')}
+                              style={{ background: 'transparent', borderColor: 'rgba(177,194,216,0.52)', color: '#dce6f5', borderRadius: 6, fontWeight: 700, fontSize: 13, padding: '0 12px', height: 32, boxShadow: 'none' }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(177,194,216,0.12)'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.72)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(177,194,216,0.52)'; }}
+                            >
+                              Load Tactic
+                            </Button>
                           </div>
                         </div>
                       )
@@ -1056,168 +1058,38 @@ const LineupDiagnosticPanel: React.FC<LineupDiagnosticPanelProps> = ({ isOpen, o
 
                     </div>
 
-                    {/* ── DEBUG PANEL ────────────────────────────────────── */}
-                    <div style={{ marginBottom: 20, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden' }}>
-                      <button
-                        type="button"
-                        onClick={() => setDebugOpen(o => !o)}
-                        style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: 'none', cursor: 'pointer',
-                          padding: '8px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={{ color: '#7a86a0', fontSize: 11, fontWeight: 600, letterSpacing: 1 }}>🔬 COMPUTATION DEBUG</Text>
-                        <Text style={{ color: '#4e5a70', fontSize: 11 }}>{debugOpen ? '▲ hide' : '▼ show'}</Text>
-                      </button>
-
-                      {debugOpen && (
-                        <div style={{ padding: '12px 14px', fontSize: 11, fontFamily: 'monospace', background: 'rgba(0,0,0,0.3)', overflowX: 'auto' }}>
-
-                          {/* 1. boardActions */}
-                          <div style={{ marginBottom: 12 }}>
-                            <Text style={{ color: '#faad14', display: 'block', marginBottom: 4 }}>
-                              ① boardActions ({boardActions.length} total across {boardActionFrames.length} frames)
-                            </Text>
-                            {boardActions.length === 0
-                              ? <Text style={{ color: '#4e5a70' }}>No actions across frames</Text>
-                              : boardActionFrames.map(({ frameIndex, actions }) => (
-                                  <div key={frameIndex} style={{ marginBottom: 8 }}>
-                                    <Text style={{ color: '#7a86a0', display: 'block', marginBottom: 3 }}>
-                                      Frame {frameIndex + 1} ({actions.length} actions)
-                                    </Text>
-                                    {actions.length === 0
-                                      ? <div style={{ color: '#4e5a70', marginBottom: 2 }}>—</div>
-                                      : actions.map((a, i) => (
-                                          <div key={`${frameIndex}-${i}`} style={{ color: a.actionTag ? '#52c41a' : '#fa4d4d', marginBottom: 2 }}>
-                                            [{i}] type={a.type} tag=<b>{a.actionTag ?? 'UNTAGGED'}</b>
-                                            {' '}start=({a.path[0]?.x.toFixed(0)},{a.path[0]?.y.toFixed(0)})
-                                            {' '}end=({a.path[a.path.length-1]?.x.toFixed(0)},{a.path[a.path.length-1]?.y.toFixed(0)})
-                                          </div>
-                                        ))}
-                                  </div>
-                                ))
-                            }
-                          </div>
-
-                          {/* 2. Demand vector */}
-                          <div style={{ marginBottom: 12 }}>
-                            <Text style={{ color: '#1677ff', display: 'block', marginBottom: 4 }}>② Demand vector (d_k = C_k / ΣC)</Text>
-                            {hasDemand
-                              ? SYNERGY_DIMS.map(k => (
-                                  <div key={k} style={{ color: (demandMap[k] ?? 0) > 0 ? '#6aa9ff' : '#333d4f', marginBottom: 1 }}>
-                                    {k.padEnd(12)}: {((demandMap[k] ?? 0) * 100).toFixed(1)}%
-                                    {' '}<span style={{ color: '#333d4f' }}>{'█'.repeat(Math.round((demandMap[k] ?? 0) * 20))}</span>
-                                  </div>
-                                ))
-                              : <Text style={{ color: '#4e5a70' }}>Empty — no tagged actions</Text>
-                            }
-                          </div>
-
-                          {/* 3. Supply per player */}
-                          <div style={{ marginBottom: 12 }}>
-                            <Text style={{ color: '#faad14', display: 'block', marginBottom: 4 }}>③ Supply per player</Text>
-                            {validTags.length === 0
-                              ? <Text style={{ color: '#4e5a70' }}>No player tags set</Text>
-                              : validTags.map((tag, pi) => (
-                                  <div key={pi} style={{ marginBottom: 6 }}>
-                                    <Text style={{ color: '#faad14' }}>Player {pi+1}: {tag}</Text>
-                                    <div style={{ paddingLeft: 8, marginTop: 2 }}>
-                                      {SYNERGY_DIMS.map(k => {
-                                        const v = TAG_CAPABILITY[tag]?.[k] ?? 0.07;
-                                        const isPaper = v > 0.10;
-                                        return (
-                                          <div key={k} style={{ color: isPaper ? '#52c41a' : '#4e5a70', marginBottom: 1 }}>
-                                            {k.padEnd(12)}: {(v * 100).toFixed(0)}%{isPaper ? ' ★' : ''}
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                ))
-                            }
-                          </div>
-
-                          {/* 4. Rank-weighted & normalized supply vector */}
-                          <div style={{ marginBottom: 12 }}>
-                            <Text style={{ color: '#faad14', display: 'block', marginBottom: 4 }}>④ Rank-weighted Supply S (normalized)</Text>
-                            {SYNERGY_DIMS.map((k, i) => (
-                              <div key={k} style={{ color: supplyVec[i] > 0.10 ? '#faad14' : '#4e5a70', marginBottom: 1 }}>
-                                {k.padEnd(12)}: {(supplyVec[i] * 100).toFixed(1)}%
-                                {' '}<span style={{ color: '#333d4f' }}>{'█'.repeat(Math.round(supplyVec[i] * 20))}</span>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* 4b. Rank-weight details */}
-                          <div style={{ marginBottom: 12 }}>
-                            <Text style={{ color: '#faad14', display: 'block', marginBottom: 4 }}>④b Rank-weight details (α, S', s)</Text>
-                            {SYNERGY_DIMS.map(k => (
-                              <div key={k} style={{ color: '#adb5c9', marginBottom: 1 }}>
-                                {k.padEnd(12)}: α={(SUPPLY_DECAY_ALPHA[k] ?? 0.8).toFixed(1)}
-                                {'  '}S'={(supplyStats.rawMap[k] ?? 0).toFixed(4)}
-                                {'  '}s={((supplyStats.normalizedMap[k] ?? 0) * 100).toFixed(1)}%
-                              </div>
-                            ))}
-                            <div style={{ color: '#4e5a70', marginTop: 3 }}>
-                              ΣS' = {supplyStats.totalRaw.toFixed(4)}; Σs = {SYNERGY_DIMS.reduce((sum, k) => sum + (supplyStats.normalizedMap[k] ?? 0), 0).toFixed(4)}
-                            </div>
-                          </div>
-
-                          {/* 5. Fit score calculation */}
-                          {hasDemand && validTags.length > 0 && (() => {
-                            const D = SYNERGY_DIMS.map(k => demandMap[k] ?? 0);
-                            const S = supplyVec;
-
-                            if (activeScoreMetric === 'jsd') {
-                              const M = D.map((d, i) => 0.5 * (d + S[i]));
-                              const kl = (p: number[], q: number[]) => p.reduce((sum, pVal, i) => {
-                                if (pVal <= 0 || q[i] <= 0) return sum;
-                                return sum + pVal * Math.log(pVal / q[i]);
-                              }, 0);
-                              const klDM = kl(D, M);
-                              const klSM = kl(S, M);
-                              const jsd = 0.5 * klDM + 0.5 * klSM;
-                              const fit = (1 - (jsd / Math.log(2))) * 100;
-
-                              return (
-                                <div>
-                                  <Text style={{ color: '#36d9b3', display: 'block', marginBottom: 4 }}>⑤ Jensen-Shannon Divergence</Text>
-                                  <div style={{ color: '#adb5c9', marginBottom: 6 }}>
-                                    <div>M = 0.5 × (D + S)</div>
-                                    {SYNERGY_DIMS.map((k, i) => (
-                                      <div key={`jsd-m-${k}`} style={{ color: M[i] > 0.08 ? '#8bdc8f' : '#4e5a70' }}>
-                                        {k.padEnd(12)}: M={M[i].toFixed(4)}  (D={D[i].toFixed(4)}, S={S[i].toFixed(4)})
-                                      </div>
-                                    ))}
-                                  </div>
-                                  <div style={{ color: '#adb5c9' }}>
-                                    KL(D||M) = {klDM.toFixed(4)}<br/>
-                                    KL(S||M) = {klSM.toFixed(4)}<br/>
-                                    JSD = 0.5 × {klDM.toFixed(4)} + 0.5 × {klSM.toFixed(4)} = {jsd.toFixed(4)}<br/>
-                                    Fit = (1 - JSD / ln(2)) × 100 = <b style={{ color: fitColor }}>{fit.toFixed(1)}%</b>
-                                  </div>
-                                </div>
-                              );
-                            }
-
-                            const dot   = D.reduce((s, d, i) => s + d * S[i], 0);
-                            const magD  = Math.sqrt(D.reduce((s, d) => s + d * d, 0));
-                            const magS  = Math.sqrt(S.reduce((s, v) => s + v * v, 0));
-                            const cos   = magD && magS ? dot / (magD * magS) : 0;
-                            return (
-                              <div>
-                                <Text style={{ color: '#36d9b3', display: 'block', marginBottom: 4 }}>⑤ Cosine Similarity</Text>
-                                <div style={{ color: '#adb5c9' }}>
-                                  D·S = {dot.toFixed(4)}<br/>
-                                  |D| = {magD.toFixed(4)}<br/>
-                                  |S| = {magS.toFixed(4)}<br/>
-                                  cos = {dot.toFixed(4)} / ({magD.toFixed(4)} × {magS.toFixed(4)}) = <b style={{ color: fitColor }}>{(cos * 100).toFixed(1)}%</b>
-                                </div>
-                              </div>
-                            );
-                          })()}
-
+                    {/* ── TACTICAL DIAGNOSIS ──────────────────────────────── */}
+                    {result.tactical_diagnosis && (
+                      <div style={{
+                        marginBottom: 20,
+                        background: 'linear-gradient(135deg, rgba(20,28,40,0.85) 0%, rgba(15,20,30,0.92) 100%)',
+                        border: '1px solid rgba(0,229,255,0.18)',
+                        borderRadius: 12,
+                        padding: '18px 22px',
+                        position: 'relative',
+                        overflow: 'hidden',
+                      }}>
+                        {/* Subtle accent glow */}
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(0,229,255,0.35), transparent)' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                          <span style={{ fontSize: 18 }}>🔍</span>
+                          <Text style={{ color: '#8f9bb3', fontSize: 14, fontWeight: 800, letterSpacing: 1.5, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' }}>
+                            TACTICAL DIAGNOSIS
+                          </Text>
                         </div>
-                      )}
-                    </div>
-                    {/* ── END DEBUG ───────────────────────────────────────── */}
+                        <div style={{
+                          color: '#d8e1ee',
+                          fontSize: 16,
+                          lineHeight: 1.7,
+                        }}
+                          dangerouslySetInnerHTML={{
+                            __html: result.tactical_diagnosis
+                              .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#fff;font-weight:800">$1</strong>')
+                          }}
+                        />
+                      </div>
+                    )}
+                    {/* ── END TACTICAL DIAGNOSIS ─────────────────────────── */}
                   </>
                 );
               })()}

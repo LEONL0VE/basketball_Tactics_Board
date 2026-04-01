@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Tuple, Optional
 import time
+import asyncio
 import os
 import math
 import httpx
@@ -578,6 +579,110 @@ async def generate_ai_issues(weak_links: List[dict], demand_map: Dict[str, float
 
 
 
+async def generate_tactical_diagnosis(
+    tactic_name: str,
+    demand_map: Dict[str, float],
+    supply_map: Dict[str, float],
+    fit_score: int,
+    lineup_tags: List[str],
+) -> str:
+    """Use Gemini to produce a high-dimensional tactical problem identification paragraph."""
+
+    # ── Compute gap vector ──────────────────────────────────────────────
+    gaps: List[Tuple[str, float]] = []
+    for dim in SYNERGY_DIMS:
+        d = demand_map.get(dim, 0.0)
+        s = supply_map.get(dim, 0.0)
+        gap = d - s  # positive = under-supplied
+        if abs(gap) > 0.02:
+            gaps.append((dim, gap))
+
+    under = sorted([(k, g) for k, g in gaps if g > 0], key=lambda x: x[1], reverse=True)[:3]
+    over  = sorted([(k, g) for k, g in gaps if g < 0], key=lambda x: abs(x[1]), reverse=True)[:2]
+
+    if not under and not over:
+        return ""
+
+    # ── Deterministic fallback ──────────────────────────────────────────
+    def _fallback_diagnosis() -> str:
+        parts = []
+        if under:
+            dims = ", ".join(f"{k.replace('_', ' ')}" for k, _ in under)
+            parts.append(f"The lineup critically under-supplies {dims}")
+        if over:
+            dims = ", ".join(f"{k.replace('_', ' ')}" for k, _ in over)
+            parts.append(f"while over-investing in {dims}")
+        return (". ".join(parts) + f". Current fit stands at {fit_score}%.") if parts else ""
+
+    gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+    if not gemini_api_key:
+        print("[Tactical Diagnosis] GEMINI_API_KEY missing, using fallback.", flush=True)
+        return _fallback_diagnosis()
+
+    # ── Build structured prompt ─────────────────────────────────────────
+    under_lines = ", ".join(
+        f"{k} (demand {demand_map.get(k, 0)*100:.0f}% vs supply {supply_map.get(k, 0)*100:.0f}%)"
+        for k, _ in under
+    )
+    over_lines = ", ".join(
+        f"{k} (demand {demand_map.get(k, 0)*100:.0f}% vs supply {supply_map.get(k, 0)*100:.0f}%)"
+        for k, _ in over
+    )
+    lineup_desc = ", ".join(f"{ROLE_FULL_NAME.get(t, t)}" for t in lineup_tags)
+
+    prompt = (
+        f"You are a basketball tactics analyst.\n"
+        f"Tactic: \"{tactic_name}\" (current fit score: {fit_score}%).\n"
+        f"Lineup roles: {lineup_desc}.\n"
+    )
+    if under_lines:
+        prompt += f"Critical under-supply: {under_lines}.\n"
+    if over_lines:
+        prompt += f"Notable over-supply: {over_lines}.\n"
+    prompt += (
+        "\nWrite a 2–3 sentence tactical diagnosis explaining the core structural mismatch "
+        "between this lineup and this tactic's engine. Focus on WHY the lineup struggles — "
+        "which role combinations create the gap and what basketball mechanism is missing. "
+        "Do NOT suggest substitutions (that's handled separately). "
+        "Be coaching-level, concise, and insightful. Use **bold** for key tactical terms."
+    )
+
+    try:
+        gemini_url = GEMINI_URL_TEMPLATE.format(model=GEMINI_MODEL, key=gemini_api_key)
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(
+                gemini_url,
+                headers={"Content-Type": "application/json"},
+                json={
+                    "contents": [{"parts": [{"text": prompt}]}],
+                    "generationConfig": {
+                        "temperature": 0.7,
+                        "maxOutputTokens": 200,
+                    },
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            candidates = data.get("candidates", [])
+            if not candidates:
+                raise ValueError("No candidates returned")
+            parts = candidates[0].get("content", {}).get("parts", [])
+            text = "".join(p.get("text", "") for p in parts if isinstance(p, dict)).strip()
+            if not text or len(text) < 20:
+                raise ValueError(f"Response too short: {text!r}")
+            # Strip any markdown code fences
+            if text.startswith("```"):
+                text = "\n".join(text.split("\n")[1:])
+                if "```" in text:
+                    text = text[:text.rfind("```")]
+                text = text.strip()
+            print(f"[Tactical Diagnosis] Gemini OK: {text[:120]}...", flush=True)
+            return text
+
+    except Exception as e:
+        print(f"[Tactical Diagnosis] Gemini failed ({e}), using fallback.", flush=True)
+        return _fallback_diagnosis()
+
 @router.post("")
 async def diagnose_lineup(request: DiagnoseRequest):
     """Deterministic lineup diagnostics: rank-weighted fit score + best substitution search."""
@@ -602,7 +707,18 @@ async def diagnose_lineup(request: DiagnoseRequest):
         dimensions = build_dimensions(action_requirements, demand_map, supply_map)
         weak_links = generate_weak_links(request.current_lineup, demand_map, fit_score, score_metric)
 
-        weak_links = await generate_ai_issues(weak_links, demand_map)
+        # Run AI issues and tactical diagnosis in parallel
+        weak_links_result, tactical_diagnosis = await asyncio.gather(
+            generate_ai_issues(weak_links, demand_map),
+            generate_tactical_diagnosis(
+                tactic_name=request.target_tactic.name,
+                demand_map=demand_map,
+                supply_map=supply_map,
+                fit_score=fit_score,
+                lineup_tags=role_tags,
+            ),
+        )
+        weak_links = weak_links_result
 
         if demand_map:
             demand_desc = ", ".join([f"{k}:{v * 100:.1f}%" for k, v in sorted(demand_map.items(), key=lambda x: x[1], reverse=True)])
@@ -621,6 +737,7 @@ async def diagnose_lineup(request: DiagnoseRequest):
             "weak_links": weak_links,
             "score_metric": score_metric,
             "base_score": fit_score,
+            "tactical_diagnosis": tactical_diagnosis,
         }
 
     except HTTPException as e:
